@@ -1,13 +1,11 @@
 # PPBformations
 
 `PPBformations` is an R package that gather functions and packages used in PPB formations, which are available [here in french](https://github.com/priviere/PPB_formations_FR).
+There are no vignette as all the codes are in the PPB formations documents.
 
 The R code is under licence GPL-3.
 
-The vignette of this package is under licence creative commons BY-NC-SA 4.0. 
-More informations about this licence [here](http://creativecommons.org/licenses/by-nc-sa/4.0/).
-
-The copyright of the R code and the vignette are owned by Réseau Semences Paysannes and Institut National de la Recherche Agronomique
+The copyright of the R code is owned by Réseau Semences Paysannes and Institut National de la Recherche Agronomique
 
 ## Version
 `PPBformations` is now at version 0.0.1
@@ -24,50 +22,9 @@ See NEWS [here](https://github.com/priviere/PPBstats/blob/master/NEWS) to know t
 
 ## Participate to development
 
-You can participate in three ways:
+You can participate by adding new examples of code with situation found in PPB programmes.
 
-1. test this development version and report bugs
-2. translate the package
-3. add new functions that may be useful in the PPB formations
-
-If you update the code, you can refer to 
-[the issues](https://github.com/priviere/shinemas2R/issues)
-and do it in on another branch.
+Do not hesitate to let a message [in the issues](https://github.com/priviere/PPBstats/issues) or to send me an email.
 Anyhow, send me an email if you wish to participate in order to coordinate our efforts!
-
-
-### 1. Test and report bugs
-
-First, load the development version:
-
-  `
-  devtools::install_github("priviere/PPBformations")
-  `
-
-The easiest way to start is to look at the vignette to know how the package works.
-
-You can see the vignette [here](https://github.com/priviere/PPBstats/blob/master/vignettes/PPBstats.pdf). You can download it by clicking on 'Raw' in the top right corner.
-
-Do not hesitate to let a message [in the issues](https://github.com/priviere/PPBstats/issues) or to send me an email if
-
-- some points are not clear in the vignette or you find bugs
-- you find bugs with your data (If so, you can send it to me so that I can see where could be the problems)
-
-### 2. Translate
-
-The package is in english. 
-Every contributions to other languages are welcome!
-More informations on R package translation [here](http://developer.r-project.org/Translations30.html).
-
-
-### 3. Add functions
-
-If you have any ideas, 
-
-- on the improvement of the current package
-- on new functions to add
-- ...
-
-even if it is not R written, send me an email and we'll see how we can work together!
 
 
