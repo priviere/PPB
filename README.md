@@ -8,15 +8,13 @@ The R code is under licence GPL-3.
 The copyright of the R code is owned by Réseau Semences Paysannes and Institut National de la Recherche Agronomique
 
 ## Version
-`PPBformations` is now at version 0.0.1
+`PPBformations` is now at version 0.1
 
 The version number is under the form A.B.C with
 
 * A: the number of the version on CRAN (0 = no version on CRAN yet)
 
-* B: +1 when the code and/or the vignette change
-
-* C: +1 when the code change but not the vignette
+* B: +1 when the code change
 
 See NEWS [here](https://github.com/priviere/PPBstats/blob/master/NEWS) to know the evolution of the codes.
 

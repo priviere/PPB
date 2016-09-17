@@ -1,8 +1,8 @@
 Package: PPBformations
 Type: Package
 Title: Set of functions and packages used in PPB formations
-Version: 0.0.1
-Date: 2015-04-01
+Version: 0.1
+Date: 2016-09-17
 Authors@R: c(person("Gaelle", "Van Franck", role = "ctb"),
     person("Pierre", "Riviere", role = c("aut", "cre")))
 Author: Pierre Riviere and Gaelle Van Franck
