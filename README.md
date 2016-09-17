@@ -10,7 +10,7 @@ The copyright of the R code is owned by Réseau Semences Paysannes and Institut 
 ## Version
 `PPBformations` is now at version 0.1
 
-The version number is under the form A.B.C with
+The version number is under the form A.B with
 
 * A: the number of the version on CRAN (0 = no version on CRAN yet)
 
