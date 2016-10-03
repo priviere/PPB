@@ -1,4 +1,9 @@
 PPBformation 0.1 ----------------------------------
 -----------------------------------------------------
+* 03/10/2016 Gaëlle van Frank - Add several functions :
+  - template_dossier_retour_2015-2016.R : function used to get the "feedback file" for each farmer
+  - ggplot_mixture.R : function to get different plots regarding the mixture trial
+  - list_translation.R : list to translate the data from shinemas2R::get.data
+  - get_result_model.T : function to select some specific results from PPBstats model
 * first version put on Github
 
