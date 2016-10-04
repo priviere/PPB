@@ -1,7 +1,7 @@
 # PPBformations
 
 `PPBformations` is an R package that gather functions and packages used in PPB formations, which are available [here in french](https://github.com/priviere/PPB_formations_FR).
-There are no vignette as all the codes are in the PPB formations documents.
+There is no vignette as all the codes are in the PPB formations documents.
 
 The R code is under licence GPL-3.
 
