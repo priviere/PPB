@@ -8,7 +8,7 @@ The R code is under licence GPL-3.
 The copyright of the R code is owned by Réseau Semences Paysannes and Institut National de la Recherche Agronomique
 
 ## Version
-`PPBformations` is now at version 0.1
+`PPBformations` is now at version 0.2
 
 The version number is under the form A.B with
 
