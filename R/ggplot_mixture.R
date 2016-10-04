@@ -7,10 +7,7 @@
 #' 
 #' @param variable the variable to study
 #' 
-#' @param plot.type the type of plot wanted. Can be "comp.in.farm" to compare the mixtures to each of its components in a farm ; 
-#' 																									"mixVScomp" to compare all mixtures to all components ;
-#' 																									"mix.comp.distribution" 
-#' 																									"mix.gain.distribution" to plot the distribution of the difference between mixtures and the mean of its components
+#' @param plot.type the type of plot wanted. Can be "comp.in.farm" to compare the mixtures to each of its components in a farm ; "mixVScomp" to compare all mixtures to all components ; "mix.comp.distribution" ; "mix.gain.distribution" to plot the distribution of the difference between mixtures and the mean of its components
 #'
 #' @param nb_parameters_per_plot the number of parameters per plot
 #
@@ -36,7 +33,6 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution") {
 	d_env_b = lapply(d_env, function(x){
 	    # une table par mélange
 	   mix = plyr:::splitter_d(x, .(mixture_id))
-	   print(x)
 	   MIX = list()
 	   for (i in 1:(length(mix)-1)) {
 	   	Mel = mix[[i]]
