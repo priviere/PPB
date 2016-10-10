@@ -1,46 +1,55 @@
 # 0. help -----------------------------------------------------------------
-#' Function to get the "feedback file" containing the results of the year's trial for each farmer
+#' Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_feedback_folder_1}
+#' 
+#' @param dir Directory where folder for each person is created
 #' 
 #' @param person The farmer's name
 #' 
-#' @param out_from_speed The results from PPBstats package
+#' @param out_analyse_feedback_folder_1 The outputs from \code{analyse_feedback_folder_1}
 #
+#' @details 
+#' The function creates two folders :
+#' \itemize{
+#'  \item "tex_files" with the tex files used to create the pdf
+#'  \item "feedback_folder" with, for each person, a folder with information coming from shinemas2R::get.pdf() see ?get.pdf for more details.
+#' }
+#' 
 #' @return Generate tex and pdf files
 #' 
 #' @author Pierre Rivière, Gaelle Van Frank
 #' 
-#' @seealso \code{\link{shinemas2R::get.ggplot}}, \code{\link{PPBstats::get.ggplot}}, \code{\link{shinemas2R::get.pdf}}
 #' 
-
-
-go = function(
+feedback_folder_1 = function(
+  dir = ".",
 	person,
-	out_from_speed)
+	out_analyse_feedback_folder_1)
 	# go ----------
 {
-  info_db = info.db()
+  # Set the right folder and create folders tex_files and feedback_folder ----------
+  a = dir(dir)
+  if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
   
-	setwd("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour")
-	source("./1.R/list_translation.R")
-	source("./1.R/translate.data.R")
-	source("./1.R/get_result_model.R")
-	source("./1.R/ggplot_mixture.R")
-	library(qdapRegex)
-	library(easyGgplot2)
-  library(shinemas2R)
-  library(PPBstats)
-	load("out_from_speed.RData")
-	
-	year = out_from_speed$year
-  res_model1 = out_from_speed$res_model1
-  res_model2 = out_from_speed$res_model2
-  data_network_year = out_from_speed$data_network_year
-  data_all =  out_from_speed$out_farmers_data[[person]]$data_all
-  data_year =  out_from_speed$out_farmers_data[[person]]$data_year
-  data_S_year =  out_from_speed$out_farmers_data[[person]]$data_S_year
-  data_SR_year =  out_from_speed$out_farmers_data[[person]]$data_SR_year
-  data_PPB_mixture = out_from_speed$out_farmers_data[[person]]$data_PPB_mixture
-
+  we_are_here = getwd()
+  setwd(dir)
+  if( !is.element("tex_files", dir()) ) { system("mkdir tex_files") ; message("The folder tex_files has been created") }
+  if( !is.element("feedback_folder", dir()) ) { system("mkdir feedback_folder") ; message("The folder feedback_folder has been created") }
+  
+  # Add info useful for feedback_folder_1
+  p = system.file("extdata", "feedback_folder_1", package = "PPBformations")
+  system(paste("cp ", , "/* ", we_are_here,"/tex_files", sep = ""))
+  message("Several files used in the tex document have been copied to tex_files folder")
+  
+  # get info from out_analyse_feedback_folder_1
+	year = out_analyse_feedback_folder_1$year
+  res_model1 = out_analyse_feedback_folder_1$res_model1
+  res_model2 = out_analyse_feedback_folder_1$res_model2
+  data_network_year = out_analyse_feedback_folder_1$data_network_year
+  data_all =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_all
+  data_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_year
+  data_S_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year
+  data_SR_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_SR_year
+  data_PPB_mixture = out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
+  Mixtures_all = out_analyse_feedback_folder_1$Mixtures_all
   
 	# Créer title page
 	a = paste(
@@ -49,10 +58,10 @@ go = function(
 		\\noindent
 		\\begin{center}
 		\\begin{tabular}{cccc}
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp4} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp6} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp7} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp2}
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp4} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp6} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp7} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp2}
 		\\end{tabular}
 		\\end{center}
 		%\\[-1em]
@@ -70,8 +79,9 @@ go = function(
 		\\textbf{\\textsf{ARDEAR Centre}} \\\\
 		\\textbf{\\textsf{Bergerie de Villarceaux}} \\\\
 		\\textbf{\\textsf{Graines de Noé}} \\\\
-		\\textbf{\\textsf{Kerna ùn Sohma}} \\\\
 		\\textbf{\\textsf{Li mestère}} \\\\
+		\\textbf{\\textsf{ADEAR 32}} \\\\
+		\\textbf{\\textsf{ARDEAR NPDC}} \\\\
 
 
 		\\vfill
@@ -94,19 +104,18 @@ go = function(
 	)
 	
 	
-	p = paste("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/titlepage_", person,".tex", sep = "")
+	p = paste(we_are_here, "/tex_files/titlepage_", person,".tex", sep = "")
 	sink(p);	cat(a);	sink()
-	
 		
 	OUT = list()
 	
 	# 0. Page de garde, contacts, table des matières ----------
 	
-	out = list("input" = paste("../2.tex_files/titlepage_", person, ".tex", sep = "")); OUT = c(OUT, out)
+	out = list("input" = paste("../tex_files/titlepage_", person, ".tex", sep = "")); OUT = c(OUT, out)
 	
 	
 	# Contacts
-	out = list("input" = "../2.tex_files/contacts.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/contacts.tex"); OUT = c(OUT, out)
 	
 	# Table of contents
 	out = list("tableofcontents" = TRUE); OUT = c(OUT, out)
@@ -114,9 +123,9 @@ go = function(
 	
 	# 1. Intro ----------
 	
-	out = list("input" = "../2.tex_files/intro.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/intro.tex"); OUT = c(OUT, out)
 	
-	out = list("input" = "../2.tex_files/fiche_paysans_SP_cereales_v5.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/fiche_paysans_SP_cereales_v5.tex"); OUT = c(OUT, out)
 	
 	# 2. Partie sur la ferme ----------
 	
@@ -551,19 +560,6 @@ out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer
 					 les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
 					 composantes"); OUT = c(OUT, out)
 
-Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-										db_name = info_db$db_name, db_password = info_db$db_password, # db infos
-										query.type = "data-mixture-1", # query for mixtures
-										filter.on = "father-son", # filters on father AND son
-										data.type = "relation", # data linked to relation between seed-lots
-										project.in="PPB-Mélange"
-)
-Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
-Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
-Mixtures_all$data$year = gsub("^.*_([^_]*)_.*$","\\1",Mixtures_all$data$son)
-Mixtures_all$data$location = gsub("[^._]*_([^_]*)_.*$","\\1",Mixtures_all$data$son)
-
-
 # 3.1. Résultats sur la ferme -----
 out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
 
@@ -825,7 +821,10 @@ p_melanges = ggplot_mixture1(res_model1, data_PPB_mixture,variable, nb_parameter
 out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
 													 Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
 													 La barre horizontale représente la moyenne des composantes
-													 ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)odel2[[variable3]]$predict.past
+													 ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+OUT = c(OUT, out)
+
+out = model2[[variable3]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
 if( nrow(out) > 0 ) {
   out = out[order(out[,"50%"], decreasing = TRUE),]
@@ -846,9 +845,14 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
 
 
 # /!\ Get pdf ----------
-setwd("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/3.dossiers")
-get.pdf(dir = "/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/3.dossiers/", form.name = paste(person, year, sep = ":"), 
-				LaTeX_head = "../2.tex_files/structure.tex", LaTeX_body = OUT, compile.tex = TRUE, color1 = "mln-green", color2 = "mln-brown")
+get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
+        form.name = paste(person, year, sep = ":"), 
+				LaTeX_head = "../tex_files/structure.tex", 
+				LaTeX_body = OUT, 
+				compile.tex = TRUE, 
+				color1 = "mln-green", 
+				color2 = "mln-brown"
+				)
 
 }
 

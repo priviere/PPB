@@ -1,8 +1,8 @@
 Package: PPBformations
 Type: Package
 Title: Set of functions and packages used in PPB formations
-Version: 0.1
-Date: 2016-09-17
+Version: 0.3
+Date: 2016-10-10
 Authors@R: c(person("Gaelle", "Van Franck", role = "ctb"),
     person("Pierre", "Riviere", role = c("aut", "cre")))
 Author: Pierre Riviere and Gaelle Van Franck
@@ -12,6 +12,8 @@ License: GPL-3
 Remotes: 
     shinemas2R
     PPBstats
+    qdapRegex
+    easyGgplot2
 LazyLoad: yes
 LazyData: true
 VignetteBuilder: knitr
