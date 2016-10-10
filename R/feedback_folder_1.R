@@ -15,19 +15,6 @@ feedback_folder_1 = function(
 	out_analyse_feedback_folder_1)
 	# go ----------
 {
-  info_db = info.db()
-  
-	setwd("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour")
-	source("./1.R/list_translation.R")
-	source("./1.R/translate.data.R")
-	source("./1.R/get_result_model.R")
-	source("./1.R/ggplot_mixture.R")
-	library(qdapRegex)
-	library(easyGgplot2)
-  library(shinemas2R)
-  library(PPBstats)
-	load("out_analyse_feedback_folder_1.RData")
-	
 	year = out_analyse_feedback_folder_1$year
   res_model1 = out_analyse_feedback_folder_1$res_model1
   res_model2 = out_analyse_feedback_folder_1$res_model2
@@ -37,7 +24,7 @@ feedback_folder_1 = function(
   data_S_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year
   data_SR_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_SR_year
   data_PPB_mixture = out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
-
+  Mixtures_all = out_analyse_feedback_folder_1$Mixtures_all
   
 	# Créer title page
 	a = paste(
@@ -547,19 +534,6 @@ out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer
 					 au mélange évoluant sans sélection massale. Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leur(s) mélanges formés sans sélection dans
 					 les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
 					 composantes"); OUT = c(OUT, out)
-
-Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-										db_name = info_db$db_name, db_password = info_db$db_password, # db infos
-										query.type = "data-mixture-1", # query for mixtures
-										filter.on = "father-son", # filters on father AND son
-										data.type = "relation", # data linked to relation between seed-lots
-										project.in="PPB-Mélange"
-)
-Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
-Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
-Mixtures_all$data$year = gsub("^.*_([^_]*)_.*$","\\1",Mixtures_all$data$son)
-Mixtures_all$data$location = gsub("[^._]*_([^_]*)_.*$","\\1",Mixtures_all$data$son)
-
 
 # 3.1. Résultats sur la ferme -----
 out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
