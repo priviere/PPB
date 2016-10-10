@@ -1,7 +1,7 @@
 # 0. help -----------------------------------------------------------------
 #' Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_feedback_folder_1}
 #' 
-#' @param dir Directory where the element of each folder is created
+#' @param dir Directory where folder for each person is created
 #' 
 #' @param person The farmer's name
 #' 
