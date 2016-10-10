@@ -11,7 +11,7 @@ feedback_folder_1(person, out_analyse_feedback_folder_1)
 
 \item{out_analyse_feedback_folder_1}{The outputs from \code{analyse_feedback_folder_1}}
 
-\item{dir}{Directory where the element of each folder is created}
+\item{dir}{Directory where folder for each person is created}
 }
 \value{
 Generate tex and pdf files
