@@ -10,7 +10,7 @@
 #' @details 
 #' The function creates two folders :
 #' \itemize{
-#'  \item "tex.files" with the tex files used to create the pdf
+#'  \item "tex_files" with the tex files used to create the pdf
 #'  \item "feedback_folder" with, for each person, a folder with information coming from shinemas2R::get.pdf() see ?get.pdf for more details.
 #' }
 #' 
@@ -25,19 +25,19 @@ feedback_folder_1 = function(
 	out_analyse_feedback_folder_1)
 	# go ----------
 {
-  # Set the right folder and create folders tex.files and feedback_folder ----------
+  # Set the right folder and create folders tex_files and feedback_folder ----------
   a = dir(dir)
   if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
   
   we_are_here = getwd()
   setwd(dir)
-  if( !is.element("tex.files", dir()) ) { system("mkdir tex.files") ; message("The folder tex.files has been created") }
+  if( !is.element("tex_files", dir()) ) { system("mkdir tex_files") ; message("The folder tex_files has been created") }
   if( !is.element("feedback_folder", dir()) ) { system("mkdir feedback_folder") ; message("The folder feedback_folder has been created") }
   
   # Add info useful for feedback_folder_1
   p = system.file("extdata", "feedback_folder_1", package = "PPBformations")
-  system(paste("cp ", , "/* ", we_are_here,"/tex.files", sep = ""))
-  message("Several files used in the tex document have been copied to tex.files folder")
+  system(paste("cp ", , "/* ", we_are_here,"/tex_files", sep = ""))
+  message("Several files used in the tex document have been copied to tex_files folder")
   
   # get info from out_analyse_feedback_folder_1
 	year = out_analyse_feedback_folder_1$year
@@ -846,7 +846,7 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
 # /!\ Get pdf ----------
 get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
         form.name = paste(person, year, sep = ":"), 
-				LaTeX_head = "../2.tex_files/structure.tex", 
+				LaTeX_head = "../tex_files/structure.tex", 
 				LaTeX_body = OUT, 
 				compile.tex = TRUE, 
 				color1 = "mln-green", 
