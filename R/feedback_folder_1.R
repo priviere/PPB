@@ -29,14 +29,15 @@ feedback_folder_1 = function(
   a = dir(dir)
   if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
   
-  we_are_here = getwd()
+
   setwd(dir)
+  we_are_here = getwd()
   if( !is.element("tex_files", dir()) ) { system("mkdir tex_files") ; message("The folder tex_files has been created") }
   if( !is.element("feedback_folder", dir()) ) { system("mkdir feedback_folder") ; message("The folder feedback_folder has been created") }
   
   # Add info useful for feedback_folder_1
   p = system.file("extdata", "feedback_folder_1", package = "PPBformations")
-  system(paste("cp ", , "/* ", we_are_here,"/tex_files", sep = ""))
+  system(paste("cp ",p , "/* ", " ",we_are_here,"/tex_files", sep = ""))
   message("Several files used in the tex document have been copied to tex_files folder")
   
   # get info from out_analyse_feedback_folder_1
@@ -75,7 +76,7 @@ feedback_folder_1 = function(
 		\\textbf{\\textsf{Triptolème}} \\\\
 		\\textbf{\\textsf{Pétanielle}} \\\\
 		\\textbf{\\textsf{Touzelle}} \\\\
-		\\textbf{\\textsf{ARDEAR Rhones-Alpes}} \\\\
+		\\textbf{\\textsf{ARDEAR Rhone-Alpes}} \\\\
 		\\textbf{\\textsf{ARDEAR Centre}} \\\\
 		\\textbf{\\textsf{Bergerie de Villarceaux}} \\\\
 		\\textbf{\\textsf{Graines de Noé}} \\\\
@@ -839,7 +840,7 @@ if( !is.null(out1) & !is.null(out2) & !is.null(out3) ) {
   
 } else { 
   out = list("text" = "
-Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données péhnotypiques sur votre ferme pour cette année . 
+Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
 "); OUT = c(OUT, out)
 }
 
