@@ -20,6 +20,7 @@
 #' 
 #' 
 feedback_folder_1 = function(
+  dir = ".",
 	person,
 	out_analyse_feedback_folder_1)
 	# go ----------
@@ -32,7 +33,13 @@ feedback_folder_1 = function(
   setwd(dir)
   if( !is.element("tex.files", dir()) ) { system("mkdir tex.files") ; message("The folder tex.files has been created") }
   if( !is.element("feedback_folder", dir()) ) { system("mkdir feedback_folder") ; message("The folder feedback_folder has been created") }
-
+  
+  # Add info useful for feedback_folder_1
+  p = system.file("extdata", "feedback_folder_1", package = "PPBformations")
+  system(paste("cp ", , "/* ", we_are_here,"/tex.files", sep = ""))
+  message("Several files used in the tex document have been copied to tex.files folder")
+  
+  # get info from out_analyse_feedback_folder_1
 	year = out_analyse_feedback_folder_1$year
   res_model1 = out_analyse_feedback_folder_1$res_model1
   res_model2 = out_analyse_feedback_folder_1$res_model2
