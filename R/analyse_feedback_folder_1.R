@@ -11,7 +11,7 @@
 #' 
 #' @param year the year of the feedback folder
 #' 
-#' @param vec_variable the variables to analyse
+#' @param vec_variables the variables to analyse
 #' 
 #' @param mc.cores	The number of cores used for parallelisation of the computing
 #' 
@@ -20,7 +20,7 @@
 analyse_feedback_folder_1 = function(
   info_db,
   year = "2016",
-  vec_variable
+  vec_variables
   )
   # go ----------
 {
@@ -233,14 +233,7 @@ query.type = "data-classic", filter.on = "father-son", data.type ="relation" ,va
 data$data = mag(data$data)
 data = translate.data(data, list_translation)
 data_stats = format.data(data, format = "PPBstats", fuse_g_and_s = TRUE)
-data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
 
-#vec_variables = c("poids.de.mille.grains---poids.de.mille.grain", 
-#				"proteine---proteine", 
-#				"poids.de.l.epi---poids.de.l.epi", 
-#				"hauteur---hauteur")
-				
-#vec_variables_trad = c("poids.de.mille.grains", "taux.de.proteine", "poids.de.l.epi", "hauteur")
 
 vec_variables_trad = unlist(lapply(vec_variables, function(x){
   i = grep(x,unlist(lapply(list_translation, function(y) {return(y[1])})))
@@ -252,10 +245,7 @@ vec_variables = unlist(lapply(vec_variables_trad, function(x){
   })
 )
 
-# vec_variables = lapply(vec_variables, )
-#vec_variables = "poids.de.mille.grains---poids.de.mille.grains"
-#vec_variables_trad = "poids.de.mille.grains"
-
+data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
 
 Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
                         db_name = info_db$db_name, db_password = info_db$db_password, # db infos
