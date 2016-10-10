@@ -58,10 +58,10 @@ feedback_folder_1 = function(
 		\\noindent
 		\\begin{center}
 		\\begin{tabular}{cccc}
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp4} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp6} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp7} &
-		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/sp2}
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp4} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp6} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp7} &
+		\\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/sp2}
 		\\end{tabular}
 		\\end{center}
 		%\\[-1em]
@@ -79,7 +79,6 @@ feedback_folder_1 = function(
 		\\textbf{\\textsf{ARDEAR Centre}} \\\\
 		\\textbf{\\textsf{Bergerie de Villarceaux}} \\\\
 		\\textbf{\\textsf{Graines de Noé}} \\\\
-		\\textbf{\\textsf{Kerna ùn Sohma}} \\\\
 		\\textbf{\\textsf{Li mestère}} \\\\
 
 
