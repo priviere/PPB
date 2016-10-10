@@ -1,9 +1,9 @@
 # 0. help -----------------------------------------------------------------
-#' Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_template_feedback_folder_1}
+#' Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_feedback_folder_1}
 #' 
 #' @param person The farmer's name
 #' 
-#' @param out_analyse_template_feedback_folder_1 The outputs from \code{analyse_template_feedback_folder_1}
+#' @param out_analyse_feedback_folder_1 The outputs from \code{analyse_feedback_folder_1}
 #
 #' @return Generate tex and pdf files
 #' 
@@ -12,7 +12,7 @@
 #' 
 feedback_folder_1 = function(
 	person,
-	out_analyse_template_feedback_folder_1)
+	out_analyse_feedback_folder_1)
 	# go ----------
 {
   info_db = info.db()
@@ -26,17 +26,17 @@ feedback_folder_1 = function(
 	library(easyGgplot2)
   library(shinemas2R)
   library(PPBstats)
-	load("out_analyse_template_feedback_folder_1.RData")
+	load("out_analyse_feedback_folder_1.RData")
 	
-	year = out_analyse_template_feedback_folder_1$year
-  res_model1 = out_analyse_template_feedback_folder_1$res_model1
-  res_model2 = out_analyse_template_feedback_folder_1$res_model2
-  data_network_year = out_analyse_template_feedback_folder_1$data_network_year
-  data_all =  out_analyse_template_feedback_folder_1$out_farmers_data[[person]]$data_all
-  data_year =  out_analyse_template_feedback_folder_1$out_farmers_data[[person]]$data_year
-  data_S_year =  out_analyse_template_feedback_folder_1$out_farmers_data[[person]]$data_S_year
-  data_SR_year =  out_analyse_template_feedback_folder_1$out_farmers_data[[person]]$data_SR_year
-  data_PPB_mixture = out_analyse_template_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
+	year = out_analyse_feedback_folder_1$year
+  res_model1 = out_analyse_feedback_folder_1$res_model1
+  res_model2 = out_analyse_feedback_folder_1$res_model2
+  data_network_year = out_analyse_feedback_folder_1$data_network_year
+  data_all =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_all
+  data_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_year
+  data_S_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year
+  data_SR_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_SR_year
+  data_PPB_mixture = out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
 
   
 	# Créer title page
