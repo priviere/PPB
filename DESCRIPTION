@@ -12,6 +12,8 @@ License: GPL-3
 Remotes: 
     shinemas2R
     PPBstats
+    qdapRegex
+    easyGgplot2
 LazyLoad: yes
 LazyData: true
 VignetteBuilder: knitr
