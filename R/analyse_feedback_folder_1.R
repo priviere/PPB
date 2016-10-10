@@ -407,6 +407,6 @@ names(out_farmers_data) = vec_person
 
 out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
 
-return(out_from_speed, file)
+return(out_from_speed)
 }
 
