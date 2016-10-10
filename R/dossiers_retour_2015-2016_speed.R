@@ -1,51 +1,33 @@
 # 0. help -----------------------------------------------------------------
-#' Script to analyse data from SHiNeMaS using shinemas2R and PPBstats
+#' Function to analyse data from SHiNeMaS using R packages \code{shinemas2R} and \code{PPBstats} regarding template_feedback_folder_1
 #' 
-#' @author Pierre RIvière, Gaëlle Van Frank
+#' @param info_db used by shinemas2R::get.data() : a list with the following element to connect to the data base:
+#' \itemize{
+#' \item db_user	 user name of SHiNeMaS
+#' \item db_host	 IP address of the computer where SHiNeMaS is. If local host db_host = "127.0.0.1"
+#' \item db_name	 name of the data base
+#' \item db_password	your password to login. If no password is needed, put ""
+#' }
 #' 
-#' @seealso \code{\link{shinemas2R::get.data}}, \code{\link{PPBstats::MC}}, \code{\link{PPBstats::FWH}}
+#' @param year the year of the feedback folder
 #' 
+#' @param mc.cores	The number of cores used for parallelisation of the computing
+#' 
+#' @author Pierre Rivière, Gaëlle Van Frank
+#' 
+analyse_template_feedback_folder_1 = function(
+  info_db,
+  year = "2016"
+  )
+  # go ----------
+{
+db_user = info_db$db_user
+db_host = info_db$db_host
+db_name = info_db$db_name
+db_password = info_db$db_password
+                  
 
-setwd("/home/deap/gvanfrank/these/R/dossiers_retour/dossiers_retour_2015-2016")
-source("info.connexion.R")
-vec_fonctions = dir("/home/deap/gvanfrank/these/R/dossiers_retour/dossiers_retour_2015-2016/fonctions")
-for (fon in vec_fonctions) { source(paste("./fonctions/", fon, sep = "")) }
-
-# PPBstats 
-vec_fonctions = dir("/home/deap/gvanfrank/these/R/packages_Pierre/PPBstats/R")
-for (fon in vec_fonctions) { source(paste("/home/deap/gvanfrank/these/R/packages_Pierre/PPBstats/R/", fon, sep = "")) }
-
-# shinemas2R
-vec_fonctions = dir("/home/deap/gvanfrank/these/R/packages_Pierre/shinemas2R/R")
-for (fon in vec_fonctions) { source(paste("/home/deap/gvanfrank/these/R/packages_Pierre/shinemas2R/R/", fon, sep = "")) }
-
-# shinemas2R
-library("RPostgreSQL")
-library("network")
-library("maps")
-library("xtable")
-library("plyr")
-library("dplyr")
-library("grid")
-library("ggplot2")
-library("RColorBrewer")
-#library("sna")
-library("scales")
-#library("tidyr")
-library("DBI")
-library("RPostgreSQL")
-
-# PPBstats
-library("rjags")
-library("FactoMineR")
-library("ggplot2")
-library("gridExtra")
-library("parallel")
-
-
-year = "2016"
-
-
+# 0. Clean the data set ----------
 mag = function(d){
   # tkw
   if( length(grep("tkw---tkw", colnames(d$data))) > 0 ) {
@@ -106,20 +88,19 @@ mag = function(d){
 }
 
 
-# 1. Statistical analysis on all data ----- 
+# 1. Statistical analysis on all data ---------- 
 
 vec_variables="tkw"
 #vec_variables = c("tkw", "protein", "spike_weight", "plant_height","spike_length",
 #"nbr_kernels_ind_corrected","LLSD")
 
-# 1.1. Get the data and format it for PPBstats -----
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
-print("1.1. get data")
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
+# 1.1. Get the data and format it for PPBstats ----------
+message("
+-------------------------------------
+-------------------------------------
+1.1. get data
+-------------------------------------
+-------------------------------------")
 
 data = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
 query.type = "data-classic", filter.on = "father-son", data.type ="relation" ,variable.in=vec_variables
@@ -141,13 +122,12 @@ vec_variables = "poids.de.mille.grains---poids.de.mille.grains"
 vec_variables_trad = "poids.de.mille.grains"
 
 # 1.2. model1 ----------
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
-print("1.2. model 1")
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
+message("
+-------------------------------------
+-------------------------------------
+1.2. model 1
+-------------------------------------
+-------------------------------------")
 
 fun_model1 = function(variable, data_stats) {
 	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 15000) # , nb_iterations = 1000)
@@ -160,13 +140,12 @@ res_model1 = mclapply(vec_variables, fun_model1, data_stats, mc.cores = length(v
 names(res_model1) = vec_variables_trad
 
 # 1.3. model 2 ----------
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
-print("1.3. model 2")
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
+message("
+-------------------------------------
+-------------------------------------
+1.3. model 2
+-------------------------------------
+-------------------------------------")
 
 fun_model2 = function(variable, data_stats){
 	out.model2 = FWH(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
@@ -193,13 +172,12 @@ names(res_model2) = vec_variables_trad
 
 
 # 2. Network data ----------
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
-print("2. Network data")
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
+message("
+-------------------------------------
+-------------------------------------
+2. Network data
+-------------------------------------
+-------------------------------------")
 
 data_network_year = get.data(db_user = db_user, db_host = db_host, db_name = db_name, 
 db_password = db_password, query.type = "network", filter.on = "son", 
@@ -208,16 +186,15 @@ year.in = year)
 vec_person = sort(as.character(unique(data_network_year$data$network.info$person)))
 
 # 3. farmers'data ---------
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
-print("3. farmers'data")
-print("-------------------------------------")
-print("-------------------------------------")
-print("-------------------------------------")
+message("
+-------------------------------------
+-------------------------------------
+3. farmers'data
+-------------------------------------
+-------------------------------------")
 
 get_data_farmers = function(person){
-print(person)
+message(person)
   # Toutes les données
   data_all = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
   query.type = "data-classic", person.in = person, filter.on = "father-son", data.type ="relation")
@@ -286,13 +263,11 @@ print(person)
 }
 
 
-out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = 16)
+out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = mc.cores)
 names(out_farmers_data) = vec_person
 
 out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation)
 
-save(out_from_speed, file = "out_from_speed.RData")
-
-
-
+return(out_from_speed, file)
+}
 
