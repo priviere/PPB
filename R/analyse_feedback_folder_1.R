@@ -20,7 +20,8 @@
 analyse_feedback_folder_1 = function(
   info_db,
   year = "2016",
-  vec_variables
+  vec_variables,
+  mc.cores
   )
   # go ----------
 {
