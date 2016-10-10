@@ -1,10 +1,19 @@
 # 0. help -----------------------------------------------------------------
 #' Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_feedback_folder_1}
 #' 
+#' @param dir Directory where the element of each folder is created
+#' 
 #' @param person The farmer's name
 #' 
 #' @param out_analyse_feedback_folder_1 The outputs from \code{analyse_feedback_folder_1}
 #
+#' @details 
+#' The function creates two folders :
+#' \itemize{
+#'  \item "tex.files" with the tex files used to create the pdf
+#'  \item "feedback_folder" with, for each person, a folder with information coming from shinemas2R::get.pdf() see ?get.pdf for more details.
+#' }
+#' 
 #' @return Generate tex and pdf files
 #' 
 #' @author Pierre Rivière, Gaelle Van Frank
@@ -15,6 +24,15 @@ feedback_folder_1 = function(
 	out_analyse_feedback_folder_1)
 	# go ----------
 {
+  # Set the right folder and create folders tex.files and feedback_folder ----------
+  a = dir(dir)
+  if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
+  
+  we_are_here = getwd()
+  setwd(dir)
+  if( !is.element("tex.files", dir()) ) { system("mkdir tex.files") ; message("The folder tex.files has been created") }
+  if( !is.element("feedback_folder", dir()) ) { system("mkdir feedback_folder") ; message("The folder feedback_folder has been created") }
+
 	year = out_analyse_feedback_folder_1$year
   res_model1 = out_analyse_feedback_folder_1$res_model1
   res_model2 = out_analyse_feedback_folder_1$res_model2
@@ -78,19 +96,18 @@ feedback_folder_1 = function(
 	)
 	
 	
-	p = paste("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/2.tex_files/titlepage_", person,".tex", sep = "")
+	p = paste(we_are_here, "/tex_files/titlepage_", person,".tex", sep = "")
 	sink(p);	cat(a);	sink()
-	
 		
 	OUT = list()
 	
 	# 0. Page de garde, contacts, table des matières ----------
 	
-	out = list("input" = paste("../2.tex_files/titlepage_", person, ".tex", sep = "")); OUT = c(OUT, out)
+	out = list("input" = paste("../tex_files/titlepage_", person, ".tex", sep = "")); OUT = c(OUT, out)
 	
 	
 	# Contacts
-	out = list("input" = "../2.tex_files/contacts.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/contacts.tex"); OUT = c(OUT, out)
 	
 	# Table of contents
 	out = list("tableofcontents" = TRUE); OUT = c(OUT, out)
@@ -98,9 +115,9 @@ feedback_folder_1 = function(
 	
 	# 1. Intro ----------
 	
-	out = list("input" = "../2.tex_files/intro.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/intro.tex"); OUT = c(OUT, out)
 	
-	out = list("input" = "../2.tex_files/fiche_paysans_SP_cereales_v5.tex"); OUT = c(OUT, out)
+	out = list("input" = "../tex_files/fiche_paysans_SP_cereales_v5.tex"); OUT = c(OUT, out)
 	
 	# 2. Partie sur la ferme ----------
 	
@@ -817,9 +834,14 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
 
 
 # /!\ Get pdf ----------
-setwd("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/3.dossiers")
-get.pdf(dir = "/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/test_dossier_retour/3.dossiers/", form.name = paste(person, year, sep = ":"), 
-				LaTeX_head = "../2.tex_files/structure.tex", LaTeX_body = OUT, compile.tex = TRUE, color1 = "mln-green", color2 = "mln-brown")
+get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
+        form.name = paste(person, year, sep = ":"), 
+				LaTeX_head = "../2.tex_files/structure.tex", 
+				LaTeX_body = OUT, 
+				compile.tex = TRUE, 
+				color1 = "mln-green", 
+				color2 = "mln-brown"
+				)
 
 }
 
