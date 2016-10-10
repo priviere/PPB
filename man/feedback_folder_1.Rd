@@ -4,14 +4,14 @@
 \alias{feedback_folder_1}
 \title{Function to get the "feedback file" containing the results of the year's trial for each farmer based on the analysis coming from \code{analyse_feedback_folder_1}}
 \usage{
-feedback_folder_1(person, out_analyse_feedback_folder_1)
+feedback_folder_1(dir = ".", person, out_analyse_feedback_folder_1)
 }
 \arguments{
+\item{dir}{Directory where folder for each person is created}
+
 \item{person}{The farmer's name}
 
 \item{out_analyse_feedback_folder_1}{The outputs from \code{analyse_feedback_folder_1}}
-
-\item{dir}{Directory where folder for each person is created}
 }
 \value{
 Generate tex and pdf files
