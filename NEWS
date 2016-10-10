@@ -1,3 +1,8 @@
+PPBformation 0.4 ------------------------------------
+-----------------------------------------------------
+* update analyse_feedback_folder_1.R
+  - add vec_variables as argument
+
 PPBformation 0.3 ------------------------------------
 -----------------------------------------------------
 * update gitignore
