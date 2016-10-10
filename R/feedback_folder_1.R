@@ -80,6 +80,8 @@ feedback_folder_1 = function(
 		\\textbf{\\textsf{Bergerie de Villarceaux}} \\\\
 		\\textbf{\\textsf{Graines de Noé}} \\\\
 		\\textbf{\\textsf{Li mestère}} \\\\
+		\\textbf{\\textsf{ADEAR 32}} \\\\
+		\\textbf{\\textsf{ARDEAR NPDC}} \\\\
 
 
 		\\vfill
