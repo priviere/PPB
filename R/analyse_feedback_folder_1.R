@@ -265,7 +265,7 @@ message("
 -------------------------------------")
 
 fun_model1 = function(variable, data_stats) {
-	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 15000) # , nb_iterations = 1000)
+	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
 	model.outputs = analyse.outputs(out.model1) # si var: ça bug, que ok si var = NULL
 	comp.mu = get.mean.comparisons(model.outputs$MCMC, "mu", get.at.least.X.groups = 2)
 	return(list("model.outputs" = model.outputs, "comp.mu" = comp.mu))
