@@ -15,7 +15,7 @@
 #' 
 #' @author Pierre Rivière, Gaëlle Van Frank
 #' 
-analyse_template_feedback_folder_1 = function(
+analyse_feedback_folder_1 = function(
   info_db,
   year = "2016"
   )
