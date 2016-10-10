@@ -11,13 +11,16 @@
 #' 
 #' @param year the year of the feedback folder
 #' 
+#' @param vec_variable the variables to analyse
+#' 
 #' @param mc.cores	The number of cores used for parallelisation of the computing
 #' 
 #' @author Pierre Rivière, Gaëlle Van Frank
 #' 
 analyse_feedback_folder_1 = function(
   info_db,
-  year = "2016"
+  year = "2016",
+  vec_variable
   )
   # go ----------
 {
@@ -211,8 +214,8 @@ mag = function(d){
 
 # 1. Statistical analysis on all data ---------- 
 
-vec_variables="tkw"
-#vec_variables = c("tkw", "protein", "spike_weight", "plant_height","spike_length",
+# vec_variables="tkw"
+# vec_variables = c("tkw", "protein", "spike_weight", "plant_height","spike_length",
 #"nbr_kernels_ind_corrected","LLSD")
 
 # 1.1. Get the data and format it for PPBstats ----------
@@ -239,8 +242,19 @@ data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
 				
 #vec_variables_trad = c("poids.de.mille.grains", "taux.de.proteine", "poids.de.l.epi", "hauteur")
 
-vec_variables = "poids.de.mille.grains---poids.de.mille.grains"
-vec_variables_trad = "poids.de.mille.grains"
+vec_variables_trad = unlist(lapply(vec_variables, function(x){
+  i = grep(x,unlist(lapply(list_translation, function(y) {return(y[1])})))
+  return(list_translation[[i]][2])
+}))
+
+vec_variables = unlist(lapply(vec_variables_trad, function(x){
+  return(paste(x,"---",x,sep=""))
+  })
+)
+
+# vec_variables = lapply(vec_variables, )
+#vec_variables = "poids.de.mille.grains---poids.de.mille.grains"
+#vec_variables_trad = "poids.de.mille.grains"
 
 
 Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
