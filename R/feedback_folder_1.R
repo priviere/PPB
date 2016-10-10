@@ -813,7 +813,10 @@ p_melanges = ggplot_mixture1(res_model1, data_PPB_mixture,variable, nb_parameter
 out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
 													 Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
 													 La barre horizontale représente la moyenne des composantes
-													 ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)odel2[[variable3]]$predict.past
+													 ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+OUT = c(OUT, out)
+
+out = model2[[variable3]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
 if( nrow(out) > 0 ) {
   out = out[order(out[,"50%"], decreasing = TRUE),]
