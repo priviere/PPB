@@ -22,7 +22,7 @@ Function to get the "feedback file" containing the results of the year's trial f
 \details{
 The function creates two folders :
 \itemize{
- \item "tex.files" with the tex files used to create the pdf
+ \item "tex_files" with the tex files used to create the pdf
  \item "feedback_folder" with, for each person, a folder with information coming from shinemas2R::get.pdf() see ?get.pdf for more details.
 }
 }
