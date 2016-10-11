@@ -137,6 +137,7 @@ list_translation = list(
   c("summer_verse", "verse"),
   c("plant_height", "hauteur"),
   c("spike_weight", "poids.de.l.epi"),
+  c("spike_length","longueur.de.l.epi"),
   
   c("awns","barbe"),
   c("curve","courbure"),
@@ -234,6 +235,7 @@ query.type = "data-classic", filter.on = "father-son", data.type ="relation" ,va
 data$data = mag(data$data)
 data = translate.data(data, list_translation)
 data_stats = format.data(data, format = "PPBstats", fuse_g_and_s = TRUE)
+colnames(data_stats)[grep("longueur.de.l.epi---longueur.de.l.epi_F",colnames(data_stats))[1]] = "longueur.de.l.epi---longueur.de.l.epi"
 
 
 vec_variables_trad = unlist(lapply(vec_variables, function(x){
