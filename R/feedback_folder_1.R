@@ -555,9 +555,14 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
 # 3. Essai Mélanges -------
 out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
 out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
-					 Les pratiques testées sont : deux années de sélection dans les composantes avant de mélanger ; une sélection dans les composantes avant de mélanger puis une sélection
-					 dans le mélange ; à partir du mélange créé sans sélection dans les composantes, deux années de sélection dans le mélange. Ces pratiques de sélection sont comparées
-					 au mélange évoluant sans sélection massale. Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leur(s) mélanges formés sans sélection dans
+					 Les pratiques testées sont : 
+          \begin{itemize}
+          \item deux années de sélection dans les composantes avant de mélanger ; 
+          \item une sélection dans les composantes avant de mélanger puis une sélection dans le mélange ; 
+          \item à partir du mélange créé sans sélection dans les composantes, deux années de sélection dans le mélange.
+          \end{itemize}
+          Ces pratiques de sélection sont comparées au mélange évoluant sans sélection massale. 
+            Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leur(s) mélanges formés sans sélection dans
 					 les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
 					 composantes"); OUT = c(OUT, out)
 
@@ -603,6 +608,11 @@ out = list("figure" = list("caption" = "Comparaison du poids de mille grains du 
 # out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
 # 3.2. Résultats sur le réseau de fermes -----
+out = list("text" = "Dans cette partie sont présentés les résultats de l'essai mélange sur le réseau de ferme. 
+            On compare dans un premier temps la valeur des mélanges à celle de la moyenne de leurs composantes respectives. 
+            Puis on s'intéresse à la variabilité observée, pour chacun des mélanges testés, de chacune des \"moins bonnes\" composantes, de la meilleure composante,
+            de la valeur moyenne des composante et de celle des mélanges.
+            Enfin on comparela valeur moyenne de l'ensemble des mélange à celle de l'ensemble des composantes pour voir si on détecte un effet du mélange.")
 out = list("section" = "Résultats sur le réseau de fermes"); OUT = c(OUT, out)
 # Codes à tester !
 
