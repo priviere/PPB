@@ -6,6 +6,8 @@
 #' @param person The farmer's name
 #' 
 #' @param out_analyse_feedback_folder_1 The outputs from \code{analyse_feedback_folder_1}
+#' 
+#' @param score Indicated whether to print the score graphics (TRUE) or not (FALSE)
 #
 #' @details 
 #' The function creates two folders :
@@ -22,7 +24,8 @@
 feedback_folder_1 = function(
   dir = ".",
 	person,
-	out_analyse_feedback_folder_1)
+	out_analyse_feedback_folder_1,
+  score=F)
 	# go ----------
 {
   # Set the right folder and create folders tex_files and feedback_folder ----------
@@ -342,13 +345,16 @@ Le pourcentage de confiance dans cette information est indiqué en dessous des p
 Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
 ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
-p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-out = list("figure" = list("caption" = "
-Scores des populations au cours du temps pour le poids de mille grains. 
-Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
-Un score maximal correspond au premier groupe de significativité. 
-Un score minimal correspond au dernier groupe de significativité.
-", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+if (score == TRUE){
+  p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+  out = list("figure" = list("caption" = "
+        Scores des populations au cours du temps pour le poids de mille grains. 
+        Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
+        Un score maximal correspond au premier groupe de significativité. 
+        Un score minimal correspond au dernier groupe de significativité.
+        ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  
+}
 
 d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
 if(!is.null(d)) {
@@ -377,13 +383,16 @@ out = list("figure" = list("caption" = "
                            Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
                            ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
-p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-out = list("figure" = list("caption" = "
-Scores des populations au cours du temps pour le taux de protéine. 
-Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
-Un score maximal correspond au premier groupe de significativité. 
-Un score minimal correspond au dernier groupe de significativité.
-", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+if (score == TRUE) {
+  p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+  out = list("figure" = list("caption" = "
+        Scores des populations au cours du temps pour le taux de protéine. 
+        Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
+        Un score maximal correspond au premier groupe de significativité. 
+       Un score minimal correspond au dernier groupe de significativité.
+        ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+}
+
 
 d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
 if(!is.null(d)) {
@@ -414,13 +423,16 @@ Le pourcentage de confiance dans cette information est indiqué en dessous des p
 Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
 ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
-p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-out = list("figure" = list("caption" = "
-Scores des populations au cours du temps pour le poids des épis. 
-Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
-Un score maximal correspond au premier groupe de significativité. 
-Un score minimal correspond au dernier groupe de significativité.
-", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+if(score == TRUE) {
+  p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+  out = list("figure" = list("caption" = "
+        Scores des populations au cours du temps pour le poids des épis. 
+        Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
+        Un score maximal correspond au premier groupe de significativité. 
+        Un score minimal correspond au dernier groupe de significativité.
+        ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+}
+
 
 d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
 if(!is.null(d)) {
@@ -609,10 +621,11 @@ out = list("figure" = list("caption" = "Comparaison du poids de mille grains du 
 
 # 3.2. Résultats sur le réseau de fermes -----
 out = list("text" = "Dans cette partie sont présentés les résultats de l'essai mélange sur le réseau de ferme. 
-            On compare dans un premier temps la valeur des mélanges à celle de la moyenne de leurs composantes respectives. 
+            On s'intéresse dans un premier temps à la différence observée entre la valeur des mélanges et celle de la moyenne de leurs composantes respectives, 
+            permettant de constater si les mélanges apportent en moyenne plutôt un gain ou une perte par rapport à la moyenne de leurs composantes. 
             Puis on s'intéresse à la variabilité observée, pour chacun des mélanges testés, de chacune des \"moins bonnes\" composantes, de la meilleure composante,
             de la valeur moyenne des composante et de celle des mélanges.
-            Enfin on comparela valeur moyenne de l'ensemble des mélange à celle de l'ensemble des composantes pour voir si on détecte un effet du mélange.")
+            Enfin on compare la valeur moyenne de l'ensemble des mélange à celle de l'ensemble des composantes pour voir si on détecte un effet du mélange.")
 out = list("section" = "Résultats sur le réseau de fermes"); OUT = c(OUT, out)
 # Codes à tester !
 
