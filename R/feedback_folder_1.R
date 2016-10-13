@@ -104,7 +104,8 @@ feedback_folder_1 = function(
 		
 		\\nopagecolor % Use this to restore the color pages to white
     \\pagestyle{plain}
-		"
+		",
+		sep=""
 	)
 	
 	
@@ -118,18 +119,296 @@ feedback_folder_1 = function(
 	out = list("input" = paste("../tex_files/titlepage_", person, ".tex", sep = "")); OUT = c(OUT, out)
 	
 	
-	# Contacts
-	out = list("input" = "../tex_files/contacts.tex"); OUT = c(OUT, out)
+	# Contacts --------
+	a=paste("	\\chapter*{Qui contacter ?}
+	
+	\\vfill
+	
+	\\noindent\\textbf{\\textsf{Correspondants nationaux :}} \\\\
+	
+	\\begin{wrapfigure}{l}{.20\\textwidth}
+	\\begin{center} \\vspace{-20pt}
+	\\includegraphics[width=.20\\textwidth]{",we_are_here,"tex_files/Logo-RSP.png}
+	\\end{center} \\vspace{-20pt}
+	\\end{wrapfigure}
+	\\noindent
+	~\\\\
+	Pierre Rivière \\href{mailto:pierre@semencespaysannes.org}{pierre@semencespaysannes.org} \\\\
+	Patrick de Kochko \\href{mailto:patrick@semencespaysannes.org}{patrick@semencespaysannes.org} \\\\
+	Réseau Semences Paysannes \\\\
+	3, avenue de la Gare 47190 Aiguillon \\\\
+	~\\\\
+	
+	\\vfill
+	
+	\\begin{wrapfigure}{l}{.20\\textwidth}
+	\\begin{center} \\vspace{-20pt}
+	\\includegraphics[width=.20\\textwidth]{",we_are_here,"tex_files/Logo-UMRGV.jpg}
+	\\end{center} \\vspace{-20pt}
+	\\end{wrapfigure}
+	\\noindent
+	Sophie Pin \\href{mailto:sophie.pin@moulon.inra.fr}{sophie.pin@moulon.inra.fr} \\\\
+	Isabelle Goldringer \\href{mailto:isa@moulon.inra.fr}{isa@moulon.inra.fr} \\\\
+	Equipe DEAP, INRA Le Moulon  \\\\
+	Ferme du Moulon, 91190 Gif sur Yvette \\\\
+	
+	\\vfill
+	
+	\\newpage
+	
+	\\noindent\\textbf{\\textsf{Correspondants régionaux :}} \\\\
+	
+	\\begin{longtable}{p{.5\\textwidth}p{.5\\textwidth}}
+	
+	Julien Lacanette 									& \\\\
+	CETAB 												& Triptolème \\\\
+	3 avenue de la Gare, 47190 AIGUILLON 				& chez Carole Gruel, Launay 35330 BOVEL \\\\
+	05.53.93.14.62										& \\\\
+	\\href{mailto:cetab@laposte.net}{cetab@laposte.net} 	& \\href{mailto:Triptoleme.CA@gmail.com}{Triptoleme.CA@gmail.com} \\\\
+	\\href{www.cetab.fr.nf}{www.cetab.fr.nf} 			& \\href{ www.semencespaysannes.org/qui_sommes-nous_286.php}{www.semencespaysannes.org/qui\\_sommes-nous\\_286.php}\\\\
+	& \\\\
+	& \\\\
+	
+	Lydie Carras & \\\\
+	Pétanielle & Touzelle \\\\
+	%& \\\\
+	07 82 08 09 15 & \\\\
+	\\href{mailto:lydiemsp@gmail.com}{lydiemsp@gmail.com} & \\\\
+	& \\\\
+	& \\\\
+	
+	Alexandre Hyacinthe  													& Sophie WOEHLING \\\\ 
+	ARDEAR Rhones-Alpes 													& ARDEAR Centre \\\\
+	58 rue Raulin 69007 LYON 												& Village d'entreprises de l'Arrou, 87A Route de Château-Renault, 41000 Blois \\\\
+	04 72 41 79 22 															& 02 54 43 32 94 \\\\
+	\\href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr}	& \\href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} \\\\
+	& \\\\
+	& \\\\
+	
+	Bergerie de Villarceaux 																			& Graines de Noé \\\\
+	Héloïse Boureau 																					& Jean-françois Guilloteau \\\\
+	La Bergerie de Villarceaux, 95710 Chaussy 															& Technopole Agro-Environnement, Agronov RD-31, 21110 BRETENIERE \\\\
+	01 34 67 91 23																						& 07 70 45 43 12 \\\\
+	\\href{mailto:heloise.boureau@bergerie-villarceaux.org}{heloise.boureau@bergerie-villarceaux.org} 	& \\href{technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
+	\\href{www.bergerie-villarceaux.org}{www.bergerie-villarceaux.org} \\\\
+	& \\\\
+	& \\\\
+	
+	Kerna ùn Sohma & \\\\
+	Anne Wanner & \\\\ 
+	5 place de la gare – 68000 Colmar & \\\\
+	03 89 24 43 19 & \\\\
+	\\href{mailto:semencesalsaciennes@yahoo.fr}{semencesalsaciennes@yahoo.fr} & \\\\ 
+	\\href{www.kernaunsohma.fr}{www.kernaunsohma.fr} & \\\\
+	
+	\\end{longtable}
+	
+	\\vfill
+	
+	%\\centering\\textsf{Fait à Aiguillon le~\\today}",sep="/")
+
+  p = paste(we_are_here, "/tex_files/contacts", ".tex", sep = "")
+  sink(p);	cat(a);	sink()
+	
+	out=list("input" = "../tex_files/contacts.tex")
+	OUT=c(OUT,out)
 	
 	# Table of contents
 	out = list("tableofcontents" = TRUE); OUT = c(OUT, out)
 	
+	       	# 1. Intro ----------
+	# 1.1 Pourquoi ce dossier -----
+  a=paste("	\\chapter{Pourquoi ce dossier?}
 	
-	# 1. Intro ----------
+	Ce dossier fait le bilan des premières années d'expérimentations qui se sont écoulées dans votre ferme et dans le réseau de fermes.
+	Il permet de vous accompagner dans votre sélection d'un point de vue agronomique.
+	Il n'est pas question ici de la qualité du blé, de son comportement en panification.
+	Cet aspect qualité sera intégré dans le futur.
 	
-	out = list("input" = "../tex_files/intro.tex"); OUT = c(OUT, out)
+	\\warning{Ce dossier n'est qu'un modeste complément de l'expertise que vous avez développé en observant les populations chez vous, dans les champs et peut être au fournil.}
+
+Ce document est séparé en deux parties:
+  
+  \\begin{enumerate}
+
+\\item \\textbf{Une première partie traite des résultats dans votre ferme.} Cette partie permet de vous orienter pour répondre à la question : \\textbf{Quelles populations se comportent le mieux dans ma ferme?}
+
+Pour cela nous vous donnons les données recueillies pour chaque étape du cycle de la population (automne, hiver, printemps et été) ainsi que les mesures qui ont été effectuées au Moulon pour le poids de mille grains, le taux de protéine, le poids des épis, et dans les champs pour la hauteur et la verse.
+
+Pour les personnes concernées, nous vous apportons également des résultats sur vos bouquets de sélection, sur la réponse de ces bouquets à la sélection ainsi que sur l'essai mélange.
+
+\\item \\textbf{Une deuxième partie traite des résultats dans le réseau de fermes.} Cette partie permet de vous orienter pour répondre à la question : \\textbf{Quelles populations serait-il plus intéressant de tester chez moi pour les prochains semis?} Ces résultats vous permettent de mobiliser la diversité évaluée dans le réseau de fermes.
+
+\\begin{itemize}
+\\item Dans un premier temps, nous montrons les fermes dans lesquelles les populations se comportent le plus comme dans  votre ferme. Cela vous permet de vous mettre en lien avec cette ferme afin de récupérer quelques populations.
+
+\\item Dans un deuxième temps 
+
+\\item Ensuite, nous vous donnons les caractéristiques génétiques des populations, c'est à dire:
+  \\begin{itemize}
+\\item Leurs effets génétiques (intrinsèque aux populations)
+\\item Leurs sensibilité à l'interaction. Moins elles sont sensibles à l'interaction, plus elles se comportent moyennement de la même manière dans les fermes par rapport aux autres populations.
+\\end{itemize}
+
+\\item Enfin, nous vous proposons de prédire les valeurs qu'auraient eu certaines populations dans vos fermes cette année : on prédit le passé!
+Cette information est issue des modèles statistiques que nous avons développés.
+Comme tous modèles, il donne une information avec une certaine confiance qui est donnée en pourcentage.
+\\end{itemize}
+
+\\end{enumerate}
+
+Les graphiques et les tableaux sont expliqués au fur et à mesure du document.
+En cas de soucis de compréhension, n'hésitez pas à nous contacter (\\href{mailto:pierre@semencespaysannes.org}{pierre@semencespaysannes.org}, 06 87 13 46 98). 
+Quand nous n'avons pas eu les données, il n'y a pas de résultats et la mention \"Pas de données\" apparaît.\\\\
+
+Au delà de cette diversité disponible dans votre ferme et dans le réseau, vous pouvez développer de nouvelles populations.
+Pour cela deux solutions sont à votre disposition\\footnote{Il en existe d'autres mais elles sont plus compliquées à mettre en oeuvre. On revient sur ce point lors des formations.} : 
+  
+  \\begin{itemize}
+  \\item mélanger des populations existantes
+  \\item faire des croisements. Dans ce cas, vous pouvez nous envoyer les parents que vous souhaitez croiser. L'équipe de recherche peut les croiser au Moulon. Elle pourra également venir faire des formations afin que vous puissiez réaliser vous même vos croisements dans votre ferme.
+  \\end{itemize}
+  
+  ~\\\\  
+  
+  Selon vos souhaits et le nombre de populations que vous voulez semer, nous vous proposerons d'être ferme régionale ou ferme satellite.
+  La figure ci-dessous rappelle la particularité de ces deux types de fermes.
+  Avec les témoins : \\colorbox{black}{\\textcolor{white}{Rouge-du-Roc}}; \\colorbox{black}{\\textcolor{white}{C14}}; \\colorbox{black}{\\textcolor{white}{C21}}; \\colorbox{black}{\\textcolor{white}{Renan}}.
+  Nous pouvons avoir les plans suivant (ces plans sont modulables selon vos contraintes ...):
+  
+  \\begin{center}
+  \\begin{tabular}{c c}
+  
+  Fermes régionales & Fermes satellites \\\\
+  \\hline	\\includegraphics[width=.4\\textwidth]{",we_are_here,"tex_files/plan_FR.pdf} & \\includegraphics[width=.4\\textwidth]{",we_are_here,"tex_files/plan_FS_bis.pdf} \\\\
+  
+  4 témoins dans 2 blocs & pas de blocs; 1 témoin répété deux fois \\\\
+  
+  24 populations non répétées & 8 populations non répétées \\\\
+  \\hline
+  \\end{tabular}
+  \\end{center}
+  
+  ~\\\\ 
+  
+  Nous avons joint à ce dossier trois fiches à remplir afin d'avoir 
+\\begin{itemize}
+\\item votre avis sur ce dossier. En effet, ce type de retour est en construction et nous avons besoin de vous pour l'améliorer.
+  %\\item la liste des populations que vous souhaitez semer pour les prochains semis. Cela nous permettra de faciliter les échanges de semences et de vous proposer un plan
+  \\item la liste éventuelle de parents que vous souhaiteriez croiser
+  \\end{itemize}
+  
+  
+  La fiche \\guill{Le rôle des paysans participant au projet de sélection collaborative sur les céréales} qui réapitule les différentes étapes du projet est présenté dans la partie 2 de ce document.
+  
+  \\vfill
+  
+  \\begin{flushright}
+  Bonne lecture et bons semis!
+  
+  Le Réseau Semences Paysannes
+  
+  L'équipe DEAP de l'INRA du Moulon
+  \\end{flushright}
+  \\vfill
+  
+  
+  \\newpage",sep="/")
 	
-	out = list("input" = "../tex_files/fiche_paysans_SP_cereales_v5.tex"); OUT = c(OUT, out)
+	p = paste(we_are_here, "/tex_files/intro", ".tex", sep = "")
+	sink(p);	cat(a);	sink()
+	
+	out=list("input" = "../tex_files/intro.tex")
+	OUT=c(OUT,out)
+
+	  #1.2 Fiche paysans --------
+	a=paste("\\chapter{Le rôle des paysans participant au projet de sélection collaborative sur les céréales}
+
+	        \\begin{center}
+	        \\Large Version 5 du 30 septembre 2015
+	        \\end{center}
+	        
+	        
+	        \\section{Réunion de bilan de l'année écoulée et des prochains semis}
+	        Cette réunion a lieu dans la deuxième semaine de septembre à Paris. Pour le suivi de la dynamique,
+	        il est important que l'animateur et au moins un paysan y soient présents.
+	        
+	        \\section{Les semis : dispositifs expérimentaux}
+	        
+	        
+	        \\warning{Envoyez à votre animateur la liste des populations que vous souhaitez semer et il vous
+	        proposera un plan de semis. Ensuite, envoyer le plan définitif à votre animateur. Il vous
+	        enverra alors des étiquettes et des piquets afin de bien identifier vos micros-parcelles.}
+	        
+	        
+	        Pour le semis, deux choses sont importantes :
+	        
+	        \\begin{itemize}
+	        \\item semer le témoin qui vous sera envoyé si vous ne l'avez pas déjà. A part le témoin, vous
+	        semez ce que vous voulez ! Il est important de conserver les noms des sélections que l'on
+	        vous donne lorsque que vous faites des bouquets de sélection (sous la forme [nom de la
+	        variété]\\#[une lettre], par exemple Rouge-de-Bordeaux\\#R ou Blanc-de-la-Réole\\#E)
+	        
+	        \\item suivre un dispositif expérimental de type ferme régional \\yo{OU} satellites.
+	        Pour les fermes satellites, s'il y a peu de populations, on peut imaginer répéter le témoin une seule fois.
+	        \\end{itemize}
+	        
+	        Les témoins sont dans les cases noires. Les populations que vous choisissez sont dans les cases
+	        blanches. 
+	        La taille conseillée des micro-parcelles est entre 5 et 10m\\up{2}.
+	        \\\\
+	        
+	        
+	        \\begin{center}
+	        \\begin{tabular}{c c}
+	        Fermes régionales & Fermes satellites \\\\
+	        \\hline
+	        \\includegraphics[width=.4\\textwidth]{",we_are_here,"tex_files/plan_FR.pdf}  & \\includegraphics[width=.4\\textwidth]{",we_are_here,"tex_files/plan_FS_bis.pdf} 
+	        \\\\
+	        \\hline
+	        \\end{tabular}
+	        \\end{center}
+	        
+	        \\section{Suivi des populations avec les fiches}
+	        Votre animateur vous fera parvenir des fiches afin de suivre la culture. Ces fiches peuvent être
+	        issues du projet national ou issues de votre groupe.
+	        
+	        \\section{Envoi des épis récoltés par la poste pour qu'ils soient mesurés à l'INRA}
+	        
+	        A la récolte, votre animateur vous enverra un courrier avec deux types d'enveloppes :
+
+\\begin{itemize}
+\\item \\yo{« 50 épis au hasard »} pour y déposer 50 épis (ou moins s'il y a peu d'épis dans la micro-
+parcelle) pris au hasard dans la parcelle ;
+
+\\item \\yo{« bouquet d'épis sélectionnés »} si vous faites des bouquets de sélection. Ceci est optionnel
+	        mais peut être intéressant si vous souhaitez étudier vos sélections massales.
+	        Ces épis seront mesurés pour les barbes, la couleur, la courbure de l'épi, le poids de l'épi, le taux de
+	        protéine et le poids de mille grains. Une notice plus précise est fournie avec les sacs.
+	        \\end{itemize}
+	        
+	        \\warning{Il est important que ces sacs d'épis soient envoyés à l'INRA le plus vite possible !}
+	        
+	        Nous recevons en moyenne 700 sacs par an, les mesures doivent être terminées le 10 septembre,
+	        date limite pour faire les mesures de protéine. Si nous recevons tout fin août, ce n'est pas gérable ...
+
+~\\\\
+
+\\yo{N'hésitez pas à nous contacter si vous souhaitez de plus amples informations :}
+	        
+	        Pierre Rivière, RSP ; \\url{pierre@semencespaysannes.org} ; 06 87 13 46 98
+	        
+	        Sophie Pin, INRA ; \\url{jouanne@moulon.inra.fr} ; 01 69 15 70 59
+	        
+	        
+	        \\newpage
+	        ", sep="/")
+	
+	p = paste(we_are_here, "/tex_files/fiche_paysans_SP_cereales_v5", ".tex", sep = "")
+	sink(p);	cat(a);	sink()
+	
+	out=list("input" = "../tex_files/fiche_paysans_SP_cereales_v5.tex")
+	OUT=c(OUT,out)
 	
 	# 2. Partie sur la ferme ----------
 	
@@ -515,8 +794,9 @@ Vous avez la possibilité d'étudier votre sélection à l'intérieur des popula
 Ce graphique présente côte à côte les valeurs moyennes de votre bouquet de sélection (bouquetS) par rapport au vrac (vracS), c'est à dire la moyenne de ce qui n'a pas été sélectionné. 
 La différence entre la moyenne du bouquet de sélection (bouquetS) et la moyenne du vrac (vracS) s'appelle le \\textbf{le différentiel de sélection}.
 Cela permet de caractériser la manière dont vous avez sélectionné par rapport à la diversité disponible.
-Si la sélection a été faite dans le cadre de l'essai sur les mélanges, la sélection correspondant à la modalité 1 (qui sera semée en pur à l'automne) est notée #VA 
-tandis que la sélection correspondant à la modalité 2 (qui sera mélangées aux autres sélections pour reformer le mélange) est noté #JA.
+Si la sélection a été faite dans le cadre de l'essai sur les mélanges, la sélection correspondant à la modalité 1 (faite dans la population, qui sera semée en pur à l'automne) 
+est notée #VA, la sélection correspondant à la modalité 2 (faite dans la population, qui sera mélangées aux autres sélections pour reformer le mélange) est noté #JA, tandis que
+la sélection faite dans le mélange est notée #BA.
 ",sep=""))
 
 
