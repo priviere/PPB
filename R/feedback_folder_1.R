@@ -406,9 +406,9 @@ if(!is.null(d)) {
 out = list("subsubsection" = "Le poids de mille grains en fonction du taux de protéine"); OUT = c(OUT, out)
 
 p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
-													 vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), hide.labels.parts = c("person:year"),
-													 nb_parameters_per_plot_x.axis = 10,
-													 nb_parameters_per_plot_in.col = 10)
+													 vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), 
+													 hide.labels.parts = c("person:year"),
+													 nb_parameters_per_plot_x.axis = 60)
 out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
 
 
