@@ -406,7 +406,9 @@ if(!is.null(d)) {
 out = list("subsubsection" = "Le poids de mille grains en fonction du taux de protéine"); OUT = c(OUT, out)
 
 p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
-													 vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), hide.labels.parts = c("person:year"))
+													 vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), hide.labels.parts = c("person:year"),
+													 nb_parameters_per_plot_x.axis = 10,
+													 nb_parameters_per_plot_in.col = 10)
 out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
 
 
@@ -452,6 +454,12 @@ p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-interaction", x.
 													 vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
 out = list("figure" = list("caption" = "Evolution de la hauteur au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
+# 2.5.1.6. La verse en fonction de la hauteur ----------
+out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
+
+p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
+                           vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
+out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
 
 
 # 2.5.2. Etude de la sélection intra-population ----------
@@ -764,23 +772,41 @@ Ces caractéristiques génétiques ont été estimées à partir du comportement
 
 variable = "poids.de.mille.grains"
 comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
-p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
-out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de mille grains", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+#p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+#p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
+#out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de mille grains", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+
+out = list("text" = "Le tableau ci-dessous présente les effets génétiques des populations dans le réseau pour le poids de mille grains."); OUT = c(OUT, out)
+tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
+tab$parameter = ex_between(tab$parameter, "[", "]")
+colnames(tab) = c("Population","poids de mille grains moyen","groupe")
+out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le poids de mille grains", "content" = tab)); OUT = c(OUT, out)
 
 
 variable = "taux.de.proteine"
 comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
-p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
-out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le taux de protéine", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+#p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+#p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
+#out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le taux de protéine", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+
+out = list("text" = "Le tableau ci-dessous présente les effets génétiques des populations dans le réseau pour le taux de protéines."); OUT = c(OUT, out)
+tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
+tab$parameter = ex_between(tab$parameter, "[", "]")
+colnames(tab) = c("Population","taux de protéine","groupe")
+out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le taux de protéines", "content" = tab)); OUT = c(OUT, out)
+
 
 
 variable = "poids.de.l.epi"
 comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
-p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
-out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de l'épis", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+#p_barplot_alpha = PPBstats::get.ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+#p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
+#out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de l'épis", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+out = list("text" = "Le tableau ci-dessous présente les effets génétiques des populations dans le réseau pour le poids e l'épi."); OUT = c(OUT, out)
+tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
+tab$parameter = ex_between(tab$parameter, "[", "]")
+colnames(tab) = c("Population","poids de l'épi","groupe")
+out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le poids de l'épi", "content" = tab)); OUT = c(OUT, out)
 
 
 # 4.3.2. Sensibilité des populations à l'interaction
@@ -792,22 +818,63 @@ Moins elles sont sensibles à l’interaction, plus elles se comportent moyennem
 ")); OUT = c(OUT, out)
 
 variable1 = "poids.de.mille.grains"
-comp.beta = res_model2[[variable1]]$comp.par$comp.beta
+comp.beta = res_model2[[variable1]]$comp.par$comp.beta$mean.comparisons
 tab1 = tail(comp.beta)
 
 variable2 = "taux.de.proteine"
-comp.beta = res_model2[[variable2]]$comp.par$comp.beta
+comp.beta = res_model2[[variable2]]$comp.par$comp.beta$mean.comparisons
 tab2 = tail(comp.beta)
 
 variable3 = "poids.de.l.epi"
-comp.beta = res_model2[[variable3]]$comp.par$comp.beta
+comp.beta = res_model2[[variable3]]$comp.par$comp.beta$mean.comparisons
 tab3 = tail(comp.beta)
 
 
 tab = cbind.data.frame(rownames(tab1), rownames(tab2), rownames(tab3))
 colnames(tab) = c(variable1, variable2, variable3)
+tab = as.data.frame(apply(tab,2,function(x) {unlist(ex_between(x,"[","]"))}))
 out = list("table" = list("caption" = "Populations qui sont le moins sensible à l'interaction dans le réseau pour le poids de mille grains", "content" = tab)); OUT = c(OUT, out)
+OUT = c(OUT, out)
 
+# 4.3.3. Effet génétique en fonction de la sensibilité à l'environnement
+out = list("subsection" = "Effet génétique en fonction de la sensibilité à l'environnement"); OUT = c(OUT, out)
+
+out = list("text" = paste("Sur les graphiques suivants sont placées les population selon leur effet génétique et leur sensibilité à l'interaction.
+                        Les populations situées en bas à droite ont un effet génétique important et sont peu sensibles à l'interaction.
+                        A l'inverse les populations en haut à gauche ont un effet génétique plus faibles que la moyenne des populations et sont sensibles à l'interaction.")); OUT = c(OUT, out)
+
+variable = "poids.de.mille.grains"
+comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
+comp.beta = res_model2[[variable]]$comp.par$comp.beta
+comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
+colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains.
+                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+
+OUT=c(OUT,out)
+
+variable = "taux.de.proteine"
+comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
+comp.beta = res_model2[[variable]]$comp.par$comp.beta
+comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
+colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine.
+                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+
+OUT=c(OUT,out)
+
+variable = "poids.de.l.epi"
+comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
+comp.beta = res_model2[[variable]]$comp.par$comp.beta
+comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
+colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi.
+                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+
+OUT=c(OUT,out)
 
 
 # 4.4. Prédire le passé ----------
