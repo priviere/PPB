@@ -1212,7 +1212,7 @@ get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""),
         form.name = paste(person, year, sep = ":"), 
 				LaTeX_head = "../tex_files/structure.tex", 
 				LaTeX_body = OUT, 
-				compile.tex = TRUE, p_alpha_beta
+				compile.tex = TRUE,
 				color1 = "mln-green", 
 				color2 = "mln-brown"
 				)
