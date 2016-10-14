@@ -736,6 +736,7 @@ p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-interaction", x.
 													 vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
 out = list("figure" = list("caption" = "Evolution de la hauteur au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
+
 # 2.5.1.6. La verse en fonction de la hauteur ----------
 out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
 
@@ -1148,7 +1149,7 @@ colnames(comp.beta$mean.comparisons) = c("median","parameter")
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains de toutes les populations.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 81)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
@@ -1161,7 +1162,7 @@ colnames(comp.beta$mean.comparisons) = c("median","parameter")
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine de toutes les populations.", 
                            "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 81)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine.", 
                            "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
@@ -1173,7 +1174,7 @@ colnames(comp.beta$mean.comparisons) = c("median","parameter")
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi de toutes les populations.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 81)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
@@ -1191,6 +1192,7 @@ Cette information est issue des modèles statistiques que nous avons développé
 variable1 = "poids.de.mille.grains"
 out = res_model2[[variable1]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
+out$parameter = unlist(ex_between(out$parameter,"[",","))
 if( nrow(out) > 0 ) {
   out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
@@ -1200,6 +1202,7 @@ if( nrow(out) > 0 ) {
 variable2 = "taux.de.proteine"
 out = res_model2[[variable2]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
+out$parameter = unlist(ex_between(out$parameter,"[",","))
 if( nrow(out) > 0 ) {
   out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
@@ -1209,6 +1212,7 @@ if( nrow(out) > 0 ) {
 variable3 = "poids.de.l.epi"
 out = res_model2[[variable3]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
+out$parameter = unlist(ex_between(out$parameter,"[",","))
 if( nrow(out) > 0 ) {
   out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
