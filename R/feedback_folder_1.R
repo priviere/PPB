@@ -28,7 +28,8 @@ feedback_folder_1 = function(
 	person,
 	out_analyse_feedback_folder_1,
   score=F,
-  melanges)
+  melanges,
+  proteine)
 	# go ----------
 {
   # Set the right folder and create folders tex_files and feedback_folder ----------
@@ -652,27 +653,28 @@ tab=traduction(tab,"col")
 out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
 
 
-# 2.5.1.2. Taux de protéine ----------
-out = list("subsubsection" = "Le taux de protéine"); OUT = c(OUT, out)
+if (proteine == TRUE){
+	# 2.5.1.2. Taux de protéine ----------
+	out = list("subsubsection" = "Le taux de protéine"); OUT = c(OUT, out)
+	
+	variable = "taux.de.proteine"
+	comp.mu = res_model1[[variable]]$comp.mu
+	p_interaction = PPBstats::get.ggplot(comp.mu, ggplot.type = "interaction")[person]
+	out = list("figure" = list("caption" = "
+														 Comparaisons de moyennes pour le taux de protéines au cours du temps. 
+														 Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
+														 Le pourcentage de confiance dans cette information est indiqué en dessous des points. 
+														 Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
+														 ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
-variable = "taux.de.proteine"
-comp.mu = res_model1[[variable]]$comp.mu
-p_interaction = PPBstats::get.ggplot(comp.mu, ggplot.type = "interaction")[person]
-out = list("figure" = list("caption" = "
-                           Comparaisons de moyennes pour le taux de protéines au cours du temps. 
-                           Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
-                           Le pourcentage de confiance dans cette information est indiqué en dessous des points. 
-                           Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
-                           ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-
-if (score == TRUE) {
-  p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-  out = list("figure" = list("caption" = "
-        Scores des populations au cours du temps pour le taux de protéine. 
-        Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
-        Un score maximal correspond au premier groupe de significativité. 
-       Un score minimal correspond au dernier groupe de significativité.
-        ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+	if (score == TRUE) {
+	 p_score = PPBstats::get.ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+	 out = list("figure" = list("caption" = "
+  													 Scores des populations au cours du temps pour le taux de protéine. 
+  													 Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
+  													 Un score maximal correspond au premier groupe de significativité. 
+  													 Un score minimal correspond au dernier groupe de significativité.
+  													 ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 }
 
 
@@ -693,6 +695,8 @@ p = shinemas2R::get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col 
 													 nb_parameters_per_plot_x.axis = 60)
 out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
 
+
+}
 
 # 2.5.1.4. Poids des épis ----------
 out = list("subsubsection" = "Le poids des épis"); OUT = c(OUT, out)
@@ -760,19 +764,21 @@ if (!is.null(data_SR_year$data)  & is.element("poids.de.mille.grains---poids.de.
                            nb_parameters_per_plot=8)
 } else {pSR1=NULL}
 
-
-# 2.5.2.2. Protéine ----------
-if (!is.null(data_S_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
-  data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pS2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
-                             nb_parameters_per_plot=8)
-} else {pS2=NULL}
-
-if (!is.null(data_SR_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
-  data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pSR2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
-                              nb_parameters_per_plot=8)
-} else {pSR2=NULL}
+if (proteine == TRUE) {
+	# 2.5.2.2. Protéine ----------
+	if (!is.null(data_S_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
+		data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
+		pS2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+															 nb_parameters_per_plot=8)
+	} else {pS2=NULL}
+	
+	if (!is.null(data_SR_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
+		data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
+		pSR2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+																nb_parameters_per_plot=8)
+	} else {pSR2=NULL}
+	
+}
 
 
 # 2.5.2.3. Poids de l'épi ----------
@@ -880,14 +886,17 @@ if (melanges == TRUE){
                              Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
                              ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   
-  # 3.1.2. Taux de protéines -----
-  out = list("subsection" = "Taux de protéines"); OUT = c(OUT, out)
-  
-  variable = "proteine"
-  p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, plot.type = "comp.in.farm", nb_parameters_per_plot = 15)[person]
-  out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
+  if (proteine == TRUE){
+  	# 3.1.2. Taux de protéines -----
+  	out = list("subsection" = "Taux de protéines"); OUT = c(OUT, out)
+  	
+  	variable = "proteine"
+  	p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, plot.type = "comp.in.farm", nb_parameters_per_plot = 15)[person]
+  	out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
                              ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  }
+ 
   
   # 3.1.3. Poids de l'épi -----
   out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
