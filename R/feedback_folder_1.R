@@ -646,10 +646,10 @@ if(!is.null(d)) {
 
 
 out = list("text" = "Le tableau ci-dessous présente le poids de mille grains pour les populations récoltées cette année."); OUT = c(OUT, out)
-tab1 = get.table(data = data_year, table.type = "mean", vec_variables = "poids.de.mille.grains---poids.de.mille.grains", 
+tab = get.table(data = data_year, table.type = "mean", vec_variables = "poids.de.mille.grains---poids.de.mille.grains", 
 								nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE)
-tab1=traduction(tab1,"col")
-out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab1)); OUT = c(OUT, out)
+tab=traduction(tab,"col")
+out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
 
 
 # 2.5.1.2. Taux de protéine ----------
