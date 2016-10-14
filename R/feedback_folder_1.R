@@ -1145,6 +1145,9 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains de toutes les populations.
+                                        ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
@@ -1155,20 +1158,24 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine de toutes les populations.", 
+                           "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine.", 
                            "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-
 
 variable = "poids.de.l.epi"
 comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
+out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi de toutes les populations.
+                                        ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi.
                                         ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-
 
 # 4.4. Prédire le passé ----------
 out = list("section" = "Prédire le passé"); OUT = c(OUT, out)
