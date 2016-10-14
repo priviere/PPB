@@ -9,7 +9,7 @@
 #' 
 #' @param score Indicated whether to print the score graphics (TRUE) or not (FALSE)
 #' 
-#' @param   melanges indicate whether to print the results from the mixture project
+#' @param melanges indicate whether to print the results from the mixture project
 #
 #' @details 
 #' The function creates two folders :
