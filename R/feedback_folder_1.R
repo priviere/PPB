@@ -1062,13 +1062,15 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 #p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
 #out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de mille grains", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
-out = list("text" = "Le tableau ci-dessous présente les effets génétiques des populations dans le réseau pour le poids de mille grains."); OUT = c(OUT, out)
+out = list("text" = "Le tableau ci-dessous présente les effets génétiques minimum et maximum des populations dans le réseau pour le poids de mille grains."); OUT = c(OUT, out)
 tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
 tab$parameter = ex_between(tab$parameter, "[", "]")
 colnames(tab) = c("Population","poids de mille grains moyen","groupe")
 attributes(tab)$invert = FALSE
-out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le poids de mille grains", "content" = tab)); OUT = c(OUT, out)
-
+tab_tail = tail(tab)
+tab_head = head(tab)
+out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de mille grains", "content" = tab_head)); OUT = c(OUT, out)
+out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de mille grains", "content" = tab_tail)); OUT = c(OUT, out)
 
 variable = "taux.de.proteine"
 comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
@@ -1081,8 +1083,10 @@ tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
 tab$parameter = ex_between(tab$parameter, "[", "]")
 colnames(tab) = c("Population","taux de protéine","groupe")
 attributes(tab)$invert = FALSE
-out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le taux de protéines", "content" = tab)); OUT = c(OUT, out)
-
+tab_tail = tail(tab)
+tab_head = head(tab)
+out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le taux de protéines", "content" = tab_head)); OUT = c(OUT, out)
+out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le taux de protéines", "content" = tab_tail)); OUT = c(OUT, out)
 
 
 variable = "poids.de.l.epi"
@@ -1095,7 +1099,10 @@ tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
 tab$parameter = ex_between(tab$parameter, "[", "]")
 colnames(tab) = c("Population","poids de l'épi","groupe")
 attributes(tab)$invert = FALSE
-out = list("table" = list("caption" = "Effets génétiques des populations dans le réseau pour le poids de l'épi", "content" = tab)); OUT = c(OUT, out)
+tab_tail = tail(tab)
+tab_head = head(tab)
+out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de l'épi", "content" = tab_head)); OUT = c(OUT, out)
+out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de l'épi", "content" = tab_tail)); OUT = c(OUT, out)
 
 
 # 4.3.2. Sensibilité des populations à l'interaction
