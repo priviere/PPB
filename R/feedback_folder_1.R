@@ -856,11 +856,11 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
 out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
 out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
 					 Les pratiques testées sont : 
-          \begin{itemize}
-          \item deux années de sélection dans les composantes avant de mélanger ; 
-          \item une sélection dans les composantes avant de mélanger puis une sélection dans le mélange ; 
-          \item à partir du mélange créé sans sélection dans les composantes, deux années de sélection dans le mélange.
-          \end{itemize}
+          \\begin{itemize}
+          \\item deux années de sélection dans les composantes avant de mélanger ; 
+          \\item une sélection dans les composantes avant de mélanger puis une sélection dans le mélange ; 
+          \\item à partir du mélange créé sans sélection dans les composantes, deux années de sélection dans le mélange.
+          \\end{itemize}
           Ces pratiques de sélection sont comparées au mélange évoluant sans sélection massale. 
             Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leur(s) mélanges formés sans sélection dans
 					 les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
@@ -1128,9 +1128,9 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
-p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 20)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains.
-                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                                        ", "content" = p_alpha_beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
 OUT=c(OUT,out)
 
@@ -1139,9 +1139,9 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
-p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine.
-                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                                        ", "content" = p_alpha_beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
 OUT=c(OUT,out)
 
@@ -1150,9 +1150,9 @@ comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
 comp.beta = res_model2[[variable]]$comp.par$comp.beta
 comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
 colnames(comp.beta$mean.comparisons) = c("median","parameter")
-p_alpha-beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
+p_alpha_beta = PPBstats::get.ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 80)
 out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi.
-                                        ", "content" = p_alpha-beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                                        ", "content" = p_alpha_beta, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
 
 OUT=c(OUT,out)
 
@@ -1172,7 +1172,7 @@ variable1 = "poids.de.mille.grains"
 out = res_model2[[variable1]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
 if( nrow(out) > 0 ) {
-  out = out[order(out[,"50%"], decreasing = TRUE),]
+  out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
   out1 = out
 } else { out1 = NULL }
@@ -1181,30 +1181,22 @@ variable2 = "taux.de.proteine"
 out = res_model2[[variable2]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
 if( nrow(out) > 0 ) {
-  out = out[order(out[,"50%"], decreasing = TRUE),]
+  out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
   out2 = out
 } else { out2 = NULL }
 
 variable3 = "poids.de.l.epi"
-out = res_m# Essai mélange
-p_melanges = ggplot_mixture1(res_model1, data_PPB_mixture,variable, nb_parameters_per_plot = 15)[person]
-out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
-													 Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
-													 La barre horizontale représente la moyenne des composantes
-													 ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
-OUT = c(OUT, out)
-
-out = model2[[variable3]]$predict.past
+out = res_model2[[variable3]]$predict.past
 out = out[grep(paste(person, year, sep = ":"), out$parameter),]
 if( nrow(out) > 0 ) {
-  out = out[order(out[,"50%"], decreasing = TRUE),]
+  out = out[order(out[,"0.50"], decreasing = TRUE),]
   out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
   out3 = out
 } else { out3 = NULL }
 
 if( !is.null(out1) & !is.null(out2) & !is.null(out3) ) {
-  tab = cbind.data.frame(out1$parameter, out1$`50%`, out2$parameter, out2$`50%`, out3$parameter, out3$`50%`)
+  tab = cbind.data.frame(out1$parameter, out1$`0.50`, out2$parameter, out2$`0.50`, out3$parameter, out3$`0.50`)
   colnames(tab) = c(paste(c("germplasm", "valeur"), variable1), paste(c("germplasm", "valeur"), variable2), paste(c("germplasm", "valeur"), variable3))
   out = list("table" = list("caption" = "Prédiction du passé pour le poids de mille grains et le poids de l'épis.", "content" = tab)); OUT = c(OUT, out)
   
@@ -1220,7 +1212,7 @@ get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""),
         form.name = paste(person, year, sep = ":"), 
 				LaTeX_head = "../tex_files/structure.tex", 
 				LaTeX_body = OUT, 
-				compile.tex = TRUE, 
+				compile.tex = TRUE, p_alpha_beta
 				color1 = "mln-green", 
 				color2 = "mln-brown"
 				)
