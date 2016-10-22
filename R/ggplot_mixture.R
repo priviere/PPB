@@ -18,7 +18,7 @@
 #' @seealso \code{\link{shinemas2R::get.data}}
 #' 
 
-ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, plot.type = "comp.in.farm", nb_parameters_per_plot = 8) 
+ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, plot.type = "comp.in.farm", nb_parameters_per_plot = 8) 
 {
   
 	melanges_PPB_mixture=melanges_PPB_mixture$data
@@ -56,8 +56,8 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution") {
 	         MeanComp = apply(Comp, 1, mean)
 	         M = cbind(Mel, MeanComp, Comp)
 	         attributes(M)$model = "model1"
-	         colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",unique(y$year),"]",sep="")
-	         colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",unique(y$year),"]",sep="")
+	         colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
+	         colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",year,"]",sep="")
 	         comp.mu = get.mean.comparisons(M, "mu", get.at.least.X.groups = 1)
 	         comp.mu=comp.mu$mean.comparisons
 	         comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
@@ -174,23 +174,6 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 
 	
 }
-
-
-# functions -----
-barplot.mixture1 = function(x) {
-    
-	p = ggplot(x, aes(x = reorder(parameter, median), y = median, fill=unlist(x$type))) + geom_bar(stat = "identity")+ theme(legend.title = element_blank())
-	
-  # ajouter les groupes de significativité
-	p = p + geom_text(data = x, aes(x = reorder(parameter, median), y = median/2, label = groups), angle = 90, color = "white")
-	p = p + ggtitle(paste(x[1, "environment"], "\n alpha = ", x[1, "alpha"], "; alpha correction :", x[1, "alpha.correction"])) + ylab("")
-			
-	# pivoter légende axe abscisses
-	p = p + xlab("") + theme(axis.text.x = element_text(angle = 90)) + ylim(0, x[1,"max"])
-	
-
-	return(p)
-} # end barplot.mix
 
 
 
