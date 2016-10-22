@@ -9,6 +9,8 @@
 #' 
 #' @param plot.type the type of plot wanted. Can be "comp.in.farm" to compare the mixtures to each of its components in a farm ; "mixVScomp" to compare all mixtures to all components ; "mix.comp.distribution" ; "mix.gain.distribution" to plot the distribution of the difference between mixtures and the mean of its components
 #'
+#' @param person if plot.type = "comp.in.farm", the farmers you want the analysis done to
+#' 
 #' @param nb_parameters_per_plot the number of parameters per plot
 #
 #' @return A list containing, for each environment and mixture, the barplots ("bp") and the tables ("Tab")
@@ -18,7 +20,7 @@
 #' @seealso \code{\link{shinemas2R::get.data}}
 #' 
 
-ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, plot.type = "comp.in.farm", nb_parameters_per_plot = 8) 
+ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 8) 
 {
   
 	melanges_PPB_mixture=melanges_PPB_mixture$data
@@ -28,7 +30,8 @@ add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] }
 if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution") {
 	  # Séparer par environnement
 	d_env = plyr:::splitter_d(melanges_PPB_mixture, .(location))
-	  	
+	if (plot.type == "comp.in.farm"){d_env=list(d_env[[grep(person,names(d_env))]])}
+	
 	  # Par environnement, on sépare par mélange pour ensuite faire les graphs
 	d_env_b = lapply(d_env, function(x){
 	    # une table par mélange
