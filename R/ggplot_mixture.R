@@ -78,7 +78,7 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution") {
 	           Data_split = plyr:::splitter_d(Data, .(split))
 	           
 	           # faire le graph pour chaque split
-	           bp = lapply(Data_split , barplot.mixture1(z) )
+	           bp = lapply(Data_split , function(z){return(barplot.mixture1(z))})
 	           
 	           return(list("barplot"= bp, "Tab" = Data))
 	        }
