@@ -95,6 +95,7 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution") {
 	   return(mix_split)
 	}) # end lapply(x)
 	names(d_env_b) = names(d_env)
+	if(plot.type == "comp.in.farm") {return(d_env_b)}
 }
 
 # 2. Compare the effect of being a mixture vs the effect of being a component -----
