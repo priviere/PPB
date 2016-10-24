@@ -52,10 +52,10 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	       mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, param = "mu", year = "2016")
 	
 	       Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Mélange"),"germplasm"]]
-	       
+
 	       if (length(Mel) > 0) {
 	         Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Composante"),"germplasm"]]
-	         
+	         if (ncol(Comp) < nrow(y)/2){missingComp = TRUE}else{missingComp=FALSE}
 	         MeanComp = apply(Comp, 1, mean)
 	         M = cbind(Mel, MeanComp, Comp)
 	         attributes(M)$model = "model1"
@@ -85,7 +85,7 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	           
 	           return(list("barplot"= bp, "Tab" = Data))
 	         }
-	         if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") {
+	         if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
 	           return(list("barplot" = NULL, "Tab" = Data))
 	         }
 
