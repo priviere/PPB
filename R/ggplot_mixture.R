@@ -188,7 +188,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	  p = p + theme(legend.position="none")
 
 
-	  return(list("plot" = p, "tab"= Mat))
+	  return(p)
 	}
 }
 
