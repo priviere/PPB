@@ -192,7 +192,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	    Histo = lapply(Distrib,function(x){
 	      return(lapply(x, function(y){
 	        z=y$tab
-	        diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))
+	        diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
 	        return(unlist(diff)) }))
 	    })
 	    
@@ -200,13 +200,15 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	  Data = cbind(names(unlist(Histo)),unlist(Histo))
 	  Data=as.data.frame(Data)
 	  colnames(Data) = c("Paysan","overyielding")
-	  Gain = round((mean(as.numeric(as.character(Data$overyielding)))-1)*100,2)
+	  Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
 	  Mean=mean(as.numeric(as.character(Data$overyielding)))
 
-	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(0.8,1.5,0.11),fill="darkgreen",alpha=0.6)
-    p = p + geom_vline(xintercept = Mean, linetype = "dotted")
+	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.11),fill="darkgreen",alpha=0.6)
+    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
     p = p + labs(x="", y="Nombre de mélanges")
     p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
+    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
+    
     return(p)
 }
 
