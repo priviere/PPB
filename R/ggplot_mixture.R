@@ -193,7 +193,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	      return(lapply(x, function(y){
 	        z=y$tab
 	        diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))
-	        return(unlist(diff))  }))
+	        return(unlist(diff)) }))
 	    })
 	    
 
