@@ -175,14 +175,9 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	  rownames(toPlot)=NULL
 	  toPlot=as.data.frame(toPlot)
 	  toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
-
-	  
-	  p =  ggplot2.stripchart(data=toPlot, xName='Type', yName='Moyenne', groupName = "Group", xtickLabelRotation=30, 
-	                          meanPointSize=5, meanPointShape="x", addMean=TRUE,
-	                          xtitle = "", ytitle = "", groupColors = brewer.pal(nrow(toPlot)/4,"Paired"),showLegend=F)
 	  
 	  p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group))
-	  p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=5)
+	  p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=3.5)
 	  p = p + geom_jitter(position=position_jitter(0), cex=3)
 	  p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
 	  p = p + theme(legend.position="none")
@@ -194,13 +189,14 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 
 # 4. Sur le réseau, distribution du gain des mélanges par rapport aux composantes ----------
 	if (plot.type == "mix.gain.distribution") {
-	  Histo = lapply(Distrib,function(x){
-	    y=x$tab
-  	   diff = lapply(y, function(z) { 
-  	      return(as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"])))
-  	  })
-	   return(unlist(diff))
-	  })
+	    Histo = lapply(Distrib,function(x){
+	      return(lapply(x, function(y){
+	        z=y$tab
+	        diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))
+	        return(unlist(diff))  }))
+	    })
+	    
+
 	  Data = cbind(names(unlist(Histo)),unlist(Histo))
 	  Data=as.data.frame(Data)
 	  colnames(Data) = c("Paysan","overyielding")
@@ -209,7 +205,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 
 	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(0.8,1.5,0.11),fill="darkgreen",alpha=0.6)
     p = p + geom_vline(xintercept = Mean, linetype = "dotted")
-    p = p + labs(x="Gains des mélanges par rapport à la moyenne de leurs composantes respectives", y="Nombre de mélanges")
+    p = p + labs(x="", y="Nombre de mélanges")
     p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
     return(p)
 }
