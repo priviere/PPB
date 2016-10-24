@@ -136,7 +136,7 @@ if ( plot.type == "mixVScomp") {
 	Data$max = max(Data$median, na.rm = TRUE)
 	# graphique mélanges vs composantes
 	bp = barplot.mixture1(Data)
-	return(list("bp"=b, "Tab" = Data))
+	return(list("bp"=bp, "Tab" = Data))
 }
 
 # 3.  Sur le réseau, comparer la distribution des mélanges à celles de la moins bonne et la meilleure composante pour chaque mélange ----------
@@ -156,20 +156,40 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 		  M=as.data.frame(M)
 		  colnames(M) = c("median","Type")
 		  rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
-			return(M)
+		  return(list("plot" = NULL, "tab"= M))
 		})
-		if (plot.type == "mix.comp.distribution"){
-		  toPlot=NULL
-		  for (i in 1:length(Mat)) {toPlot=rbind(toPlot,cbind(as.matrix(Mat[[i]]),rep(i, 4)))}
-		  colnames(toPlot) = c("Moyenne","Type","Paysan")
-		  toPlot = as.data.frame(toPlot)
-		  
-		  p =  ggplot2.stripchart(data=as.data.frame(toPlot), xName='Type',yName='Moyenne',groupName = "Paysan",xtickLabelRotation=30, cex=15) 
-		  return(list("plot" = p, "tab"= Mat))
-		}else{
-		  return(list("plot"=NULL,"tab"=Mat))
-		}
+		return(Mat)
 	})
+	if (plot.type == "mix.comp.distribution"){
+	 toPlot=NULL
+	  D = lapply(Distrib,function(x) {
+	   return(lapply(x,function(y){return(y$tab)}))
+	 })
+	 for ( i in 1:length(D)) {
+	   for (j in 1:length(D[[i]])){
+	     toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))
+	   }
+	 }
+
+	  colnames(toPlot) = c("Moyenne","Type","Paysan","Group")
+	  rownames(toPlot)=NULL
+	  toPlot=as.data.frame(toPlot)
+	  toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
+
+	  
+	  p =  ggplot2.stripchart(data=toPlot, xName='Type', yName='Moyenne', groupName = "Group", xtickLabelRotation=30, 
+	                          meanPointSize=5, meanPointShape="x", addMean=TRUE,
+	                          xtitle = "", ytitle = "", groupColors = brewer.pal(nrow(toPlot)/4,"Paired"),showLegend=F)
+	  
+	  p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group))
+	  p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=5)
+	  p = p + geom_jitter(position=position_jitter(0), cex=3)
+	  p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
+	  p = p + theme(legend.position="none")
+
+
+	  return(list("plot" = p, "tab"= Mat))
+	}
 }
 
 # 4. Sur le réseau, distribution du gain des mélanges par rapport aux composantes ----------
@@ -185,6 +205,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	  Data=as.data.frame(Data)
 	  colnames(Data) = c("Paysan","overyielding")
 	  Gain = round((mean(as.numeric(as.character(Data$overyielding)))-1)*100,2)
+	  Mean=mean(as.numeric(as.character(Data$overyielding)))
 
 	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(0.8,1.5,0.11),fill="darkgreen",alpha=0.6)
     p = p + geom_vline(xintercept = Mean, linetype = "dotted")
