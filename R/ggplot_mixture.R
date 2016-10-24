@@ -148,14 +148,18 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 		Mat = lapply(x, function(y) {
 		  Tab=y$Tab
 			Data = Tab[Tab$type %in% "Composante",]
-			Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
-			Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
-			Mel = Tab[Tab$type %in% "Mélange","median"]
-			MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
-		  M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"))
-		  M=as.data.frame(M)
-		  colnames(M) = c("median","Type")
-		  rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
+			if (!is.null(Data)){
+			  Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
+			  Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
+			  Mel = Tab[Tab$type %in% "Mélange","median"]
+			  MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
+			  M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"))
+			  M=as.data.frame(M)
+			  colnames(M) = c("median","Type")
+			  rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
+			}else{
+			  M = NULL
+			  }
 		  return(list("plot" = NULL, "tab"= M))
 		})
 		return(Mat)
@@ -167,7 +171,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	 })
 	 for ( i in 1:length(D)) {
 	   for (j in 1:length(D[[i]])){
-	     toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))
+	     if(!is.null(D[[i]][[j]])){toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))}
 	   }
 	 }
 
@@ -192,8 +196,10 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	    Histo = lapply(Distrib,function(x){
 	      return(lapply(x, function(y){
 	        z=y$tab
-	        diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
-	        return(unlist(diff)) }))
+	        if(!is.null(z)){
+	          diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
+	        return(unlist(diff))}
+	        }))
 	    })
 	    
 
