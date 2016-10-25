@@ -199,7 +199,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	        if(!is.null(z)){
 	          diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
 	        return(unlist(diff))}
-	        }))
+	      }))
 	    })
 	    
 
@@ -209,7 +209,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	  Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
 	  Mean=mean(as.numeric(as.character(Data$overyielding)))
 
-	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.11),fill="darkgreen",alpha=0.6)
+	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.05),fill="darkgreen",alpha=0.6)
     p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
     p = p + labs(x="", y="Nombre de mélanges")
     p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
