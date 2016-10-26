@@ -49,8 +49,7 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	       noms$type = c("Mélange",rep("Composante",(nrow(noms)-1)))
 	       colnames(noms)[1] = "germplasm"
 	       
-	       mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, param = "mu", year = "2016")
-	
+	       mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, param = "mu", year = year)
 	       Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Mélange"),"germplasm"]]
 
 	       if (length(Mel) > 0) {
@@ -99,6 +98,15 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	if(plot.type == "comp.in.farm") {return(d_env_b)}
 }
 
+Nul = TRUE
+for (i in 1:length(d_env_b)){
+  for (j in 1:length(d_env_b[[i]])){
+    for (k in 1:length(d_env_b[[i]][[j]])){
+      if(!is.null(d_env_b[[i]][[j]][[k]])){Nul = FALSE}
+    }
+  }
+}
+
 # 2. Compare the effect of being a mixture vs the effect of being a component -----
 # Normalement ça marche
 if ( plot.type == "mixVScomp") {
@@ -142,80 +150,92 @@ if ( plot.type == "mixVScomp") {
 # 3.  Sur le réseau, comparer la distribution des mélanges à celles de la moins bonne et la meilleure composante pour chaque mélange ----------
 # Normalement ça marche, pas testé sur données
 if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") {
-	Distrib = lapply(d_env_b, function(x){
-		Worst = Best = Mel = MeanComp = NULL
-		  
-		Mat = lapply(x, function(y) {
-		  Tab=y$Tab
-			Data = Tab[Tab$type %in% "Composante",]
-			if (!is.null(Data)){
-			  Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
-			  Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
-			  Mel = Tab[Tab$type %in% "Mélange","median"]
-			  MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
-			  M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"))
-			  M=as.data.frame(M)
-			  colnames(M) = c("median","Type")
-			  rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
-			}else{
-			  M = NULL
-			  }
-		  return(list("plot" = NULL, "tab"= M))
-		})
-		return(Mat)
-	})
-	if (plot.type == "mix.comp.distribution"){
-	 toPlot=NULL
-	  D = lapply(Distrib,function(x) {
-	   return(lapply(x,function(y){return(y$tab)}))
-	 })
-	 for ( i in 1:length(D)) {
-	   for (j in 1:length(D[[i]])){
-	     if(!is.null(D[[i]][[j]])){toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))}
-	   }
-	 }
+    if(Nul == FALSE){
+      Distrib = lapply(d_env_b, function(x){
+        Worst = Best = Mel = MeanComp = NULL
+        
+        Mat = lapply(x, function(y) {
+          Tab=y$Tab
+          Data = Tab[Tab$type %in% "Composante",]
+          if (!is.null(Data)){
+            Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
+            Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
+            Mel = Tab[Tab$type %in% "Mélange","median"]
+            MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
+            M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"))
+            M=as.data.frame(M)
+            colnames(M) = c("median","Type")
+            rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
+          }else{
+            M = NULL
+          }
+          return(list("plot" = NULL, "tab"= M))
+        })
+        return(Mat)
+      })
+      
+      if (plot.type == "mix.comp.distribution"){
+        toPlot=NULL
+        D = lapply(Distrib,function(x) {
+          return(lapply(x,function(y){return(y$tab)}))
+        })
+        for ( i in 1:length(D)) {
+          for (j in 1:length(D[[i]])){
+            if(!is.null(D[[i]][[j]])){toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))}
+          }
+        }
+        
+        colnames(toPlot) = c("Moyenne","Type","Paysan","Group")
+        rownames(toPlot)=NULL
+        toPlot=as.data.frame(toPlot)
+        toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
+        
+        p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group), xlab=variable)
+        p = p +labs(x="", y=paste("Valeur du ",variable,sep=""))
+        p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=4.5)
+        p = p + geom_jitter(position=position_jitter(0), cex=3)
+        p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
+        p = p + theme(legend.position="none")
+        return(p)
+      }
 
-	  colnames(toPlot) = c("Moyenne","Type","Paysan","Group")
-	  rownames(toPlot)=NULL
-	  toPlot=as.data.frame(toPlot)
-	  toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
-	  
-	  p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group))
-	  p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=3.5)
-	  p = p + geom_jitter(position=position_jitter(0), cex=3)
-	  p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
-	  p = p + theme(legend.position="none")
+    }else{
+      return(NULL)
+    }
 
-
-	  return(p)
 	}
-}
+
 
 # 4. Sur le réseau, distribution du gain des mélanges par rapport aux composantes ----------
 	if (plot.type == "mix.gain.distribution") {
+	  if(Nul==FALSE){
 	    Histo = lapply(Distrib,function(x){
 	      return(lapply(x, function(y){
 	        z=y$tab
 	        if(!is.null(z)){
 	          diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
-	        return(unlist(diff))}
+	          return(unlist(diff))}
 	      }))
 	    })
 	    
-
-	  Data = cbind(names(unlist(Histo)),unlist(Histo))
-	  Data=as.data.frame(Data)
-	  colnames(Data) = c("Paysan","overyielding")
-	  Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
-	  Mean=mean(as.numeric(as.character(Data$overyielding)))
-
-	  p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.05),fill="darkgreen",alpha=0.6)
-    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
-    p = p + labs(x="", y="Nombre de mélanges")
-    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
-    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
-    
-    return(p)
+	    
+	    Data = cbind(names(unlist(Histo)),unlist(Histo))
+	    Data=as.data.frame(Data)
+	    colnames(Data) = c("Paysan","overyielding")
+	    Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
+	    Mean=mean(as.numeric(as.character(Data$overyielding)))
+	    
+	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.04),fill="darkgreen",alpha=0.6)
+	    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
+	    p = p + labs(x=paste("rapport Mélange/Moyenne des composantes pour ",variable,sep=""), y="Nombre de mélanges")
+	    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
+	    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
+	    
+	    return(p)
+	  }else{
+	    return(NULL)
+	    }
+	  
 }
 
 
