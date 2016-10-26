@@ -61,7 +61,7 @@ get_result_model = function(res_model, data, type_result = "comp.mu", variable, 
 		MCMC = res_model[[variable]]$model.outputs$MCMC
 		D=MCMC[,colnames(MCMC) %in% ID$parameter] 
 #		colnames(D) = ID[ID$parameter %in% colnames(MCMC),1]
-		if (is.null(ncol(D))) { D = as.data.frame(matrix(D,ncol=1))} #; colnames(D) = ID[ID %in% colnames(MCMC)]}
+		if (is.null(ncol(D)) & !is.null(D)) { D = as.data.frame(matrix(D,ncol=1))} #; colnames(D) = ID[ID %in% colnames(MCMC)]}
 	}
 
 
