@@ -8,8 +8,6 @@
 #' @param out_analyse_feedback_folder_1 The outputs from \code{analyse_feedback_folder_1}
 #' 
 #' @param score Indicated whether to print the score graphics (TRUE) or not (FALSE)
-#' 
-#' @param melanges indicate whether to print the results from the mixture project
 #
 #' @details 
 #' The function creates two folders :
@@ -613,6 +611,8 @@ out = list("section" = "Mesures à la récolte"); OUT = c(OUT, out)
 
 # 2.5.1. Mesures sur les populations ----------
 out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
+out = list("text" = "Cette année nous sommes dans l'incapacité de vous donner des résultats concernant le taux de protéine car nous avons fait les analyses sur une nouvelle machine 
+           et il nous faut faire des analyses complémentaires pour pouvoir calculer le taux de protéine des grains."); OUT = c(OUT, out)
 
 # 2.5.1.1. Poids de mille grains ----------
 out = list("subsubsection" = "Le poids de mille grains"); OUT = c(OUT, out)
@@ -674,14 +674,14 @@ if (proteine == TRUE){
   													 Un score maximal correspond au premier groupe de significativité. 
   													 Un score minimal correspond au dernier groupe de significativité.
   													 ", "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-}
+  }
 
 
-d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
-if(!is.null(d)) {
-  p_interaction_2 = PPBstats::get.ggplot(d, ggplot.type = "interaction")[person]
-  out = list("figure" = list("caption" = "Evolution du taux de protéine au cours du temps sans analyses statistiques.", "content" = p_interaction_2, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-}
+  d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
+  if(!is.null(d)) {
+   p_interaction_2 = PPBstats::get.ggplot(d, ggplot.type = "interaction")[person]
+    out = list("figure" = list("caption" = "Evolution du taux de protéine au cours du temps sans analyses statistiques.", "content" = p_interaction_2, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  }
 
 
 
@@ -754,7 +754,7 @@ out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", 
 if (!is.null(data_S_year$data) & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
   data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
   pS1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
-                             nb_parameters_per_plot=8)
+                             nb_parameters_per_plot=15)
 } else {pS1=NULL}
 
 if (!is.null(data_SR_year$data)  & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
@@ -767,7 +767,7 @@ if (proteine == TRUE) {
 	# 2.5.2.2. Protéine ----------
 	if (!is.null(data_S_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
 		data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-		pS2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+		pS2 = PPBstats::get.ggplot(data=res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
 															 nb_parameters_per_plot=8)
 	} else {pS2=NULL}
 	
@@ -777,7 +777,7 @@ if (proteine == TRUE) {
 																nb_parameters_per_plot=8)
 	} else {pSR2=NULL}
 	
-}
+}else{pS2=pSR2=NULL}
 
 
 # 2.5.2.3. Poids de l'épi ----------
@@ -894,20 +894,28 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
       out = list("subsection" = "Taux de protéines"); OUT = c(OUT, out)
       
       variable = "proteine"
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
     
     
     # 3.1.3. Poids de l'épi -----
     out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
     variable = "poids.de.l.epi"
-    p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 15)[person]
+    p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
     out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+    
+    # 3.1.4. Hauteur -----
+    out = list("subsection" = "Hauteur"); OUT = c(OUT, out)
+    variable = "hauteur"
+    p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
+    out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
+                             Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
     # 3.1.4. La hauteur et la verse ----------
     # A faire !
@@ -922,7 +930,7 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     # 													 vec_variables ="verse---verse", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
     # out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
-  }
+     }
  
   # 3.2. Résultats sur le réseau de fermes -----
   out = list("section" = "Résultats sur le réseau de fermes"); OUT = c(OUT, out)
@@ -933,61 +941,111 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
              de la valeur moyenne des composante et de celle des mélanges.
              Enfin on compare la valeur moyenne de l'ensemble des mélange à celle de l'ensemble des composantes pour voir si on détecte un effet du mélange."); OUT=c(OUT,out)
 
-  # Codes à tester !
   
   # 3.2.1. Distribution du gain du mélange par rapport à la moyenne de ses composantes sur le réseau -----
   out = list("subsection" = "Distribution du gain du mélange par rapport à la moyenne de ses composantes sur le réseau"); OUT = c(OUT, out)
   out = list("text" = "Ces graphiques présentent le comportement des mélanges par rapport à la moyenne de leurs composantes respectives. 
-             Un histogramme décallé vers la droite par rapport à 1 indique qu'une majorité des mélanges se sont mieux comportés que la moyenne de leurs composantes. 
+             Un histogramme décallé vers la droite par rapport à 0 indique qu'une majorité des mélanges se sont mieux comportés que la moyenne de leurs composantes. 
              A l'inverse si l'histogramme est décallé vers la gauche la majorité des mélanges se sont moins bien comportés que la moyenne de leurs composantes."); OUT = c(OUT, out)
   
   # 3.2.1.1. poids de mille grains -----
   out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
   variable = "poids.de.mille.grains"
-  p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
-  out = list("figure" = list("caption" = "Distribution du gain de poids de mille grains entre les mélanges et la moyenne de leurs composantes sur le réseau.
-                            La ligne verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives.
-                             ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)
-
+  if (!file.exists(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  }
+  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution des rapports entre les comportement des mélanges et les comportements moyens
+                              des leurs composantes respectives pour le poids de mille grains.
+                              La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
+                            tandis que la ligne pointillée noire est fixée sur un gain nul.", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
+  
+   
   # 3.2.1.2. Poids de l'épi -----
   out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
   variable = "poids.de.l.epi"
-  p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
-  out = list("figure" = list("caption" = "Distribution de la différence de poids de l'épi entre les mélanges et la moyenne de leurs composantes sur le réseau.
-                              La ligne verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives.
-                            ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)
+  if (!file.exists(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  }
+  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution des rapports entre les comportement des mélanges et les comportements moyens
+                              des leurs composantes respectives pour le poids de l'épi.
+                              La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
+                            tandis que la ligne pointillée noire est fixée sur un gain nul.", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
+  
+  # 3.2.1.3. Hauteur -----
+  out = list("subsection" = "Hauteur moyenne"); OUT = c(OUT, out)
+  variable = "hauteur"
+  if (!file.exists(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+  } 
+  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution des rapports entre les comportement des mélanges et les comportements moyens
+                              des leurs composantes respectives pour la hauteur.
+                              La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
+                            tandis que la ligne pointillée noire est fixée sur un gain nul.", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
   
   # 3.2.2. Distribution des mélanges, de la moins bonne composante & la meilleure composante -----
-  out = list("subsection" = "Distributions des mélanges, de la moins bonne composante et la meilleure pour chaque mélange"); OUT = c(OUT, out)
-  out = list("text" = "Ces graphiques présentent la variabilité observée des mélanges, ainsi que de la moins bonne et la meilleure composante pour chaque mélange
-              et la valeur moyenne des composantes. 
-              Il permet de comparer la 
-             
+  out = list("subsection" = "Distributions des mélanges, de la moins bonne et la meilleure composante pour chaque mélange"); OUT = c(OUT, out)
+  out = list("text" = "Ces graphiques présentent, pour chacun des mélanges testés cette année, le comportement du mélange, de sa moins bonne composantes,
+              de sa meilleure composante et le comportement moyen de ses composantes. 
+              On peut observer sur ces graphiques la variabilité de comportement des mélanges ainsi que celle de leurs moins bonne
+              et meilleure composantes.
              "); OUT = c(OUT, out)
   
   # 3.2.2.1. poids de mille grains -----
   out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
   variable = "poids.de.mille.grains"
-  p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15)
-  out = list("figure" = list("caption" = "Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
+  if (!file.exists(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  } 
+  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
                                           ainsi que de la moyenne des composantes pour chaque mélange.
                                           Le X noir représente la valeur moyenne pour chaque type.
-                                        ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)
+                                        ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
   
   # 3.2.2.2. Poids de l'épi -----
   out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
   variable = "poids.de.l.epi"
-  p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15)
-  out = list("figure" = list("caption" = "Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
+  if (!file.exists(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  } 
+  if(!is.null(p_melanges)){ out = list("figure" = list("caption" = "Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
                                           ainsi que de la moyenne des composantes pour chaque mélange.
                                           Le X noir représente la valeur moyenne pour chaque type.
-                                        ", "content" = p_mélanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)
+                                        ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
+
+    # 3.2.2.3. Hauteur -----
+  out = list("subsection" = "Hauteur moyenne"); OUT = c(OUT, out)
+  variable = "hauteur"
+  if (!file.exists(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))){
+    p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15)
+    save(p_melanges,file=paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  }else{
+    load(paste(we_are_here,"/figures/Distribution.",variable,".RData",sep=""))
+  } 
+  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
+                                          ainsi que de la moyenne des composantes pour chaque mélange.
+                                          Le X noir représente la valeur moyenne pour chaque type.
+                                        ", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
   
   # 3.2.3. Comparaison de l'effet mélange par rapport à variété "pure" -----
   # A virer...? 
-#   out = list("subsection" = "Comparaison de la performance moyenne des mélanges par rapport àa la performance moyenne des composantes"); OUT = c(OUT, out)
-#   out = list("text" = "On se pose la question de savoir s'il y a une différence significative entre la moyenne de tous les mélanges de l'essai 
-#              et la moyenne de toutes leurs composantes."); OUT = c(OUT, out)
+  #   out = list("subsection" = "Comparaison de la performance moyenne des mélanges par rapport àa la performance moyenne des composantes"); OUT = c(OUT, out)
+  #   out = list("text" = "On se pose la question de savoir s'il y a une différence significative entre la moyenne de tous les mélanges de l'essai 
+  #              et la moyenne de toutes leurs composantes."); OUT = c(OUT, out)
 #   
 #   # 3.2.3.1. poids de mille grains -----
 #   out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
@@ -1042,15 +1100,9 @@ Vous pouvez essayer des populations cultivées dans une ferme qui apparait proch
 Les dossiers de chaque paysan(ne) est disponible à la demande."); OUT = c(OUT, out)
 
 
-out = list(
-  res_model2[["poids.de.mille.grains"]]$model.outputs,
-  res_model2[["taux.de.proteine"]]$model.outputs,
-  res_model2[["poids.de.l.epi"]]$model.outputs,
-  res_model2[["hauteur"]]$model.outputs
-)
-names(out) = c("poids.de.mille.grains", "taux.de.proteine", "poids.de.l.epi", "hauteur")
 
-           
+out = lapply(res_model2,function(x){return(x$model.outputs)})
+
 clust = get.parameter.groups(out, parameter = "theta")
 p_PCA = PPBstats::get.ggplot(clust, ggplot.type = "PCA")
 out = list("figure" = list("caption" = paste("Analyse  en composantes principales sur les effets fermes:année"), "content" = p_PCA$ind, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
