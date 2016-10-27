@@ -1316,7 +1316,7 @@ if (variable2 %in% names(Model2)) {
     out = out[order(out[,"0.50"], decreasing = TRUE),]
     out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
     tab=cbind.data.frame(tab,out$parameter, out1$`0.50`)
-    colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable1))
+    colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable2))
   } 
 }
 
@@ -1329,7 +1329,7 @@ if (variable3 %in% names(Model2)) {
     out = out[order(out[,"0.50"], decreasing = TRUE),]
     out = out[c(c(1:5),c((nrow(out) - 5):nrow(out))),]
     tab=cbind.data.frame(tab,out$parameter, out$`0.50`)
-    colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable1))
+    colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable3))
   } 
 } 
 if (ncol(tab)>1){
