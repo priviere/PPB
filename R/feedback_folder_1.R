@@ -971,16 +971,25 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
   # 3.2.1.1. poids de mille grains -----
   out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
   variable = "poids.de.mille.grains"
-  if (!file.exists(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))){
+  if (!file.exists(paste(we_are_here,"/figures/Gain.distribution.",variable,".jpg",sep=""))){
     p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
-    save(p_melanges,file=paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
-  }else{
-    load(paste(we_are_here,"/figures/Gain.distribution.",variable,".RData",sep=""))
+    jpeg(paste(we_are_here,"/figures/Gain.distribution.",variable,".jpg",sep=""))
+    p_melanges
+    dev.off()
   }
-  if(!is.null(p_melanges)){out = list("figure" = list("caption" = "Distribution des rapports entre les comportement des mélanges et les comportements moyens
-                              des leurs composantes respectives pour le poids de mille grains.
-                              La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
-                            tandis que la ligne pointillée noire est fixée sur un gain nul.", "content" = p_melanges, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 0.8)); OUT = c(OUT, out)}
+ a=paste("\\begin{center}
+           \\begin{tabular}{cccc}
+           \\includegraphics[width=.25\\textwidth, height=.25\\textwidth]{", we_are_here, "/tex_files/Gain.distrib.",variable,".jpg}
+           \\end{tabular}
+           \\end{center})",sep="")
+  
+  
+  p = paste(we_are_here, "/tex_files/Gain.distrib.",variable,".tex", sep = "")
+  sink(p);	cat(a);	sink()
+  
+  out=list("input" = paste("../tex_files/Gain.distrib.",variable,".tex", sep = ""))
+  OUT=c(OUT,out)
+  
   
    
   # 3.2.1.2. Poids de l'épi -----
