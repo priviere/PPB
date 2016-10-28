@@ -755,7 +755,7 @@ out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", 
 if (!is.null(data_S_year$data) & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
   data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
   pS1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
-                             nb_parameters_per_plot=15)
+                             nb_parameters_per_plot=8)
 } else {pS1=NULL}
 
 if (person != "ADP" & !is.null(data_SR_year$data)  & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
@@ -893,9 +893,9 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     variable = "poids.de.mille.grains"
     p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20)
   for (i in 1:length(p_melanges[[1]])){
-    out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
+   if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
                                Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
   }
 
 
@@ -907,9 +907,9 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
       variable = "proteine"
       p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       for (i in 1:length(p_melanges[[1]])){
-        out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
+        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
       }
 
     }
@@ -920,9 +920,9 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     variable = "poids.de.l.epi"
     p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
     for (i in 1:length(p_melanges[[1]])){
-      out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
+      if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
     }
 
     
@@ -931,9 +931,9 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     variable = "hauteur"
     p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
     for (i in 1:length(p_melanges[[1]])){
-      out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
+      if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
     }
 
     
@@ -1347,7 +1347,8 @@ if (variable3 %in% names(Model2)) {
     colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable3))
   } 
 } 
-if (ncol(tab)>1){
+
+if (!is.null(dim(tab))){
   tab=tab[,-1]
   attributes(tab)$invert = FALSE
   out = list("table" = list("caption" = "Prédiction du passé pour le poids de mille grains et le poids de l'épis.", "content" = tab)); OUT = c(OUT, out)
