@@ -648,8 +648,9 @@ if(!is.null(d)) {
 
 out = list("text" = "Le tableau ci-dessous présente le poids de mille grains pour les populations récoltées cette année."); OUT = c(OUT, out)
 tab = get.table(data = data_year, table.type = "mean", vec_variables = "poids.de.mille.grains---poids.de.mille.grains", 
-								nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE)
+								nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = "poids.de.mille.grains---poids.de.mille.grains")
 tab=traduction(tab,"col")
+tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains` = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains`)),3)
 out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
 
 
@@ -1256,7 +1257,7 @@ out = list("text" = paste("Sur les graphiques suivants sont placées les populat
                         A l'inverse les populations en haut à gauche ont un effet génétique plus faibles que la moyenne des populations et sont sensibles à l'interaction.")); OUT = c(OUT, out)
 
 variable = "poids.de.mille.grains"
-if (variable %in% names(out)) {
+if (variable %in% names(Model2)) {
   comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
   comp.beta = res_model2[[variable]]$comp.par$comp.beta
   comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
@@ -1270,7 +1271,7 @@ if (variable %in% names(out)) {
 }
 
 variable = "taux.de.proteine"
-if (variable %in% names(out)) {
+if (variable %in% names(Model2)) {
   comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
   comp.beta = res_model2[[variable]]$comp.par$comp.beta
   comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
@@ -1284,7 +1285,7 @@ if (variable %in% names(out)) {
 }
 
 variable = "poids.de.l.epi"
-if (variable %in% names(out)) {
+if (variable %in% names(Model2)) {
   comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
   comp.beta = res_model2[[variable]]$comp.par$comp.beta
   comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
