@@ -910,7 +910,7 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+                             ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
       }
 
     }
@@ -923,7 +923,7 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     for (i in 1:length(p_melanges[[1]])){
       if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+                             ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
     }
 
     
@@ -934,7 +934,7 @@ if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     for (i in 1:length(p_melanges[[1]])){
       if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                             ", "content" = p_melanges[[1]][[1]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+                             ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
     }
 
     
