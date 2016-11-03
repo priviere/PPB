@@ -22,7 +22,6 @@
 
 ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 8) 
 {
-  
 	melanges_PPB_mixture=melanges_PPB_mixture$data
 add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
 
@@ -61,8 +60,14 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	         colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
 	         colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",year,"]",sep="")
 	         comp.mu = get.mean.comparisons(M, "mu", get.at.least.X.groups = 1)
+	         
+	         C=comp.mu$Mpvalue[[1]]
+	         A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$type == "Mélange"),"germplasm"],",",unique(y$location),":",year,"]",sep=""))]
+	         if(A == 0){A = C[which(rownames(C) == paste("mu[",noms[which(noms$type == "Mélange"),"germplasm"],",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep=""))]}
+
 	         comp.mu=comp.mu$mean.comparisons
 	         comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
+	         comp.mu$pval=A
 	         
 	         type = NULL
 	         for (i in 1:nrow(comp.mu)) { 
@@ -162,9 +167,16 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
             Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
             Mel = Tab[Tab$type %in% "Mélange","median"]
             MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
-            M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"))
+            pval = Data$pval
+           
+            # get significance
+            grepMel = grep("Mélange",Tab$type)
+            grepMeanComp = grep("MoyenneComposantes",Tab$type)
+
+            M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"),pval[1:4])
             M=as.data.frame(M)
-            colnames(M) = c("median","Type")
+
+            colnames(M) = c("median","Type","pval")
             rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
           }else{
             M = NULL
@@ -214,23 +226,36 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	        z=y$tab
 	        if(!is.null(z)){
 	          diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
-	          return(unlist(diff))}
-	      }))
+	          
+	          return(c(unlist(diff),as.numeric(as.character(z[1,"pval"]))))
+	      }}))
 	    })
 	    
 	    
-	    Data = cbind(names(unlist(Histo)),unlist(Histo))
+	    Data = cbind(
+	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[1]])}))})),
+	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[2]])}))}))
+	                 )
+	    Data=cbind(rownames(Data),Data)
 	    Data=as.data.frame(Data)
-	    colnames(Data) = c("Paysan","overyielding")
+	    colnames(Data) = c("Paysan","overyielding","pvalue")
 	    Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
 	    Mean=mean(as.numeric(as.character(Data$overyielding)))
 	    
-	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)))) + geom_histogram(breaks=seq(-0.2,0.4,0.04),fill="darkgreen",alpha=0.6)
+	    pval= NULL
+	    for (i in 1:nrow(Data)){
+	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){pval = c(pval,"significant at 0.01")}
+	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){pval = c(pval,"significant at 0.05")}
+	      if (as.numeric(as.character(Data[i,"pvalue"])) > 0.05){pval = c(pval,"not significant (pvalue >0.05)")}
+	    }
+	    
+	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) + geom_histogram(breaks=seq(-0.2,0.4,0.04), alpha=0.6)
 	    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
 	    p = p + labs(x=paste("rapport Mélange/Moyenne des composantes pour ",variable,sep=""), y="Nombre de mélanges")
 	    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
 	    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
-	    
+
+	   
 	    return(p)
 	  }else{
 	    return(NULL)
