@@ -85,7 +85,7 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	           Data_split = plyr:::splitter_d(Data, .(split))
 	           
 	           # faire le graph pour chaque split
-	           bp = lapply(Data_split , function(z){return(barplot.mixture1(z))})
+	           bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, variable, sep=" : ")))})
 	           
 	           return(list("barplot"= bp, "Tab" = Data))
 	         }
@@ -100,17 +100,18 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	   return(mix_split)
 	}) # end lapply(x)
 	names(d_env_b) = names(d_env)
+	Nul = TRUE
+	for (i in 1:length(d_env_b)){
+	  for (j in 1:length(d_env_b[[i]])){
+	    for (k in 1:length(d_env_b[[i]][[j]])){
+	      if(!is.null(d_env_b[[i]][[j]][[k]])){Nul = FALSE}
+	    }
+	  }
+	}
 	if(plot.type == "comp.in.farm") {return(d_env_b)}
 }
 
-Nul = TRUE
-for (i in 1:length(d_env_b)){
-  for (j in 1:length(d_env_b[[i]])){
-    for (k in 1:length(d_env_b[[i]][[j]])){
-      if(!is.null(d_env_b[[i]][[j]][[k]])){Nul = FALSE}
-    }
-  }
-}
+
 
 # 2. Compare the effect of being a mixture vs the effect of being a component -----
 # Normalement ça marche
@@ -241,21 +242,26 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	    colnames(Data) = c("Paysan","overyielding","pvalue")
 	    Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
 	    Mean=mean(as.numeric(as.character(Data$overyielding)))
+	    Positif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))>0])*100/length(Data$overyielding),2)
+	    Negatif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))<0])*100/length(Data$overyielding),2)
 	    
 	    pval= NULL
 	    for (i in 1:nrow(Data)){
-	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){pval = c(pval,"significant at 0.01")}
-	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){pval = c(pval,"significant at 0.05")}
-	      if (as.numeric(as.character(Data[i,"pvalue"])) > 0.05){pval = c(pval,"not significant (pvalue >0.05)")}
+	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){pval = c(pval,"Significatif à 0.01")}
+	      if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){pval = c(pval,"Significatif à 0.05")}
+	      if (as.numeric(as.character(Data[i,"pvalue"])) > 0.05){pval = c(pval,"Non significatif (pvalue >0.05)")}
 	    }
 	    
-	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) + geom_histogram(breaks=seq(-0.2,0.4,0.04), alpha=0.6)
+	    B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
+	    
+	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.04), alpha=0.6)
 	    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
 	    p = p + labs(x=paste("rapport Mélange/Moyenne des composantes pour ",variable,sep=""), y="Nombre de mélanges")
 	    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
 	    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
-
-	   
+      p = p + scale_fill_discrete(name = "Significativité")
+      p = p + annotate("text",label = c(paste("Cas positifs :",Positif,"%",sep=" "),paste("Cas négatifs :",Negatif,"%",sep=" ")),x=B,y=c(5,4.8))
+ 
 	    return(p)
 	  }else{
 	    return(NULL)
