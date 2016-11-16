@@ -163,6 +163,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
         Mat = lapply(x, function(y) {
           Tab=y$Tab
           Data = Tab[Tab$type %in% "Composante",]
+          nb_comp = nrow(Data)
           if (!is.null(Data)){
             Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
             Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
@@ -182,7 +183,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
           }else{
             M = NULL
           }
-          return(list("plot" = NULL, "tab"= M))
+          return(list("plot" = NULL, "tab"= M, "nbComp" =  nb_comp))
         })
         return(Mat)
       })
@@ -198,16 +199,24 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
           }
         }
         
-        colnames(toPlot) = c("Moyenne","Type","Paysan","Group")
+#         D = cbind(toPlot[toPlot$Type %in% "1.moins bonne","Moyenne"],toPlot[toPlot$Type %in% "2.moyenne composantes","Moyenne"],
+#                   toPlot[toPlot$Type %in% "3.mélange","Moyenne"],toPlot[toPlot$Type %in% "4.meilleure","Moyenne"])
+#         colnames(D) = c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure")
+#         
+#         plot(D)
+        
+        colnames(toPlot) = c("Moyenne","Type","pvalue","Paysan","Group")
         rownames(toPlot)=NULL
         toPlot=as.data.frame(toPlot)
         toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
+        write.table(toPlot,file=paste("./Distrib",variable,"csv",sep="."))
         
         p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group), xlab=variable)
         p = p +labs(x="", y=paste("Valeur du ",variable,sep=""))
         p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=4.5)
-        p = p + geom_jitter(position=position_jitter(0), cex=3)
+        p = p + geom_jitter(position=position_jitter(0), cex=3) 
         p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
+        p = p + geom_line()
         p = p + theme(legend.position="none")
         return(p)
       }
@@ -228,18 +237,19 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	        if(!is.null(z)){
 	          diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
 	          
-	          return(c(unlist(diff),as.numeric(as.character(z[1,"pval"]))))
+	          return(c(unlist(diff),as.numeric(as.character(z[1,"pval"])),y$nbComp))
 	      }}))
 	    })
 	    
 	    
 	    Data = cbind(
 	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[1]])}))})),
-	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[2]])}))}))
+	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[2]])}))})),
+	                 unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[3]])}))}))
 	                 )
 	    Data=cbind(rownames(Data),Data)
 	    Data=as.data.frame(Data)
-	    colnames(Data) = c("Paysan","overyielding","pvalue")
+	    colnames(Data) = c("Paysan","overyielding","pvalue","nbComp")
 	    Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
 	    Mean=mean(as.numeric(as.character(Data$overyielding)))
 	    Positif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))>0])*100/length(Data$overyielding),2)
@@ -254,14 +264,17 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	    
 	    B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
 	    
-	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.04), alpha=0.6)
+	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
+	    p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.04), alpha=0.6, color="black")
 	    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
-	    p = p + labs(x=paste("rapport Mélange/Moyenne des composantes pour ",variable,sep=""), y="Nombre de mélanges")
+	    p = p + labs(x=paste("Différence normalisée entre les mélanges et 
+	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
 	    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
 	    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
       p = p + scale_fill_discrete(name = "Significativité")
       p = p + annotate("text",label = c(paste("Cas positifs :",Positif,"%",sep=" "),paste("Cas négatifs :",Negatif,"%",sep=" ")),x=B,y=c(5,4.8))
  
+      write.table(Data,file=paste("OveryieldingMel",variable,"csv",sep="."))
 	    return(p)
 	  }else{
 	    return(NULL)
