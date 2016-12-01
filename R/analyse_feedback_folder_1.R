@@ -30,7 +30,7 @@ db_host = info_db$db_host
 db_name = info_db$db_name
 db_password = info_db$db_password
                   
-# list_translation
+# list_translation --------
 list_translation = list(
   c("post_winter_global", "note.globale.hiver"),
   c("spring_global", "note.globale.printemps"),
@@ -148,7 +148,10 @@ list_translation = list(
   c("nbr_kernels","nbr.epillets"),
   c("nbr_missing_spikelet","nbr.epillets.manquants"),
   c("nbr_spike","nbr.épis"),
-  c("nbr_sterile_spikelets","nbr.epillets.stériles")
+  c("nbr_sterile_spikelets","nbr.epillets.stériles"),
+  c("measured_grain_weight","poids.grains.mesure"),
+  c("estimated_nbr_grain_spike","nbr.estime.grain.par.epi"),
+  c("LLSD","LLSD")
 )
 
 
@@ -188,26 +191,42 @@ mag = function(d){
   # LLSD
   if( length(grep("LLSD---LLSD", colnames(d$data))) > 0 ) {
     a = as.numeric(as.character(d$data$"LLSD---LLSD"))
-    a[which(a < -10)] = NA
+    a[which(a < 0)] = 0
     a[which(a > 500)] = NA
     d$data$"LLSD---LLSD" = a
   }
   
   
-    # nbr_kernels_ind_corrected---nbr.epillets_ind_corrected
-  if( length(grep("nbr_kernels_ind_corrected---nbr_kernels_ind_corrected", colnames(d$data))) > 0 ) {
-    a = as.numeric(as.character(d$data$"nbr_kernels_ind_corrected---nbr_kernels_ind_corrected"))
+    # nbr_kernels---nbr.epillets
+  if( length(grep("nbr_kernels---nbr_kernels", colnames(d$data))) > 0 ) {
+    a = as.numeric(as.character(d$data$"nbr_kernels---nbr_kernels"))
     a[which(a <= 0)] = NA
-    a[which(a > 70)] = NA
-    d$data$"nbr_kernels_ind_corrected---nbr_kernels_ind_corrected" = a
+    a[which(a > 60)] = NA
+    d$data$"nbr_kernels---nbr_kernels" = a
   }
  
       #  spike_length---spike_length_F
-  if( length(grep("spike_length---spike_length_F", colnames(d$data))) > 0 ) {
+  if( length(grep("spike_length---spike_length", colnames(d$data))) > 0 ) {
     a = as.numeric(as.character(d$data$"spike_length---spike_length_F"))
     a[which(a <= 0)] = NA
     a[which(a > 250)] = NA
     d$data$"spike_length---spike_length_F" = a
+  }
+  
+        #  rdt
+  if( length(grep("rdt", colnames(d$data))) > 0 ) {
+    a = as.numeric(as.character(d$data$"rdt"))
+    a[which(a <= 10)] = NA
+    a[which(a > 100)] = NA
+    d$data$"rdt" = a
+  }
+  
+      # estimated_nbr_grain_spike
+  if( length(grep("estimated_nbr_grain_spike---estimated_nbr_grain_spike", colnames(d$data))) > 0 ) {
+    a = as.numeric(as.character(d$data$"estimated_nbr_grain_spike---estimated_nbr_grain_spike"))
+    a[which(a <= 0)] = NA
+    a[which(a > 100)] = NA
+    d$data$"estimated_nbr_grain_spike---estimated_nbr_grain_spike" = a
   }
   
   return(d)
@@ -215,10 +234,6 @@ mag = function(d){
 
 
 # 1. Statistical analysis on all data ---------- 
-
-# vec_variables="tkw"
-# vec_variables = c("tkw", "protein", "spike_weight", "plant_height","spike_length",
-#"nbr_kernels_ind_corrected","LLSD")
 
 # 1.1. Get the data and format it for PPBstats ----------
 message("
@@ -232,10 +247,36 @@ data = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_pass
 query.type = "data-classic", filter.on = "father-son", data.type ="relation" ,variable.in=vec_variables
 )
 
+
+if("measured_grain_weight" %in% vec_variables){
+	# If the number of kernels was not measured but we want to estimated it since the thousand kernel weight, total grain weight and number of spikes were measured
+	D=data$data$data
+	
+	# Get the number of spikes 
+	nBS=NULL
+	for (i in 1:nrow(D)){
+		nBS= c(nBS,ifelse(!is.na(D[i,"nbr_spike---nbr_spikes"]),D[i,"nbr_spike---nbr_spikes"],D[i,"nbr_spikes---nbr_spikes"]))
+	}
+	D$"nBS---nBS" = nBS
+	# If it was not measured, its equal to the number of spikes on which the measures of spike weight were done
+	for (i in 1:nrow(D)){ 
+		if( !is.na(D[i,"measured_grain_weight---measured_grain_weight"]) & is.na(D[i,"nBS---nBS"]) ){
+			nbr_ind = length(D[D$son %in% D[i,"son"] & D$block %in% D[i,"block"] & D$X %in% D[i,"X"] & D$Y %in% D[i,"Y"],"son"])
+			D[i,"nBS---nBS"] = nbr_ind
+		}
+	}
+	# Estimate the mean number of grain per spike
+	D$'estimated_nbr_grain_spike---estimated_nbr_grain_spike' = if(!is.na(D[,"measured_grain_weight---measured_grain_weight"]) & !is.na(D[,"nBS---nBS"])){
+		as.numeric(as.character(D[,"measured_grain_weight---measured_grain_weight"]))*1000/(as.numeric(as.character(D[,"nBS---nBS"]))*as.numeric(as.character(D[,"tkw---tkw"])))
+	}
+	data$data$data = D
+}
+
+
+
 data$data = mag(data$data)
 data = translate.data(data, list_translation)
 data_stats = format.data(data, format = "PPBstats", fuse_g_and_s = TRUE)
-colnames(data_stats)[grep("longueur.de.l.epi---longueur.de.l.epi_F",colnames(data_stats))[1]] = "longueur.de.l.epi---longueur.de.l.epi"
 
 
 vec_variables_trad = unlist(lapply(vec_variables, function(x){
@@ -272,7 +313,7 @@ message("
 -------------------------------------")
 
 fun_model1 = function(variable, data_stats) {
-	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
+	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 30000) # , nb_iterations = 1000)
 	model.outputs = analyse.outputs(out.model1) # si var: ça bug, que ok si var = NULL
 	comp.mu = get.mean.comparisons(model.outputs$MCMC, "mu", get.at.least.X.groups = 2)
 	return(list("model.outputs" = model.outputs, "comp.mu" = comp.mu))
