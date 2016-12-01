@@ -109,6 +109,19 @@ if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.ty
 	  }
 	}
 	if(plot.type == "comp.in.farm") {return(d_env_b)}
+	Mat = NULL
+  for (i in 1:length(d_env_b)){
+    for (j in 1:length(d_env_b[[i]])){
+      if (!is.null(d_env_b[[i]][[j]]$Tab)){
+        M=d_env_b[[i]][[j]]$Tab
+        M$melange = M[M$type %in% "Mélange","germplasm"]
+        Mat = rbind(Mat,M)
+      }
+    }
+  }
+	colnames(Mat)[2] = variable
+	write.table(Mat,file=paste("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/dossier_retour_2015-2016/AnalyseDonnees/donnees brutes/Value_",variable,".csv",sep=""))
+    
 }
 
 
@@ -209,7 +222,7 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
         rownames(toPlot)=NULL
         toPlot=as.data.frame(toPlot)
         toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
-        write.table(toPlot,file=paste("./Distrib",variable,"csv",sep="."))
+        write.table(toPlot,file=paste("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/dossier_retour_2015-2016/AnalyseDonnees/donnees brutes/Distrib",variable,"csv",sep="."))
         
         p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group), xlab=variable)
         p = p +labs(x="", y=paste("Valeur du ",variable,sep=""))
@@ -265,16 +278,17 @@ if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution")
 	    B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
 	    
 	    p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
-	    p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.04), alpha=0.6, color="black")
+	    p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.07), alpha=0.6, color="black")
 	    p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
 	    p = p + labs(x=paste("Différence normalisée entre les mélanges et 
 	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
 	    p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
 	    p = p + geom_vline(xintercept = 0,  linetype = "dotted")
       p = p + scale_fill_discrete(name = "Significativité")
-      p = p + annotate("text",label = c(paste("Cas positifs :",Positif,"%",sep=" "),paste("Cas négatifs :",Negatif,"%",sep=" ")),x=B,y=c(5,4.8))
+      p = p + annotate("text",label = c(paste("Cas positifs :",Positif,"%",sep=" "),paste("Cas négatifs :",Negatif,"%",sep=" ")),x=B,y=c(7,6.8))
  
-      write.table(Data,file=paste("OveryieldingMel",variable,"csv",sep="."))
+      write.table(Data,file=paste("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/dossier_retour_2015-2016/AnalyseDonnees/donnees brutes/OveryieldingMel",variable,"csv",sep="."))
+      
 	    return(p)
 	  }else{
 	    return(NULL)
