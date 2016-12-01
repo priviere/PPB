@@ -52,13 +52,13 @@ analyse.selection = function(res_model, data_version, variable, person, empile, 
      if (Data[i,"type"] == "Composante" & as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){
        if(language == "english"){pval = c(pval,"Component, significant at 0.05")}else{pval = c(pval,"Composante, significatif à 0.05")}}
      if (Data[i,"type"] == "Composante" & as.numeric(as.character(Data[i,"pvalue"])) > 0.05){
-       if(language == "english"){pval = c(pval,"Component, not significant (pvalue > 0.05)")}else{pval = c(pval,"Component, not significant (pvalue > 0.05)")}}
+       if(language == "english"){pval = c(pval,"Component, not significant (pvalue > 0.05)")}else{pval = c(pval,"Composante, non significatif (pvalue > 0.05)")}}
      if (Data[i,"type"] == "Mélange" & as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){
-       if(language == "english"){pval = c(pval,"Mixture, significant at 0.01")}else{pval = c(pval,"Mixture, significatif à 0.01")}}
+       if(language == "english"){pval = c(pval,"Mixture, significant at 0.01")}else{pval = c(pval,"Mélange, significatif à 0.01")}}
      if (Data[i,"type"] == "Mélange" & as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){
-       if(language == "english"){pval = c(pval,"Mixture, significant at 0.05")}else{pval = c(pval,"Mixture, significatif à 0.05")}}
+       if(language == "english"){pval = c(pval,"Mixture, significant at 0.05")}else{pval = c(pval,"Mélange, significatif à 0.05")}}
      if (Data[i,"type"] == "Mélange" & as.numeric(as.character(Data[i,"pvalue"])) > 0.05){
-       if(language == "english"){pval = c(pval,"Mixture, not significant (pvalue > 0.05)")}else{pval = c(pval,"Mixture, not significant (pvalue > 0.05)")}}
+       if(language == "english"){pval = c(pval,"Mixture, not significant (pvalue > 0.05)")}else{pval = c(pval,"Mélange, non significatif (pvalue > 0.05)")}}
    }
   Mean=unlist(lapply(levels(as.factor(Data$modalite)),function(x){mean(Data[Data$modalite %in% x,"overyielding"])}))
   names(Mean) = levels(as.factor(Data$modalite))
@@ -74,14 +74,16 @@ analyse.selection = function(res_model, data_version, variable, person, empile, 
   By = (max(Data$overyielding)-min(Data$overyielding))/12
   if (language == "english"){factoL = c("Component, not significant (pvalue > 0.05)","Component, significant at 0.05","Component, significant at 0.01",
                                         "Mixture, not significant (pvalue > 0.05)","Mixture, significant at 0.05","Mixture, significant at 0.01")
-  }else{factoL = c("Composante, non significatif (pvalue >0.05)","Composante, significatif à 0.05","Composante, significatif à 0.01",
-                                                       "Mélange, non significatif (pvalue >0.05)","Mélange, significatif à 0.05","Mélange, significatif à 0.01")}
+  }else{factoL = c("Composante, non significatif (pvalue > 0.05)","Composante, significatif à 0.05","Composante, significatif à 0.01",
+                                                       "Mélange, non significatif (pvalue > 0.05)","Mélange, significatif à 0.05","Mélange, significatif à 0.01")}
   if(nrow(Data) ==1){p = ggplot(ylim = c(0,1))
+  
   }else{ 
     p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=factor(pval, levels = factoL))) +
     geom_histogram(breaks = seq(From,To,By), color = "black")
-    }
-  if (empile==TRUE){ p = p + facet_wrap( ~ modalite, ncol =1, scales="free_y") + theme(strip.text.x = element_text(size=11))} 
+  }
+  
+  if (empile==TRUE){ p = p + facet_wrap( ~ modalite, ncol =1, scales="free_y") + theme(strip.text.x = element_text(size=9))} 
   p = p + ggtitle(paste(person, variable, nom, sep=" : "))
   if (empile == FALSE) {
     p = p + geom_vline(xintercept = mean(Mean), size = 1.2, color="red")
