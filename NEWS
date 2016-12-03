@@ -1,3 +1,10 @@
+PPBformation 0.4 ------------------------------------
+-----------------------------------------------------
+* update analyse_feedback_folder_1.R
+  - add vec_variables as argument
+* add function that generates barplots for mixtures comparisons with components (ggplot_mixture.R)
+* add function that generate barplots for the analysis of selection differential (analyse.selection.R)
+
 PPBformation 0.3 ------------------------------------
 -----------------------------------------------------
 * update gitignore
