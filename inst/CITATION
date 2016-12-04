@@ -2,18 +2,18 @@ citHeader("To cite the PPBformations package in publications use:")
 
 citEntry(
   entry = 'manual',
-  title = 'PPBformations: R package that gather functions and 
-  packages used in PPB formations. Version 0.4',
+  title = 'PPB: An R package that provides severals examples of 
+  workflow of analysis that can be used in PPB programmes. Version 0.5',
   author = '{Pierre Riviere and Gaelle Van Frank}',
   organisation = '{Reseau Semences Paysannes and Institut National de la Recherche Agronomique}',
   year = '2016',
-  url = 'https://github.com/priviere/PPBformations',
+  url = 'https://github.com/priviere/PPB',
   note = 'R code is under licence GPL-3. 
-          Vignette is under licence creative commons BY-NC-SA 4.0.',
+          Vignette is under licence creative commons BY-NC-SA 5.0.',
   textVersion =   'Pierre Riviere and Gaelle Van Frank, 2016, 
                   PPBformations: R package that gather functions and 
                   packages used in PPB formations. 
-                  Version 0.3.
-                  URL: https://github.com/priviere/PPBformations'
+                  Version 0.5.
+                  URL: https://github.com/priviere/PPB'
 )
 
