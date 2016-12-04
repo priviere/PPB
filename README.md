@@ -18,7 +18,7 @@ The version number is under the form A.B with
 
 * B: +1 when the code change
 
-See NEWS [here](https://github.com/priviere/PPBformations/blob/master/NEWS) to know the evolution of the codes.
+See NEWS [here](https://github.com/priviere/PPB/blob/master/NEWS) to know the evolution of the codes.
 
 ## Participate to development
 
@@ -44,7 +44,7 @@ First, load the development version:
 
 The easiest way to start is to look at the vignette to know how the package works.
 
-You can see the vignette [here](). 
+You can see the vignette [here](https://github.com/priviere/PPB/blob/master/vignettes/PPB.Rmd). 
 
 Do not hesitate to let a message [in the issues](https://github.com/priviere/PPB/issues) or to send me an email if
 
