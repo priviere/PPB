@@ -10,7 +10,7 @@ More informations about this licence [here](http://creativecommons.org/licenses/
 The copyright of the R code and the vignette are owned by Réseau Semences Paysannes and Institut National de la Recherche Agronomique
 
 ## Version
-`PPBformations` is now at version 0.5
+`PPB` is now at version 0.5
 
 The version number is under the form A.B with
 
@@ -26,8 +26,8 @@ You can participate in three ways:
 
 1. test this development version and report bugs
 2. translate the package
-3. add new functions that may be useful in the analysis of unbalanced trials that can be found in PPB programmes
-
+3. add new functions that may be useful in workflow of analysis in PPB programmes.
+ 
 If you update the code, you can refer to 
 [the issues](https://github.com/priviere/PPB/issues)
 and do it in on another branch.
