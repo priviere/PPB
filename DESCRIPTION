@@ -17,4 +17,4 @@ Remotes:
 LazyLoad: yes
 LazyData: true
 VignetteBuilder: knitr
-
+Suggests: knitr
