@@ -23,7 +23,6 @@ analyse.selection = function(res_model, data_version, variable, person, empile, 
 {
   
   data=unique(data_version[,c("year","location","germplasm","group","type","modalite")])
- # data=data[1:(nrow(data)/2),]
   data$vrac = paste("mu[",sapply(strsplit(as.character(data$group)," | "),function(x){return(x[[1]])}),",",data$location,":",data$year,"]",sep="")
   data$bouquet = paste("mu[",sapply(strsplit(as.character(data$group)," | "),function(x){return(x[[3]])}),",",data$location,":",data$year,"]",sep="")
   
@@ -87,7 +86,6 @@ analyse.selection = function(res_model, data_version, variable, person, empile, 
   p = p + ggtitle(paste(person, variable, nom, sep=" : "))
   if (empile == FALSE) {
     p = p + geom_vline(xintercept = mean(Mean), size = 1.2, color="red")
-   # p = p + geom_text(x=mean(Mean),y=-0.03,label=paste("Gain moyen =",round((mean(Mean))*100,2),"%",sep=" "), size=5)
   }
   p = p + labs(x=ifelse(language == "english",paste("Normalised difference between selected and non-selected bulk, ",variable,sep=""),paste("Différence normalisée entre bouquet de sélection et vrac, ",variable,sep="")),
                y=ifelse(language == "english","Number of comparisons selected vs non-selected bulk","Nombre de couples Bouquet - Vrac")) 
@@ -97,7 +95,6 @@ analyse.selection = function(res_model, data_version, variable, person, empile, 
   
   if (empile==F){p = p + annotate("text",label = c(paste("n :",nrow(Data),sep=" "),paste(ifelse(language == "english","Mean gain =","Gain moyen ="),round((mean(Mean))*100,2),"%",sep=" ")),x=(max(Data$overyielding)-0.2*max(Data$overyielding)),y=c(nrow(Data)/5,(nrow(Data)/5-nrow(Data)/50)))}
 
- # p = p +annotate("text",label = "* : Sélection(s) dans le mélange",x=(max(Data$overyielding)-0.5),y=3)
   
   return(list("histo" = p, "tab" = Data))
 }
