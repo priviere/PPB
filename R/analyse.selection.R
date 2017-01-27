@@ -26,6 +26,8 @@ analyse.selection = function(donnees, data_version, variable, person, empile=FAL
   data$vrac = paste("mu[",sapply(strsplit(as.character(data$group)," | "),function(x){return(x[[1]])}),",",data$location,":",data$year,"]",sep="")
   data$bouquet = paste("mu[",sapply(strsplit(as.character(data$group)," | "),function(x){return(x[[3]])}),",",data$location,":",data$year,"]",sep="")
 
+  
+#0. functions ---------
  compare_model = function(x){
    # x : nom du vrac et nom du bouquet. La fonction retourne la moyenne de chacune des chaines ainsi que la comparaison des 2
    MCMC = donnees[[variable]]$model.outputs$MCMC
@@ -38,25 +40,29 @@ analyse.selection = function(donnees, data_version, variable, person, empile=FAL
    return(c(mean(vrac),mean(bouquet),Mpvalue[1,2]))
  }
  
- chi2 = function(x){
+ WMW = function(x){
    # x: nom du vrac et du bouquet
    if (class(x) == "data.frame"){Mat = donnees[as.character(donnees$expe_name) %in% x[,"group"],]}else{Mat = donnees[as.character(donnees$expe_name) %in% x["group"],]}
    # add one since color, awns and curve can be 0 and then problems when calculating overyielding
-   vrac=as.numeric(na.omit(Mat[grep("vrac",Mat$sl_statut),variable]))+1
-   bouquet = as.numeric(na.omit(Mat[grep("bouquet",Mat$sl_statut),variable]))+1
-   if( length(levels(as.factor(na.omit(vrac)))) ==1 | length(levels(as.factor(na.omit(bouquet)))) ==1){
-     return(c(mean(na.omit(as.numeric(vrac))-1),mean(na.omit(as.numeric(bouquet))-1),NA))
-   }
-#   if(length(vrac) != length(bouquet)){if(length(vrac) > length(bouquet)){bouquet=c(bouquet,rep(NA,(length(vrac)-length(bouquet))))}else{vrac=c(vrac,rep(NA,(length(bouquet)-length(vrac))))}}
-    # Test non paramétrique U de Wilcoxon-Mann-Whitney pour données semi_quantitatives
-    WMW = wilcox.test(as.numeric(c(vrac,bouquet)) ~ c(rep("vrac",length(vrac)),rep("bouquet",length(bouquet))))
-  # m = as.data.frame(cbind(c(vrac, bouquet),c(rep("vrac",length(vrac)), rep("bouquet", length(bouquet)))))
-#   hist(as.numeric(vrac))
-#   hist(as.numeric(bouquet))
-  # var.test(as.numeric(vrac[,variable]),as.numeric(bouquet[,variable]))
+   vrac=as.numeric(na.omit(Mat[grep("vrac",Mat$sl_statut),variable]))
+   bouquet = as.numeric(na.omit(Mat[grep("bouquet",Mat$sl_statut),variable]))
    
-   return(c(mean(na.omit(as.numeric(vrac))),mean(na.omit(as.numeric(bouquet))),WMW$p.value))
+   if (var(na.omit(bouquet)) == 0 & var(na.omit(vrac)) == 0){
+     if(mean(bouquet) == mean(vrac)){pval = 1}else{pval=0}
+   }else{
+     # Test non paramétrique U de Wilcoxon-Mann-Whitney pour données semi_quantitatives
+     pval = wilcox.test(as.numeric(c(vrac,bouquet)) ~ c(rep("vrac",length(vrac)),rep("bouquet",length(bouquet))))$p.value
+     
+   }
+   return(c(mean(na.omit(as.numeric(vrac))),mean(na.omit(as.numeric(bouquet))),pval))
  }
+ 
+ get_stars = function(signif) {
+   stars = findInterval(signif, c(0, 0.001, 0.01, 0.05, 0.1))
+   codes = c("***" , "**","*", ".", " ")
+   return(codes[stars])
+ }
+ 
 
 #1. If the data was analyzed using bayesian model -----------
 if (class(donnees) == "list"){
@@ -67,14 +73,16 @@ if (class(donnees) == "list"){
 #2. If the data was not analyzed using the bayesian model: semi-quantitative data such as awns, color, curve --> use chi2 test to compare selection vs bulk-----------
 if(class(donnees) == "data.frame"){
   if (!(variable %in% names(donnees))){stop("Variable must be one of donnees's names")}
-  
-  result = apply(data,1,FUN=chi2)
+  result = apply(data,1,FUN=WMW)
 }
  
+#3. Calculations ----------------
  result = t(result)
  colnames(result) = c("MoyenneVrac","MoyenneBouquet","pvalue")
  Data=cbind(data,result)
- Data$overyielding = Data$MoyenneBouquet/Data$MoyenneVrac-1
+ if(class(donnees) == "list"){Data$overyielding = Data$MoyenneBouquet/Data$MoyenneVrac-1}
+ if(class(donnees) == "data.frame"){Data$overyielding = Data$MoyenneBouquet-Data$MoyenneVrac}
+
  Data=Data[Data$modalite != "",]
  pval= NULL
  Data[is.na(Data$pvalue),"pvalue"] = 1
@@ -92,16 +100,40 @@ if(class(donnees) == "data.frame"){
    if (Data[i,"type"] == "Mélange" & as.numeric(as.character(Data[i,"pvalue"])) > 0.05){
      if(language == "english"){pval = c(pval,"Mixture, not significant (pvalue > 0.05)")}else{pval = c(pval,"Mélange, non significatif (pvalue > 0.05)")}}
  }
- Mean=unlist(lapply(levels(as.factor(Data$modalite)),function(x){mean(Data[Data$modalite %in% x,"overyielding"])}))
- names(Mean) = levels(as.factor(Data$modalite))
+
+  Mean=unlist(lapply(levels(as.factor(Data$modalite)),function(x){mean(Data[Data$modalite %in% x,"overyielding"])}))
+  names(Mean) = levels(as.factor(Data$modalite))
+  MeanGlob = mean(Data$overyielding)
+
  Data$pval = pval
  
  mel = Data[Data$type %in% "Mélange", "overyielding"]
  names(mel) = Data[Data$type %in% "Mélange", "germplasm"]
- Data$modalite = unlist(lapply(Data$modalite, function(x){paste(x,ifelse(language=="english","- Mean gain: "," - Gain moyen : "),round((Mean[x])*100,2)," % (n = ",nrow(Data[Data$modalite %in% x,])," )", sep="")}))
+
+#3. Test to check if overyielding is different from zero ---------
+ if (empile == FALSE){
+   if(shapiro.test(Data$overyielding)$p.value <= 0.05){Signif = t.test(Data$overyielding, mu=0)$p.value }else{ Signif = wilcox.test(Data$overyielding, mu=0)$p.value}
+ }
+ if (empile ==TRUE){
+   Signif=NULL
+   if(shapiro.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"])$p.value <= 0.05){ 
+     Signif = c(Signif,t.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"], mu=0)$p.value)
+  }else{  Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"], mu=0)$p.value)}
  
-  
-#3. Histogram ---------
+   if(shapiro.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"])$p.value <= 0.05){ 
+     Signif = c(Signif,t.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"], mu=0)$p.value)
+   }else{  Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"], mu=0)$p.value)}
+   
+   if(shapiro.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"])$p.value <= 0.05){ 
+     Signif = c(Signif,t.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"], mu=0)$p.value)
+   }else{ Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"], mu=0)$p.value)}
+   names(Signif) = c("Composantes : Mod 1","Composantes : Mod 2","Mélanges : Mod 3")
+ }
+ 
+ Data$modalite = unlist(lapply(Data$modalite, function(x){paste(x,ifelse(language=="english","- Mean gain: "," - Gain moyen : "),round((Mean[x])*100,2)," % ",get_stars(Signif[x])," (n = ",nrow(Data[Data$modalite %in% x,])," )", sep="")}))
+ 
+
+#4. Histogram ---------
   From= min(Data$overyielding)-0.2*abs(min(Data$overyielding))
   To = max(Data$overyielding) + 0.2*max(Data$overyielding)
   By = (max(Data$overyielding)-min(Data$overyielding))/12
@@ -119,15 +151,24 @@ if(class(donnees) == "data.frame"){
   if (empile==TRUE){ p = p + facet_wrap( ~ modalite, ncol =1, scales="free_y") + theme(strip.text.x = element_text(size=9))} 
   p = p + ggtitle(paste(person, variable, nom, sep=" : "))
   if (empile == FALSE) {
-    p = p + geom_vline(xintercept = mean(Mean), size = 1.2, color="red")
+    p = p + geom_vline(xintercept = MeanGlob, size = 1.2, color="red")
   }
-  p = p + labs(x=ifelse(language == "english",paste("Normalised difference between selected and non-selected bulk, ",variable,sep=""),paste("Différence normalisée entre bouquet de sélection et vrac, ",variable,sep="")),
+  if(class(donnees) == "list"){
+    xlabel = ifelse(language == "english",paste("Normalised difference between selected and non-selected bulk, ",variable,sep=""),paste("Différence normalisée entre bouquet de sélection et vrac, ",variable,sep=""))
+  }
+  if(class(donnees) == "data.frame"){
+    xlabel = ifelse(language == "english",paste("Difference between selected and non-selected bulk, ",variable,sep=""),paste("Différence entre bouquet de sélection et vrac, ",variable,sep=""))
+  }
+  p = p + labs(x=xlabel,
                y=ifelse(language == "english","Number of comparisons selected vs non-selected bulk","Nombre de couples Bouquet - Vrac")) 
   p = p + geom_vline(xintercept = 0,  linetype = "dotted")
   p = p + scale_fill_discrete(name = "")
   p = p + theme(legend.text = element_text(size = 7), axis.title = element_text(size = 10))
   
-  if (empile==F){p = p + annotate("text",label = c(paste("n :",nrow(Data),sep=" "),paste(ifelse(language == "english","Mean gain =","Gain moyen ="),round((mean(Mean))*100,2),"%",sep=" ")),x=(max(Data$overyielding)-0.2*max(Data$overyielding)),y=c(nrow(Data)/5,(nrow(Data)/5-nrow(Data)/50)))}
+  if (empile==F){p = p + annotate("text",label = c(paste("n :",nrow(Data),sep=" "),
+                                                   paste(ifelse(language == "english","Mean gain = ","Gain moyen = "),round(MeanGlob*100,2),"% (",get_stars(Signif),")",sep="")),x=(max(Data$overyielding)-0.2*max(Data$overyielding)),y=c(nrow(Data)/5,(nrow(Data)/5-nrow(Data)/50)),
+                                                  size=3.5)
+  }
 
   
   return(list("histo" = p, "tab" = Data))
