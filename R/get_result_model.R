@@ -1,35 +1,50 @@
 # 0. help -----------------------------------------------------------------
 #' Select parts of models results from PPBstats::analyse.outputs (eigher parameters comparisons or MCMC).
 #' 
-#' @param res_model output from the \code{PPBstats::analyse.outputs} function
+#' @param res_model output from the \code{PPBformation::analyse_feedback_folder_1} function
 #' 
 #' @param data output from the \code{shinemas2R::get.data} function
 #' 
-#' @param type_result the results wanted : parameters comparison ("comp.mu") or MCMC ("MCMC")
+#' @param type_result the results wanted : parameters comparison ("comparison") or MCMC ("MCMC")
 #
 #' @param variable the variable
+#' 
+#' @param modele the model from which the results were obtained : model_1, model_2, model_variance_intra
 #
-#' @param param if type_result is "MCMC", the parameter wanted ("mu","beta","sigma" if model 1 is used, "alpha","beta","theta")
+#' @param param The parameter wanted ("mu","beta","sigma" if model_1 is used, "alpha","beta","theta" if model_2 is used, "sigma" if model_variance_intra model is used)
 #' 
 #' @param year the year wanted
 #' 
-#' @return The data with translated data
+#' @return the model results for the germplasm, environment and year wanted
 #' 
 #' @author Gaelle Van Frank
 #' 
 #' @seealso \code{\link{PPBstats::analyse.outputs}}, \code{\link{shinemas2R::get.data}}
 #' 
 #' 
-get_result_model = function(res_model, data, type_result = "comp.mu", variable, param = NULL, year = NULL) 
+get_result_model = function(res_model, data, type_result = "comparison", variable, modele, param = NULL, year = NULL) 
 {
 
-## marche pour le modèle 1 --> adapter aux sorties du modèle 2 !	
-	
+
 # 1. Check parameters -------------
 	if ( is.null(year)) {stop("A year is needed.")}
-	if ( type_result %in% c("comp.mu","MCMC") == FALSE ) {stop("Type_result must be comp.mu or MCMC." )}
-	if ( type_result == "comp.mu" & param %in% c(NULL, "mu") == FALSE ) {stop("If type_result == comp.mu then param must be NULL or mu." )}
-	if ( "comp.mu" %in% names(res_model[[variable]]) ) {modele = 1}
+	if ( type_result %in% c("comparison","MCMC") == FALSE ) {stop("Type_result must be comparison or MCMC." )}
+	if ( type_result == "comparison" & param == NULL ) {stop("If type_result == comparison then param must be mu, beta, sigma if model 1 is used, alpha, beta, theta if model 2 is used, or  sigma if variance_intra model is used." )}
+  if (type_result == "comparison" ){
+    if (model == model_1){
+      if (!(param %in% c("mu","beta","sigma"))){stop("If type_result == comparison and model == model_1 then param must be mu, beta or sigma")}
+      if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
+    }
+    if (model == model_2){
+      if (!(param %in% c("alpha","beta","theta"))){stop("If type_result == comparison and model == model_2 then param must be alpha, beta or theta")}
+      if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
+    }
+    if (model == model_variance_intra){
+      if (!(param %in% "sigma")){stop("If type_result == comparison and model == model_variance_intra then param must be sigma")}
+      if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
+    }
+  }
+  #	if ( "comp.mu" %in% names(res_model[[variable]]) ) {modele = 1}
 	
 # 2. Get ID ------------------
 	if ( "data" %in% names(data) == TRUE ) {data = data$data}
@@ -41,13 +56,31 @@ get_result_model = function(res_model, data, type_result = "comp.mu", variable, 
 	env = gsub("[^._]*_([^_]*)_.*$","\\1", noms)
 	block = data$block
 	
-
-	if (type_result == "comp.mu") {	comp.mu = res_model[[variable]]$comp.mu ; param = unlist(strsplit(as.character(comp.mu$parameter)[1], "\\["))[1]	}
+  
+	if (type_result == "comparison") {	
+	  comp.param = paste("comp",param,sep=".")
+	  comp = res_model[[variable]]$comp.par[[comp.param]]$mean.comparisons 
+	  param = unlist(strsplit(as.character(comp$parameter)[1], "\\["))[1]	
+	}
 	
-	if (param == "mu") {	ID = as.data.frame(cbind(as.character(noms),paste(param,"[",paste(germplasm,paste(env,year,sep=":"), sep=","),"]",sep=""))) }
-	if (param == "beta") {	ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
-	if (param == "sigma") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
+	if (model == model_1){
+	  if (param == "mu") {	ID = as.data.frame(cbind(as.character(noms),paste(param,"[",paste(germplasm,paste(env,year,sep=":"), sep=","),"]",sep=""))) }
+	  if (param == "beta") {	ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
+	  if (param == "sigma") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
+	}
+	
+	if (model == model_2){
+	  if (param == "alpha") {	ID = as.data.frame(cbind(as.character(noms),paste(param,"[",germplasm,"]",sep=""))) }
+	#à faire  >  if (param == "beta") {	ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
+	#à faire >  if (param == "theta") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
+	}
+	
+	if (model == model_var_intra){
+	  if (param == "sigma") {		ID = as.data.frame(cbind(as.character(noms),paste(param,"[",paste(germplasm,paste(env,year,sep=":"), sep=","),"]",sep=""))) }
+	}
+	
 	if (!is.null(ID)) { colnames(ID) = c("ID","parameter")}
+	
 	
 # 3. Get model results -------------
 	if (type_result == "comp.mu") {	
