@@ -623,7 +623,7 @@ out = list("text" = "Cette année nous sommes dans l'incapacité de vous donner 
 out = list("subsubsection" = "Le poids de mille grains"); OUT = c(OUT, out)
 
 variable = "poids.de.mille.grains"
-comp.mu = res_model1[[variable]]$comp.mu
+comp.mu = res_model1[[variable]]$comp.par$comp.mu
 p_interaction = PPBstats::get.ggplot(comp.mu, ggplot.type = "interaction")[person]
 out = list("figure" = list("caption" = "
 Comparaisons de moyennes pour le poids de mille grains au cours du temps. 
@@ -663,7 +663,7 @@ if (proteine == TRUE){
 	out = list("subsubsection" = "Le taux de protéine"); OUT = c(OUT, out)
 	
 	variable = "taux.de.proteine"
-	comp.mu = res_model1[[variable]]$comp.mu
+	comp.mu = res_model1[[variable]]$comp.par$comp.mu
 	p_interaction = PPBstats::get.ggplot(comp.mu, ggplot.type = "interaction")[person]
 	out = list("figure" = list("caption" = "
 														 Comparaisons de moyennes pour le taux de protéines au cours du temps. 
@@ -707,7 +707,7 @@ out = list("figure" = list("caption" = "Relation entre le poids de mille grains 
 out = list("subsubsection" = "Le poids des épis"); OUT = c(OUT, out)
 
 variable = "poids.de.l.epi"
-comp.mu = res_model1[[variable]]$comp.mu
+comp.mu = res_model1[[variable]]$comp.par$comp.mu
 p_interaction = PPBstats::get.ggplot(comp.mu, ggplot.type = "interaction")[person]
 out = list("figure" = list("caption" = "
 Comparaisons de moyennes pour le poids des épis au cours du temps. 
@@ -759,13 +759,13 @@ out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", 
 # 2.5.2.1. Poids de mille grains ----------
 if (!is.null(data_S_year$data) & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
   data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pS1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+  pS1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                              nb_parameters_per_plot=8)
 } else {pS1=NULL}
 
 if (person != "ADP" & !is.null(data_SR_year$data)  & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
   data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pSR1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+  pSR1 = PPBstats::get.ggplot(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                            nb_parameters_per_plot=8)
 } else {pSR1=NULL}
 
@@ -773,13 +773,13 @@ if (proteine == TRUE) {
 	# 2.5.2.2. Protéine ----------
 	if (!is.null(data_S_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
 		data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-		pS2 = PPBstats::get.ggplot(data=res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+		pS2 = PPBstats::get.ggplot(data=res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
 															 nb_parameters_per_plot=8)
 	} else {pS2=NULL}
 	
 	if (!is.null(data_SR_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
 		data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-		pSR2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+		pSR2 = PPBstats::get.ggplot(data= res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
 																nb_parameters_per_plot=8)
 	} else {pSR2=NULL}
 	
@@ -789,13 +789,13 @@ if (proteine == TRUE) {
 # 2.5.2.3. Poids de l'épi ----------
 if (!is.null(data_S_year$data) & is.element("poids.de.l.epi---poids.de.l.epi",colnames(data_S_year$data$data))) {
   data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pS3 = PPBstats::get.ggplot(data= res_model1$poids.de.l.epi$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+  pS3 = PPBstats::get.ggplot(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                              nb_parameters_per_plot=8)
 } else {pS3=NULL}
 
 if (person != "ADP" & !is.null(data_SR_year$data) & is.element("poids.de.l.epi---poids.de.l.epi",colnames(data_S_year$data$data))) {
   data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-  pSR3 = PPBstats::get.ggplot(data= res_model1$poids.de.l.epi$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+  pSR3 = PPBstats::get.ggplot(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                               nb_parameters_per_plot=8)
 } else {pSR3=NULL}
 

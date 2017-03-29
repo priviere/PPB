@@ -313,10 +313,10 @@ message("
 -------------------------------------")
 
 fun_model1 = function(variable, data_stats) {
-	out.model1 = MC(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 30000) # , nb_iterations = 1000)
-	model.outputs = analyse.outputs(out.model1) # si var: ça bug, que ok si var = NULL
-	comp.mu = get.mean.comparisons(model.outputs$MCMC, "mu", get.at.least.X.groups = 2)
-	return(list("model.outputs" = model.outputs, "comp.mu" = comp.mu))
+	out.model1 = model_1(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 30000) # , nb_iterations = 1000)
+	model.outputs = check_model_model_1(out.model1) # si var: ça bug, que ok si var = NULL
+	comp.mu = mean_comparisons_model1(model.outputs$MCMC, "mu", get.at.least.X.groups = 2)
+	return(list("model.outputs" = model.outputs, "comp.par" = list("comp.mu" =comp.mu)))
 }
 
 res_model1 = mclapply(vec_variables, fun_model1, data_stats, mc.cores = length(vec_variables))
@@ -331,21 +331,21 @@ message("
 -------------------------------------")
 
 fun_model2 = function(variable, data_stats){
-	out.model2 = FWH(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
-	model.outputs = analyse.outputs(out.model2)
+	out.model2 = model_2(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
+	model.outputs = check_model_model_2(out.model2)
 
 	para_ok = colnames(model.outputs$MCMC)
 	test_a = length(grep("alpha\\[", para_ok )) > 0
 	test_b = length(grep("beta\\[", para_ok )) > 0
 	test_t = length(grep("theta\\[", para_ok )) > 0
 	
-	if( test_a ) { comp.alpha = get.mean.comparisons(model.outputs$MCMC, "alpha", get.at.least.X.groups = 2) } else { comp.alpha = NULL }
-	if( test_b ) { comp.beta = get.mean.comparisons(model.outputs$MCMC, "beta", type = 2, threshold = 1) } else { comp.beta = NULL }
-	if( test_t ) { comp.theta = get.mean.comparisons(model.outputs$MCMC, "theta", get.at.least.X.groups = 2) } else { comp.theta = NULL }
+	if( test_a ) { comp.alpha = mean_comparisons_model2(model.outputs$MCMC, "alpha", get.at.least.X.groups = 2) } else { comp.alpha = NULL }
+	if( test_b ) { comp.beta = mean_comparisons_model2(model.outputs$MCMC, "beta", type = 2, threshold = 1) } else { comp.beta = NULL }
+	if( test_t ) { comp.theta = mean_comparisons_model2(model.outputs$MCMC, "theta", get.at.least.X.groups = 2) } else { comp.theta = NULL }
 	
 	comp.par = list("comp.alpha" = comp.alpha, "comp.beta" = comp.beta, "comp.theta" = comp.theta)
 
-	if( test_a & test_b & test_t) { pp = predict.the.past(model.outputs, output.format = "summary") } else { pp = NULL }
+	if( test_a & test_b & test_t) { pp = predict_the_past_model_2(model.outputs) } else { pp = NULL }
 	predict.past = pp
 	return(list("model.outputs" = model.outputs, "comp.par" = comp.par, "predict.past" = predict.past))
 }
@@ -353,6 +353,23 @@ fun_model2 = function(variable, data_stats){
 res_model2 = mclapply(vec_variables, fun_model2, data_stats, mc.cores = length(vec_variables))
 names(res_model2) = vec_variables_trad
 
+#1.4. model variance intra ---------
+message("
+-------------------------------------
+------------------------------------
+1.4. model variance intra-population
+-------------------------------------
+-------------------------------------")
+
+fun_model3 = function(variable, data_stats){
+  out.model3 = model_variance_intra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = FALSE, nb_iterations = 20000) 
+  model.outputs = check_model_model_variance_intra(out.model3)
+  comp.sigma = mean_comparisons_model_varintra(model.outputs$MCMC, "sigma", get.at.least.X.groups = 2)
+  return(list("model.outputs" = model.outputs, "comp.par" = list("comp.sigma" = comp.sigma)))
+}
+
+res_model_varintra = mclapply(vec_variables, fun_model3, data_stats, mc.cores = length(vec_variables))
+names(res_model3) = vec_variables_trad
 
 # 2. Network data ----------
 message("
@@ -449,7 +466,8 @@ message(person)
 out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = mc.cores)
 names(out_farmers_data) = vec_person
 
-out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
+out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model3" = res_model3, 
+    "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
 
 return(out_from_speed)
 }
