@@ -22,24 +22,24 @@
 #' @seealso \code{\link{PPBstats::analyse.outputs}}, \code{\link{shinemas2R::get.data}}
 #' 
 #' 
-get_result_model = function(res_model, data, type_result = "comparison", variable, modele, param = NULL, year = NULL) 
+get_result_model = function(res_model, data, type_result = "comparison", variable, model, param = NULL, year = NULL) 
 {
 
 
 # 1. Check parameters -------------
 	if ( is.null(year)) {stop("A year is needed.")}
 	if ( type_result %in% c("comparison","MCMC") == FALSE ) {stop("Type_result must be comparison or MCMC." )}
-	if ( type_result == "comparison" & param == NULL ) {stop("If type_result == comparison then param must be mu, beta, sigma if model 1 is used, alpha, beta, theta if model 2 is used, or  sigma if variance_intra model is used." )}
+	if ( type_result == "comparison" & is.null(param) ) {stop("If type_result == comparison then param must be mu, beta, sigma if model 1 is used, alpha, beta, theta if model 2 is used, or  sigma if variance_intra model is used." )}
   if (type_result == "comparison" ){
-    if (model == model_1){
+    if (model == "model_1"){
       if (!(param %in% c("mu","beta","sigma"))){stop("If type_result == comparison and model == model_1 then param must be mu, beta or sigma")}
       if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
     }
-    if (model == model_2){
+    if (model == "model_2"){
       if (!(param %in% c("alpha","beta","theta"))){stop("If type_result == comparison and model == model_2 then param must be alpha, beta or theta")}
       if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
     }
-    if (model == model_variance_intra){
+    if (model == "model_variance_intra"){
       if (!(param %in% "sigma")){stop("If type_result == comparison and model == model_variance_intra then param must be sigma")}
       if (!(param %in% unlist(lapply(names(res_model[[variable]]$comp.par), function(x){return(strsplit(x,"[.]")[[1]][2])})))){stop(paste(param," is not in the data",sep=""))}
     }
@@ -63,19 +63,19 @@ get_result_model = function(res_model, data, type_result = "comparison", variabl
 	  param = unlist(strsplit(as.character(comp$parameter)[1], "\\["))[1]	
 	}
 	
-	if (model == model_1){
+	if (model == "model_1"){
 	  if (param == "mu") {	ID = as.data.frame(cbind(as.character(noms),paste(param,"[",paste(germplasm,paste(env,year,sep=":"), sep=","),"]",sep=""))) }
-	  if (param == "beta") {	ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
+	  if (param == "beta") { ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
 	  if (param == "sigma") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
 	}
 	
-	if (model == model_2){
+	if (model == "model_2"){
 	  if (param == "alpha") {	ID = as.data.frame(cbind(as.character(noms),paste(param,"[",germplasm,"]",sep=""))) }
-	#à faire  >  if (param == "beta") {	ID = unique(as.data.frame(cbind(paste("[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep=""),paste(param,"[",paste(paste(env,year,sep=":"), block, sep=","),"]",sep="")))) }
-	#à faire >  if (param == "theta") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
+	  if (param == "beta") { ID = as.data.frame(cbind(as.character(noms),paste(param,"[",germplasm,"]",sep="")))  }
+	  if (param == "theta") {	ID = unique(as.data.frame(cbind(paste(param,"[",paste(env,year,sep=":"),"]",sep=""),paste(param,"[",paste(env,year,sep=":"),"]",sep="")))) }
 	}
 	
-	if (model == model_var_intra){
+	if (model == "model_var_intra"){
 	  if (param == "sigma") {		ID = as.data.frame(cbind(as.character(noms),paste(param,"[",paste(germplasm,paste(env,year,sep=":"), sep=","),"]",sep=""))) }
 	}
 	
@@ -83,12 +83,12 @@ get_result_model = function(res_model, data, type_result = "comparison", variabl
 	
 	
 # 3. Get model results -------------
-	if (type_result == "comp.mu") {	
-		D=merge(comp.mu,ID, by="parameter")
-		D$entry = sub(paste(param, "\\[", sep=""), "", sapply(D$parameter, function(x){unlist(strsplit(as.character(x), ","))[1]}))
-		D$environment =  sub("\\]", "", sapply(D$parameter, function(x){unlist(strsplit(as.character(x), ","))[2]}))
-		D$location = sapply(D$environment, function(x){unlist(strsplit(as.character(x), ":"))[1]})
-		D$year = sapply(D$environment, function(x){unlist(strsplit(as.character(x), ":"))[2]})
+	if (type_result == "comparison") {	
+		D=merge(comp,ID, by="parameter")
+		D$entry = unlist(lapply(as.character(D$ID), function(x){strsplit(x,"_")[[1]][1]}))
+		D$environment = paste(unlist(lapply(as.character(D$ID), function(x){strsplit(x,"_")[[1]][2]})),unlist(lapply(as.character(D$ID), function(x){strsplit(x,"_")[[1]][3]})),sep=":")
+		D$location = unlist(lapply(as.character(D$ID), function(x){strsplit(x,"_")[[1]][2]}))
+		D$year = unlist(lapply(as.character(D$ID), function(x){strsplit(x,"_")[[1]][3]}))
 	}
 	if (type_result == "MCMC") {	
 		MCMC = res_model[[variable]]$model.outputs$MCMC
