@@ -115,19 +115,23 @@ if(class(donnees) == "data.frame"){
    if(shapiro.test(Data$overyielding)$p.value <= 0.05){Signif = t.test(Data$overyielding, mu=0)$p.value }else{ Signif = wilcox.test(Data$overyielding, mu=0)$p.value}
  }
  if (empile ==TRUE){
-   Signif=NULL
-   if(shapiro.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"])$p.value <= 0.05){ 
-     Signif = c(Signif,t.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"], mu=0)$p.value)
-  }else{  Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Composantes : Mod 1","overyielding"], mu=0)$p.value)}
- 
-   if(shapiro.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"])$p.value <= 0.05){ 
-     Signif = c(Signif,t.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"], mu=0)$p.value)
-   }else{  Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Composantes : Mod 2","overyielding"], mu=0)$p.value)}
-   
-   if(shapiro.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"])$p.value <= 0.05){ 
-     Signif = c(Signif,t.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"], mu=0)$p.value)
-   }else{ Signif = c(Signif,wilcox.test(Data[Data$modalite %in% "Mélanges : Mod 3","overyielding"], mu=0)$p.value)}
-   names(Signif) = c("Composantes : Mod 1","Composantes : Mod 2","Mélanges : Mod 3")
+   Signif = unlist(lapply(unique(Data$modalite),function(x){
+     if(length(Data[Data$modalite %in% x,"modalite"]) < 3){
+       Signif=1
+     }else{
+       if (length(unique(Data[Data$modalite %in% x,"overyielding"])) == 1){
+         if(mean(Data[Data$modalite %in% x,"overyielding"]) == 0){Signif = 1}else{Signif = 0}
+       }else{
+         if(shapiro.test(Data[Data$modalite %in% x,"overyielding"])$p.value <= 0.05){ 
+           Signif = t.test(Data[Data$modalite %in% x,"overyielding"], mu=0)$p.value
+         }else{  Signif = wilcox.test(Data[Data$modalite %in% x,"overyielding"], mu=0)$p.value}
+       }
+
+     }
+
+     return(Signif)
+   }))
+   names(Signif)=unique(Data$modalite)
  }
  
  Data$modalite = unlist(lapply(Data$modalite, function(x){paste(x,ifelse(language=="english","- Mean gain: "," - Gain moyen : "),round((Mean[x])*100,2)," % ",get_stars(Signif[x])," (n = ",nrow(Data[Data$modalite %in% x,])," )", sep="")}))
