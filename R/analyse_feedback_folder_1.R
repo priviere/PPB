@@ -362,14 +362,14 @@ message("
 -------------------------------------")
 
 fun_model3 = function(variable, data_stats){
-  out.model3 = model_variance_intra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = FALSE, nb_iterations = 20000) 
-  model.outputs = check_model_model_variance_intra(out.model3)
+  out.model_varintra = model_variance_intra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = FALSE, nb_iterations = 20000) 
+  model.outputs = check_model_model_variance_intra(out.model_varintra)
   comp.sigma = mean_comparisons_model_varintra(model.outputs$MCMC, "sigma", get.at.least.X.groups = 2)
   return(list("model.outputs" = model.outputs, "comp.par" = list("comp.sigma" = comp.sigma)))
 }
 
 res_model_varintra = mclapply(vec_variables, fun_model3, data_stats, mc.cores = length(vec_variables))
-names(res_model3) = vec_variables_trad
+names(res_model_varintra) = vec_variables_trad
 
 # 2. Network data ----------
 message("
@@ -466,7 +466,7 @@ message(person)
 out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = mc.cores)
 names(out_farmers_data) = vec_person
 
-out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model3" = res_model3, 
+out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model_varintra" = res_model_varintra, 
     "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
 
 return(out_from_speed)
