@@ -1,6 +1,6 @@
 ---
 title: "PPB"
-author: "Pierre Rivière and Gaelle Van Franck"
+author: "Pierre Rivière and Gaelle Van Frank"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -46,7 +46,7 @@ The web site dedicated to `PPBstats` is [here](https://github.com/priviere/PPBst
 
 ### General workflow
 
-The workflow can be describe as follow:
+The workflow can be described as follows:
 <center>
 <img src="figures/workflow.png" width="600px" />
 </center>
