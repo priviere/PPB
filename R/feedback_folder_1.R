@@ -660,7 +660,7 @@ feedback_folder_1 = function(
     tab=traduction(tab,"col")
     tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains` = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains`)),3)
     out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
-  }else{out = list("text" = "No data."); OUT = c(OUT, out)}
+    }else{out = list("text" = "No data."); OUT = c(OUT, out)}
   
   
   # 2.5.1.2. Taux de protéine ----------
@@ -867,7 +867,7 @@ feedback_folder_1 = function(
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
                                                     forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
-  }
+    }
   
   if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
     out = list("subsubsection" = "La réponse à la sélection"); OUT = c(OUT, out)
@@ -925,9 +925,9 @@ feedback_folder_1 = function(
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
+      }
       
-        }
+      }
     
     
     # 3.1.3. Poids de l'épi -----
@@ -939,8 +939,8 @@ feedback_folder_1 = function(
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
+      }
+    }
     
     # 3.1.4. Hauteur -----
     out = list("subsection" = "Hauteur"); OUT = c(OUT, out)
@@ -951,8 +951,8 @@ feedback_folder_1 = function(
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la hauteur du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
+      }
+    }
     
     # 3.1.5. Longueur de l'épi -----
     out = list("subsection" = "Longueur de l'épi"); OUT = c(OUT, out)
@@ -963,8 +963,8 @@ feedback_folder_1 = function(
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la longueur de l'épi du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
+      }
+    }
     
     
     # 3.1.4. La hauteur et la verse ----------
@@ -980,7 +980,7 @@ feedback_folder_1 = function(
     # 													 vec_variables ="verse---verse", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
     # out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
-      }
+    }
   
   # 3.2. Résultats sur le réseau de fermes -----
   out = list("section" = "Résultats sur le réseau de fermes"); OUT = c(OUT, out)
@@ -1232,7 +1232,7 @@ feedback_folder_1 = function(
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups (Model2, parameter = "theta")
-  p_PCA = get_ggplot_PPBstats(clust, ggplot.type = "PCA")
+  p_PCA = ggplot_parameter_groups(clust)
   out = list("figure" = list("caption" = paste("Analyse  en composantes principales sur les effets fermes:année"), "content" = p_PCA$ind, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   
   clust_of_personyear = clust$clust$clust[paste(person, year, sep = ":"),"clust"]
@@ -1367,7 +1367,7 @@ feedback_folder_1 = function(
     comp.beta = res_model2[[variable]]$comp.par$comp.beta
     comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
     colnames(comp.beta$mean.comparisons) = c("median","parameter")
-    p_alpha_beta = get_ggplot_PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = NULL)
+    p_alpha_beta = get_ggplot_PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains de toutes les populations.
                                ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     p_alpha_beta = get_ggplot_PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
