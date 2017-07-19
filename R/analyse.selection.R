@@ -35,9 +35,11 @@ analyse.selection = function(donnees, data_version, variable, person, empile=FAL
    bouquet=MCMC[,colnames(MCMC) %in% x["bouquet"]]
    
    Result = as.data.frame(cbind(vrac,bouquet))
-   colnames(Result) = c("mu[vrac]","mu[bouquet]")
-   Mpvalue = comp.parameters(Result, parameter = "mu", type = 1)
-   return(c(mean(vrac),mean(bouquet),Mpvalue[1,2]))
+   if(length(Result) == 2){ 
+     colnames(Result) = c("mu[vrac]","mu[bouquet]")
+     Mpvalue = comp.parameters(Result, parameter = "mu", type = 1)
+     return(c(mean(vrac),mean(bouquet),Mpvalue[1,2]))
+   }
  }
  
  WMW = function(x){
@@ -68,6 +70,7 @@ analyse.selection = function(donnees, data_version, variable, person, empile=FAL
 if (class(donnees) == "list"){
   if (!(variable %in% names(donnees))){stop("Variable must be one of donnees's names")}
   result = apply(data,1,FUN=compare_model)
+  if(class(result) == "list"){Res=NULL; comp = NULL; for (i in 1:length(result)){if(!is.null(result[[i]])){Res=cbind(Res,result[[i]])}else{comp = c(comp,i)}}; result=Res; data=data[-comp,]}
 }
    
 #2. If the data was not analyzed using the bayesian model: semi-quantitative data such as awns, color, curve --> use chi2 test to compare selection vs bulk-----------
