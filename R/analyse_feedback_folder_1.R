@@ -364,7 +364,7 @@ analyse_feedback_folder_1 = function(
     if( test_t ) { comp.theta = mean_comparisons_model_2(model.outputs, "theta", get.at.least.X.groups = 2) } else { comp.theta = NULL }
     
     comp.par = list("comp.alpha" = comp.alpha, "comp.beta" = comp.beta, "comp.theta" = comp.theta)
-    envs = colnames(out.model2$data.presence.abscence.matrix)
+    envs = colnames(out.model2$model2.presence.abscence.matrix)
     envs=envs[grep(year,envs)]
     if( test_a & test_b & test_t & length(envs)>0) { 
       pp = lapply(envs,function(x){predict_the_past_model_2(model.outputs,x)}) 
