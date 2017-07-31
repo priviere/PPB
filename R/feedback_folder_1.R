@@ -482,7 +482,7 @@ feedback_folder_1 = function(
   a=unique(a)
   a = paste(a, collapse=" ; ")
   
-  out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains", a,sep=" : ")); OUT = c(OUT, out)
+  out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains : \\textbf{", a,"}",sep="")); OUT = c(OUT, out)
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
@@ -510,8 +510,7 @@ feedback_folder_1 = function(
                   nb_col = NULL)
   tab=traduction(tab,row_or_col = "row")
   
-  
-  out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out)
   
   vec_variables = 
     c("pluies.automne---pluies", 
@@ -727,7 +726,7 @@ feedback_folder_1 = function(
     out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
     
     
-    }else{# out = list("text" = "No data."); OUT = c(OUT, out)}
+    }#else{# out = list("text" = "No data."); OUT = c(OUT, out)}
   
   # 2.5.1.4. Poids des épis ----------
   out = list("subsubsection" = "Le poids des épis"); OUT = c(OUT, out)
@@ -947,7 +946,6 @@ feedback_folder_1 = function(
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
         }
-      
         }
     
     
@@ -1253,7 +1251,7 @@ feedback_folder_1 = function(
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups (Model2, parameter = "theta")
-  p_PCA = ggplot_parameter_groups(clust)
+  p_PCA = plot.parameter_groups(clust)
   out = list("figure" = list("caption" = paste("Analyse  en composantes principales sur les effets fermes:année"), "content" = p_PCA$ind, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   
   clust_of_personyear = clust$clust$clust[paste(person, year, sep = ":"),"clust"]
@@ -1493,7 +1491,7 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
   
   
   rm(list=setdiff(ls(), c("we_are_here","OUT","person","year")))
-  
+
   # /!\ Get pdf ----------
   get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
           form.name = paste(person, year, sep = ":"), 
@@ -1504,7 +1502,10 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
           color2 = "mln-brown"
   )
   
-  }
+    }
+  
+
+
 
 
 
