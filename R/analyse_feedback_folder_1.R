@@ -159,28 +159,28 @@ analyse_feedback_folder_1 = function(
   # 0. Clean the data set ----------
   mag = function(d){
     # tkw
-    if( length(grep("tkw---tkw", colnames(d$data))) > 0 ) {
+    if( length(grep("^tkw---tkw$", colnames(d$data))) > 0 ) {
       a = as.numeric(d$data$"tkw---tkw")
       a[which(a>70)] = NA
       d$data$"tkw---tkw" = a
     }
     
     # protein
-    if( length(grep("protein---protein", colnames(d$data))) > 0 ) {
+    if( length(grep("^protein---protein$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"protein---protein"))
       a[which(a>20)] = NA
       d$data$"protein---protein" = a
     }
     
     # spike_weight
-    if( length(grep("spike_weight---spike_weight", colnames(d$data))) > 0 ) {
+    if( length(grep("^spike_weight---spike_weight$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"spike_weight---spike_weight"))
       a[which(a>10)] = NA
       d$data$"spike_weight---spike_weight" = a
     }
     
     # plant_height
-    if( length(grep("plant_height---plant_height", colnames(d$data))) > 0 ) {
+    if( length(grep("^plant_height---plant_height$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"plant_height---plant_height"))
       a[which(a==0)] = NA # mesure en m
       a[which(a<2)] = a[which(a<2)] * 1000 # mesure en m
@@ -189,7 +189,7 @@ analyse_feedback_folder_1 = function(
     }
     
     # LLSD
-    if( length(grep("LLSD---LLSD", colnames(d$data))) > 0 ) {
+    if( length(grep("^LLSD---LLSD$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"LLSD---LLSD"))
       a[which(a < 0)] = 0
       a[which(a > 500)] = NA
@@ -198,7 +198,7 @@ analyse_feedback_folder_1 = function(
     
     
     # nbr_kernels---nbr.epillets
-    if( length(grep("nbr_kernels---nbr_kernels", colnames(d$data))) > 0 ) {
+    if( length(grep("^nbr_kernels---nbr_kernels$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"nbr_kernels---nbr_kernels"))
       a[which(a <= 0)] = NA
       a[which(a > 60)] = NA
@@ -206,7 +206,7 @@ analyse_feedback_folder_1 = function(
     }
     
     #  spike_length---spike_length
-    if( length(grep("spike_length---spike_length", colnames(d$data))) > 0 ) {
+    if( length(grep("^spike_length---spike_length$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"spike_length---spike_length"))
       a[which(a <= 0)] = NA
       a[which(a > 250)] = NA
@@ -214,15 +214,22 @@ analyse_feedback_folder_1 = function(
     }
     
     #  rdt
-    if( length(grep("rdt", colnames(d$data))) > 0 ) {
+    if( length(grep("^rdt$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"rdt"))
-      a[which(a <= 10)] = NA
+      a[which(a <= 5)] = NA
       a[which(a > 100)] = NA
       d$data$"rdt" = a
     }
     
+    if( length(grep("^rdt_parcelle---rdt_parcelle$", colnames(d$data))) > 0 ) {
+      a = as.numeric(as.character(d$data$"rdt_parcelle---rdt_parcelle"))
+      a[which(a <= 5)] = NA
+      a[which(a > 100)] = NA
+      d$data$"rdt_parcelle---rdt_parcelle" = a
+    }
+    
     # estimated_nbr_grain_spike
-    if( length(grep("estimated_nbr_grain_spike---estimated_nbr_grain_spike", colnames(d$data))) > 0 ) {
+    if( length(grep("^estimated_nbr_grain_spike---estimated_nbr_grain_spike$", colnames(d$data))) > 0 ) {
       a = as.numeric(as.character(d$data$"estimated_nbr_grain_spike---estimated_nbr_grain_spike"))
       a[which(a <= 0)] = NA
       a[which(a > 100)] = NA
@@ -242,6 +249,22 @@ analyse_feedback_folder_1 = function(
           1.1. get data
           -------------------------------------
           -------------------------------------")
+  todelete=NULL
+  # If spike_length, get total height and height of spike base to calculate it if not in the database
+  if("spike_length" %in% vec_variables  &  !("plant_height_2"%in%vec_variables)){
+    a = setdiff(c("plant_height","plant_height_2"),vec_variables)
+    todelete=c(todelete,a)
+    vec_variables=c(vec_variables,a)
+  }
+  
+  #If we want to calculate the estimated number of grains per spike
+  if("estimated_nbr_grain_spike" %in% vec_variables){
+    a = setdiff(c("tkw","measured_grain_weight","nbr_spike","total_nbr_spikes","nbr_spikes","spike_weight"),vec_variables)
+    todelete=c(todelete,a)
+    vec_variables=c(vec_variables,a)
+    to_add = "estimated_nbr_grain_spike"
+    vec_variables = vec_variables[-grep("estimated_nbr_grain_spike",vec_variables)]
+  }else{to_add=NULL}
   
   data = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
                   query.type = "data-classic", filter.on = "father-son", data.type ="relation" ,variable.in=vec_variables
@@ -256,10 +279,17 @@ analyse_feedback_folder_1 = function(
       if(is.na(D[i,'spike_length---spike_length']) & !is.na(D[i,"spike_length---spike_length_F"])){
         D[i,'spike_length---spike_length'] = D[i,"spike_length---spike_length_F"]}
     }
+    
+    # If there are data on plant height and height at spike base, calculate spike_length
+    for (i in 1:nrow(D)){
+      if(is.na(D[i,'spike_length---spike_length']) & !is.na(D[i,"plant_height---plant_height"]) &  !is.na(D[i,"plant_height_2---plant_height_2"])){
+        D[i,'spike_length---spike_length'] = as.numeric(as.character(D[i,"plant_height---plant_height"])) - as.numeric(as.character(D[i,"plant_height_2---plant_height_2"]))}
+    }
+    
     data$data$data=D
   }
   
-  if("measured_grain_weight" %in% vec_variables){
+  if(length(to_add)>0){
     # If the number of kernels was not measured but we want to estimated it since the thousand kernel weight, total grain weight and number of spikes were measured
     D=data$data$data
     
@@ -281,6 +311,7 @@ analyse_feedback_folder_1 = function(
       as.numeric(as.character(D[,"measured_grain_weight---measured_grain_weight"]))*1000/(as.numeric(as.character(D[,"nBS---nBS"]))*as.numeric(as.character(D[,"tkw---tkw"])))
     }
     data$data$data = D
+    vec_variables = c(vec_variables,"estimated_nbr_grain_spike")
   }
   
   
@@ -289,7 +320,9 @@ analyse_feedback_folder_1 = function(
   if("tkw" %in% vec_variables){data$data$data[data$data$data$son %in% "Louesme-Blanc#VA_JUBA_2016_0001","tkw---tkw"][1] = 34.203}
   if("measured_grain_weight" %in% vec_variables){data$data$data[data$data$data$son %in% "Blanc-des-Flandres_MAV_2016_0001",
                                                                 "measured_grain_weight---measured_grain_weight"][1] = 21.4}
-  
+  data$data$data[ data$data$data$son_person%in%"RAB" & data$data$data$son_year%in%"2016" & data$data$data$block%in%"2" & data$data$data$X%in%"B","Y"]=5
+  data$data$data[ data$data$data$son_person%in%"RAB" & data$data$data$son_year%in%"2016" & data$data$data$block%in%"2","X"]="J"
+  data$data$data[ data$data$data$son_person%in%"RAB" &  data$data$data$son_year%in%"2016" & data$data$data$block%in%"2","block"]="1"
   data$data = mag(data$data)
   data = translate.data(data, list_translation)
   data_stats = format.data(data, format = "PPBstats", fuse_g_and_s = TRUE)
@@ -297,7 +330,7 @@ analyse_feedback_folder_1 = function(
   data_stats[data_stats$location %in% "JSG" & data_stats$year %in% "2016","block"] = 1
   data_stats[data_stats$location %in% "DAV" & data_stats$year %in% "2016"& data_stats$germplasm %in% "Peter-Jacoby", "block"] = 1
   
-  
+  if(!is.null(todelete)){vec_variables = vec_variables[-grep(paste(todelete,collapse="|"),vec_variables)]}
   vec_variables_trad = unlist(lapply(vec_variables, function(x){
     i = grep(x,unlist(lapply(list_translation, function(y) {return(y[1])})))
     return(list_translation[[i]][2])
@@ -334,8 +367,8 @@ analyse_feedback_folder_1 = function(
   
   fun_model1 = function(variable, data_stats) {
     out.model1 = model_1(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 30000) # , nb_iterations = 1000)
-    model.outputs = check_model_model_1(out.model1) 
-    comp.mu = mean_comparisons_model_1(model.outputs, "mu", get.at.least.X.groups = 2)
+    model.outputs = check_model.fit_model_1(out.model1) 
+    comp.mu = mean_comparisons.check_model_1(model.outputs, "mu", get.at.least.X.groups = 2)
     return(list("model.outputs" = model.outputs, "comp.par" = list("comp.mu" =comp.mu)))
   }
   
@@ -352,16 +385,16 @@ analyse_feedback_folder_1 = function(
   
   fun_model2 = function(variable, data_stats){
     out.model2 = model_2(data = data_stats, variable = variable, return.epsilon = TRUE, nb_iterations = 20000) # , nb_iterations = 1000)
-    model.outputs = check_model_model_2(out.model2)
+    model.outputs = check_model.fit_model_2(out.model2)
     
     para_ok = colnames(model.outputs$MCMC)
     test_a = length(grep("alpha\\[", para_ok )) > 0
     test_b = length(grep("beta\\[", para_ok )) > 0
     test_t = length(grep("theta\\[", para_ok )) > 0
     
-    if( test_a ) { comp.alpha = mean_comparisons_model_2(model.outputs, "alpha", get.at.least.X.groups = 2) } else { comp.alpha = NULL }
-    if( test_b ) { comp.beta = mean_comparisons_model_2(model.outputs, "beta", type = 2, threshold = 1) } else { comp.beta = NULL }
-    if( test_t ) { comp.theta = mean_comparisons_model_2(model.outputs, "theta", get.at.least.X.groups = 2) } else { comp.theta = NULL }
+    if( test_a ) { comp.alpha = mean_comparisons.check_model_2(model.outputs, "alpha", get.at.least.X.groups = 2) } else { comp.alpha = NULL }
+    if( test_b ) { comp.beta = mean_comparisons.check_model_2(model.outputs, "beta", type = 2, threshold = 1) } else { comp.beta = NULL }
+    if( test_t ) { comp.theta = mean_comparisons.check_model_2(model.outputs, "theta", get.at.least.X.groups = 2) } else { comp.theta = NULL }
     
     comp.par = list("comp.alpha" = comp.alpha, "comp.beta" = comp.beta, "comp.theta" = comp.theta)
     envs = colnames(out.model2$model2.presence.abscence.matrix)
@@ -386,14 +419,15 @@ analyse_feedback_folder_1 = function(
           -------------------------------------")
   
   fun_model3 = function(variable, data_stats){
-    out.model_varintra = model_variance_intra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = FALSE, nb_iterations = 20000) 
+    out.model_varintra2 = model_varintra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = TRUE, nb_iterations = 20000) 
     model.outputs = check_model_model_variance_intra(out.model_varintra)
-    comp.sigma = mean_comparisons_model_varintra(model.outputs$MCMC, "sigma", get.at.least.X.groups = 2)
+    comp.sigma = mean_comparisons_model_varintra(model.outputs, "sigma", get.at.least.X.groups = 2)
     return(list("model.outputs" = model.outputs, "comp.par" = list("comp.sigma" = comp.sigma)))
   }
-  
-  res_model_varintra = mclapply(vec_variables, fun_model3, data_stats, mc.cores = length(vec_variables))
-  names(res_model_varintra) = vec_variables_trad
+  variables = setdiff(vec_variables,c("poids.de.mille.grains---poids.de.mille.grains","taux.de.proteine---taux.de.proteine","nbr.estime.grain.par.epi---nbr.estime.grain.par.epi"))
+  variables_trad = setdiff(vec_variables_trad,c("poids.de.mille.grains","taux.de.proteine","nbr.estime.grain.par.epi"))
+  res_model_varintra = mclapply(variables, fun_model3, data_stats, mc.cores = length(variables))
+  names(res_model_varintra) = variables_trad
   
   # 2. Network data ----------
   message("
@@ -423,7 +457,7 @@ analyse_feedback_folder_1 = function(
     data_all = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
                         query.type = "data-classic", person.in = person, filter.on = "father-son", data.type ="relation")
     
-    data_all = mag(data_all)
+    data_all$data = mag(data_all$data)
     if ( class(data_all$data) == "list" ) {
       data_all = translate.data(data_all, list_translation)
       attributes(data_all)$shinemas2R.object = "data-classic"
@@ -435,7 +469,7 @@ analyse_feedback_folder_1 = function(
     data_year = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
                          query.type = "data-classic", person.in = person, year.in = year, filter.on = "son", data.type ="relation")
     
-    data_year = mag(data_year)
+    data_year$data = mag(data_year$data)
     if ( class(data_year$data) == "list" ) {
       data_year = translate.data(data_year, list_translation)
       attributes(data_year)$shinemas2R.object = "data-classic"
@@ -447,9 +481,9 @@ analyse_feedback_folder_1 = function(
     data_S_year = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
                            query.type = "data-S", person.in = person, year.in = year, filter.on = "father-son", data.type ="relation")
     
-    data_S_year = mag(data_S_year)
+    data_S_year$data = mag(data_S_year$data)
     
-    if (!is.null(data_S_year$data) & !is.null(attributes(data_S_year$data)$shinemas2R.object)) {
+    if (!is.null(data_S_year$data$data) & !is.null(attributes(data_S_year$data)$shinemas2R.object)) {
       data_S_year = translate.data(data_S_year, list_translation)
       attributes(data_S_year)$shinemas2R.object = "data-S"
     }
@@ -458,9 +492,9 @@ analyse_feedback_folder_1 = function(
     data_SR_year = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password, 
                             query.type = "data-SR", person.in = person, year.in = year, filter.on = "father-son", data.type ="relation")
     
-    data_SR_year = mag(data_SR_year)
+    data_SR_year$data = mag(data_SR_year$data)
     
-    if (!is.null(data_SR_year$data) & !is.null(attributes(data_SR_year$data)$shinemas2R.object)) {
+    if (!is.null(data_SR_year$data$data) & !is.null(attributes(data_SR_year$data)$shinemas2R.object)) {
       data_SR_year = translate.data(data_SR_year, list_translation)
       attributes(data_SR_year)$shinemas2R.object = "data-SR"
     }
@@ -487,10 +521,10 @@ analyse_feedback_folder_1 = function(
   }
   
   
-  out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = 10)
+  out_farmers_data = mclapply(vec_person, get_data_farmers, mc.cores = 14)
   names(out_farmers_data) = vec_person
   
-  out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, #"res_model_varintra" = res_model_varintra, 
+  out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model_varintra" = res_model_varintra, 
                         "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
   
   return(out_from_speed)
