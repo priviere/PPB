@@ -61,7 +61,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
           colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",year,"]",sep="")
           M=list("MCMC"=M)
           attributes(M)$PPBstats.object = "check_model_model_1"
-          comp.mu = mean_comparisons_model_1(M, "mu", get.at.least.X.groups = 1)
+          comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
           
           C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
           A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$type == "Mélange"),"germplasm"],",",unique(y$location),":",year,"]",sep=""))]
@@ -124,7 +124,6 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
     colnames(Mat)[2] = variable
  
   }
-  
   
   
   # 2. Compare the effect of being a mixture vs the effect of being a component -----
@@ -278,7 +277,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
       B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
       
       p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
-      p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.07), alpha=0.6, color="black")
+      p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.05), alpha=0.6, color="black")
       p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
       p = p + labs(x=paste("Différence normalisée entre les mélanges et 
 	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
