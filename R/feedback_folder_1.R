@@ -465,8 +465,24 @@ feedback_folder_1 = function(
   out = list("text" = 
                "Dans ce chapitre, vous trouverez les résultats des données recueillies dans votre ferme.
              Ces résultats vous permettent de répondre à la question : \\textbf{Quelles populations se comportent le mieux dans ma ferme?}.
-             Nous n'avons pas eu le temps de rentrer les données hiver, printemps et été sur la base cette année donc nous ne pouvons pas vous redonner ces informations.
              "); OUT = c(OUT, out)
+  
+  # 2.0. Populations présentes dans la ferme ----------
+  out = list("section" = "Populations semées cette année dans votre ferme"); OUT = c(OUT, out)
+  D=out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_year$data$data
+  a = unique(D[!is.na(D$block) |!is.na(D$X) | !is.na(D$Y) | !is.na(D$"nom.champ---notice nom.champ") | !is.na(D$"poids.grains.mesure---poids.grains.mesure") | 
+                 !is.na(D$"nbr_spikes---nbr.épiss") | !is.na(D$"poids.de.mille.grains---poids.de.mille.grains"),"son"])
+  a = unlist(lapply(as.character(a),function(x){strsplit(x,'_')[[1]][1]}))
+  b = unique(out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year$data$data$expe_name_2)
+  b = unlist(lapply(as.character(b),function(x){strsplit(x,' | ')[[1]][3]}))
+  b = unlist(lapply(as.character(b),function(x){strsplit(x,'_')[[1]][1]}))
+  a = a[-grep(paste(b,collapse='|'),a)]
+  a=unique(a)
+  a = paste(a, collapse=" ; ")
+  
+  out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains : \\textbf{", a,"}",sep="")); OUT = c(OUT, out)
+  
+  
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
@@ -495,7 +511,7 @@ feedback_folder_1 = function(
   tab=traduction(tab,row_or_col = "row")
   
   
-  out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out)}
   
   vec_variables = 
     c("pluies.automne---pluies", 
@@ -505,7 +521,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab= traduction(tab,"col")
   
-  out = list("table" = list("caption" = "Informations sur le climat d'automne", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat d'automne", "content" = tab)); OUT = c(OUT, out)}
   
   
   # 2.2. Hiver ----------
@@ -528,7 +544,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Sommaire de la fiche hiver", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche hiver", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
   
   vec_variables = c("pluies.hiver---pluies", 
                     "températures.hiver---températures",
@@ -539,7 +555,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Informations sur le climat de l'hiver", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat de l'hiver", "content" = tab)); OUT = c(OUT, out)}
   
   # 2.3. Printemps ----------
   out = list("section" = "Notations de printemps"); OUT = c(OUT, out)
@@ -564,7 +580,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Sommaire de la fiche printemps", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche printemps", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
   
   
   vec_variables = c("pluies.printemps---pluies", 
@@ -576,7 +592,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Informations sur le climat du printemps", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat du printemps", "content" = tab)); OUT = c(OUT, out)}
   
   
   # 2.4. Ete ----------
@@ -598,7 +614,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, nb_row = 7, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Sommaire de la fiche été", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche été", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
   
   vec_variables = c("pluies.été---pluies",
                     "températures.été---températures", 
@@ -609,7 +625,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  out = list("table" = list("caption" = "Informations sur le climat de l'été", "content" = tab)); OUT = c(OUT, out)
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat de l'été", "content" = tab)); OUT = c(OUT, out)}
   
   
   # 2.5. Mesure à la récolte ----------
@@ -660,7 +676,7 @@ feedback_folder_1 = function(
     tab=traduction(tab,"col")
     tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains` = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`$`poids.de.mille.grains`)),3)
     out = list("table" = list("caption" = paste("Poids de mille grains des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
-  }else{out = list("text" = "No data."); OUT = c(OUT, out)}
+  }#else{out = list("text" = "No data."); OUT = c(OUT, out)}
   
   
   # 2.5.1.2. Taux de protéine ----------
@@ -701,16 +717,21 @@ feedback_folder_1 = function(
     
     # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
     out = list("subsubsection" = "Le poids de mille grains en fonction du taux de protéine"); OUT = c(OUT, out)
-    
+    a=data_all$data$data
+    prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
+    prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
+    pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
+    to_add = merge(prot,pmg,by="son")
+    a=rbind(prot_ok,to_add)
+    data_all$data$data=a
     p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
                    vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), 
-                   hide.labels.parts = c("person:year"),
-                   nb_parameters_per_plot_x.axis = 60)
+                   hide.labels.parts = c("person:year"))
     out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
     
     
-    }else{ out = list("text" = "No data."); OUT = c(OUT, out)}
-  
+  }#else{# out = list("text" = "No data."); OUT = c(OUT, out)}
+
   # 2.5.1.4. Poids des épis ----------
   out = list("subsubsection" = "Le poids des épis"); OUT = c(OUT, out)
   
@@ -1232,7 +1253,7 @@ feedback_folder_1 = function(
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups (Model2, parameter = "theta")
-  p_PCA = ggplot_parameter_groups(clust)
+  p_PCA = plot.parameter_groups(clust)
   out = list("figure" = list("caption" = paste("Analyse  en composantes principales sur les effets fermes:année"), "content" = p_PCA$ind, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   
   clust_of_personyear = clust$clust$clust[paste(person, year, sep = ":"),"clust"]
