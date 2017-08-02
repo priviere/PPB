@@ -3,7 +3,7 @@
 packageStartupMessage("
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!! Thanks for using PPBformations :-)
-!!! To cite PPBstats, type citation(\"PPBformations\")
+!!! To cite PPBformations, type citation(\"PPBformations\")
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 "
 )
