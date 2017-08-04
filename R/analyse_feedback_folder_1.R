@@ -419,9 +419,9 @@ analyse_feedback_folder_1 = function(
           -------------------------------------")
   
   fun_model3 = function(variable, data_stats){
-    out.model_varintra2 = model_varintra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = TRUE, nb_iterations = 20000) 
-    model.outputs = check_model_model_variance_intra(out.model_varintra)
-    comp.sigma = mean_comparisons_model_varintra(model.outputs, "sigma", get.at.least.X.groups = 2)
+    out.model_varintra = model_variance_intra(data = data_stats, variable = variable, return.sigma = TRUE, return.mu = TRUE, return.epsilon=TRUE, nb_iterations = 20000) 
+    model.outputs = check_model.fit_model_variance_intra(out.model_varintra)
+    comp.sigma = mean_comparisons(model.outputs, "sigma", get.at.least.X.groups = 2)
     return(list("model.outputs" = model.outputs, "comp.par" = list("comp.sigma" = comp.sigma)))
   }
   variables = setdiff(vec_variables,c("poids.de.mille.grains---poids.de.mille.grains","taux.de.proteine---taux.de.proteine","nbr.estime.grain.par.epi---nbr.estime.grain.par.epi"))
