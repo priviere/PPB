@@ -483,7 +483,7 @@ feedback_folder_1 = function(
   b = unique(out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year$data$data$expe_name_2)
   b = unlist(lapply(as.character(b),function(x){strsplit(x,' | ')[[1]][3]}))
   b = unlist(lapply(as.character(b),function(x){strsplit(x,'_')[[1]][1]}))
-  a = a[-grep(paste(b,collapse='|'),a)]
+  if(!is.null(b)){a = a[-grep(paste(b,collapse='|'),a)]}
   a=unique(a)
   a = paste(a, collapse=" ; ")
   
@@ -491,7 +491,7 @@ feedback_folder_1 = function(
   
   # 2.0.1. Evolution des notes globales au cours du cycle
   out = list("subsection" = "Evolution des notes globales de ces populations au cours de l'année"); OUT = c(OUT, out)
-  
+  OUT = graph.fiche(OUT, data_all, "all_notes")
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
@@ -652,7 +652,7 @@ feedback_folder_1 = function(
   if(variable %in% names(res_model1)){
     comp.mu = res_model1[[variable]]$comp.par$comp.mu
     attributes(comp.mu)$PPBstats.object = "mean_comparisons_model_1"  # à retirer quand résultats depuis nouveau package PPBstats
-    p_interaction = PPBstats::get_ggplot(comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)[person]
+    p_interaction =plot.PPBstats(comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)[person]
     out = list("figure" = list("caption" = "
                                Comparaisons de moyennes pour le poids de mille grains au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
@@ -661,7 +661,7 @@ feedback_folder_1 = function(
                                ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
     if (score == TRUE){
-      p_score = PPBstats::get_ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+      p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
       out = list("figure" = list("caption" = "
                                  Scores des populations au cours du temps pour le poids de mille grains. 
                                  Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
@@ -698,7 +698,7 @@ feedback_folder_1 = function(
     
     variable = "taux.de.proteine"
     comp.mu = res_model1[[variable]]$comp.par$comp.mu
-    p_interaction = PPBstats::get_ggplot(comp.mu, ggplot.type = "interaction")[person]
+    p_interaction =plot.PPBstats(comp.mu, ggplot.type = "interaction")[person]
     out = list("figure" = list("caption" = "
                                Comparaisons de moyennes pour le taux de protéines au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
@@ -707,7 +707,7 @@ feedback_folder_1 = function(
                                ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
     if (score == TRUE) {
-      p_score = PPBstats::get_ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+      p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
       out = list("figure" = list("caption" = "
                                  Scores des populations au cours du temps pour le taux de protéine. 
                                  Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
@@ -719,7 +719,7 @@ feedback_folder_1 = function(
     
     d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
     if(!is.null(d)) {
-      p_interaction_2 = PPBstats::get_ggplot(d, ggplot.type = "interaction")[person]
+      p_interaction_2 =plot.PPBstats(d, ggplot.type = "interaction")[person]
       out = list("figure" = list("caption" = "Evolution du taux de protéine au cours du temps sans analyses statistiques.", "content" = p_interaction_2, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
     
@@ -747,7 +747,7 @@ feedback_folder_1 = function(
   variable = "poids.de.l.epi"
   if (variable %in% names(res_model1)){
     comp.mu = res_model1[[variable]]$comp.par$comp.mu
-    p_interaction = PPBstats::get_ggplot(comp.mu, ggplot.type = "interaction")[person]
+    p_interaction = plot.PPBstats(comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 15)[person]
     out = list("figure" = list("caption" = "
                                Comparaisons de moyennes pour le poids des épis au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
@@ -756,7 +756,7 @@ feedback_folder_1 = function(
                                ", "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
     if(score == TRUE) {
-      p_score = PPBstats::get_ggplot(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+      p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
       out = list("figure" = list("caption" = "
                                  Scores des populations au cours du temps pour le poids des épis. 
                                  Un score élevé signifie que la population était dans un groupe de significativité avec une moyenne élevée. 
@@ -769,7 +769,7 @@ feedback_folder_1 = function(
     d = res_model1[[variable]]$model.outputs$model1.data_env_whose_param_did_not_converge
     if(!is.null(d)) {
       attributes(d)$PPBstats.object = "check_model_model_1"  # à retirer quand résultats depuis nouveau package PPBstats
-      p_interaction_2 = PPBstats::get_ggplot(d, ggplot.type = "interaction")[person]
+      p_interaction_2 =plot.PPBstats(d, ggplot.type = "interaction")[person]
       out = list("figure" = list("caption" = "Evolution du poids des épis au cours du temps sans analyses statistiques.", "content" = p_interaction_2, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
     }
@@ -799,13 +799,13 @@ feedback_folder_1 = function(
   # 2.5.2.1. Poids de mille grains ----------
   if (!is.null(data_S_year$data) & is.element("poids.de.mille.grains---poids.de.mille.grains",colnames(data_S_year$data$data))) {
     data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-    pS1 = PPBstats::get_ggplot(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+    pS1 =plot.PPBstats(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                               nb_parameters_per_plot=8)
   } else {pS1=NULL}
   
   if (person != "ADP" & !is.null(data_SR_year$data)  & is.element("poids.de.mille.grains---poids.de.mille.grains", colnames(data_S_year$data$data))) {
     data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-    pSR1 = PPBstats::get_ggplot(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+    pSR1 =plot.PPBstats(data= res_model1$poids.de.mille.grains$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                                nb_parameters_per_plot=8)
   } else {pSR1=NULL}
   
@@ -813,13 +813,13 @@ feedback_folder_1 = function(
     # 2.5.2.2. Protéine ----------
     if (!is.null(data_S_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      pS2 = PPBstats::get_ggplot(data=res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+      pS2 =plot.PPBstats(data=res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                                 nb_parameters_per_plot=8)
     } else {pS2=NULL}
     
     if (!is.null(data_SR_year$data) & is.element("taux.de.proteine---taux.de.proteine",colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      pSR2 = PPBstats::get_ggplot(data= res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+      pSR2 =plot.PPBstats(data= res_model1$taux.de.proteine$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                                  nb_parameters_per_plot=8)
     } else {pSR2=NULL}
     
@@ -829,13 +829,13 @@ feedback_folder_1 = function(
   # 2.5.2.3. Poids de l'épi ----------
   if (!is.null(data_S_year$data) & is.element("poids.de.l.epi---poids.de.l.epi",colnames(data_S_year$data$data))) {
     data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-    pS3 = PPBstats::get_ggplot(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+    pS3 =plot.PPBstats(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                               nb_parameters_per_plot=8)
   } else {pS3=NULL}
   
   if (person != "ADP" & !is.null(data_SR_year$data) & is.element("poids.de.l.epi---poids.de.l.epi",colnames(data_S_year$data$data))) {
     data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-    pSR3 = PPBstats::get_ggplot(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
+    pSR3 =plot.PPBstats(data= res_model1$poids.de.l.epi$comp.par$comp.mu, data_2=NULL, data_version = data_version, ggplot.type = "barplot", 
                                nb_parameters_per_plot=8)
   } else {pSR3=NULL}
   
@@ -1274,7 +1274,7 @@ feedback_folder_1 = function(
   out = list("text" = paste("Les fermes présentes dans le même groupe que votre ferme pour les années ", as.character(as.numeric(year)-1), " et ", year  ," sont : ", paste(farm_in_the_group, collapse = ", "))); OUT = c(OUT, out)
   
   #comp.theta = res_model2$comp.par[[variable]]$comp.theta
-  #p_barplot_theta = PPBstats::get_ggplot(comp.theta, ggplot.type = "barplot")
+  #p_barplot_theta =plot.PPBstats(comp.theta, ggplot.type = "barplot")
   
   
   # 4.3. Caractéristiques génétiques des populations dans le réseau ----------
@@ -1285,13 +1285,13 @@ feedback_folder_1 = function(
   
   out = list("text" = paste("
                             Les effets génétiques correpondent à la valeur intrinsèque des populations.
-                            Ces caractéristiques génétiques ont été estimées à partir du comportement des populations dans le réseau de fermes.
+                            Ces caractéristiques génétiques ont été estimées à partir du comportement des populations dans le réseau de fermes pour l'ensemble des années.
                             ")); OUT = c(OUT, out)
   
   variable = "poids.de.mille.grains"
   if (variable %in% names(Model2)) {
     comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-    #p_barplot_alpha = PPBstats::get_ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+    #p_barplot_alpha =plot.PPBstats(comp.alpha, ggplot.type = "barplot")$alpha
     #p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
     #out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de mille grains", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
@@ -1302,15 +1302,36 @@ feedback_folder_1 = function(
     attributes(tab)$invert = FALSE
     tab_tail = tail(tab)
     tab_head = head(tab)
-    out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de mille grains", "content" = tab_head)); OUT = c(OUT, out)
-    out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de mille grains", "content" = tab_tail)); OUT = c(OUT, out)
     
+    #Récupérer les résultats des 2 meilleures et 2 moins bonnes populations sur la ferme
+    tab_pmg= res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median","groups")]
+    if(!is.null(tab_pmg)){
+      tab_pmg$parameter = paste(ex_between(tab_pmg$parameter, "[", "]"),"*",sep=" ")
+      colnames(tab_pmg) = c("Population","poids de mille grains moyen","groupe")
+      tab_pmg$groupe = NA
+      tab_pop_tail = tail(tab_pmg,n=2)
+      tab_pop_head = head(tab_pmg,n=2)
+      
+      
+      tab_tail=rbind(tab_tail,tab_pop_tail) ; tab_tail=tab_tail[order(tab_tail[,"poids de mille grains moyen"]),]
+      tab_head=rbind(tab_head,tab_pop_head) ; tab_head=tab_head[order(tab_head[,"poids de mille grains moyen"]),]
+      out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de mille grains.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des poids de mille grains les plus faible chez vous cette année (*)", "content" = tab_head)); OUT = c(OUT, out)
+      out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de mille grains.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des poids de mille grains les plus importants chez vous cette année (*)", "content" = tab_tail)); OUT = c(OUT, out)
+      
+    }else{
+      out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de mille grains", "content" = tab_head)); OUT = c(OUT, out)
+                              out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de mille grains", "content" = tab_tail)); OUT = c(OUT, out)
+                              
+    }
   }
+   
   
   variable = "taux.de.proteine"
   if (variable %in% names(Model2)) {
     comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-    #p_barplot_alpha = PPBstats::get_ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+    #p_barplot_alpha =plot.PPBstats(comp.alpha, ggplot.type = "barplot")$alpha
     #p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
     #out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le taux de protéine", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     
@@ -1321,16 +1342,35 @@ feedback_folder_1 = function(
     attributes(tab)$invert = FALSE
     tab_tail = tail(tab)
     tab_head = head(tab)
-    out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le taux de protéines", "content" = tab_head)); OUT = c(OUT, out)
-    out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le taux de protéines", "content" = tab_tail)); OUT = c(OUT, out)
     
+    #Récupérer les résultats des 2 meilleures et 2 moins bonnes populations sur la ferme
+    tab_prot = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median","groups")]
+    if(!is.null(tab_prot)){
+      tab_prot$parameter = paste(ex_between(tab_prot$parameter, "[", "]"),"*",sep=" ")
+      colnames(tab_prot) = c("Population","taux de protéine","groupe")
+      tab_prot$groupe = NA
+      tab_pop_tail = tail(tab_prot,n=2)
+      tab_pop_head = head(tab_prot,n=2)
+      
+      
+      tab_tail=rbind(tab_tail,tab_pop_tail) ; tab_tail=tab_tail[order(tab_tail[,"taux de protéine"]),]
+      tab_head=rbind(tab_head,tab_pop_head) ; tab_head=tab_head[order(tab_head[,"taux de protéine"]),]
+      out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le taux de protéine.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des taux de protéine les plus faible chez vous cette année (*)", "content" = tab_head)); OUT = c(OUT, out)
+      out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le taux de protéine.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des taux de protéine les plus importants chez vous cette année (*)", "content" = tab_tail)); OUT = c(OUT, out)
+      
+    }else{
+     out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le taux de protéines", "content" = tab_head)); OUT = c(OUT, out)
+     out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le taux de protéines", "content" = tab_tail)); OUT = c(OUT, out)
+    }
   }
   
   
   variable = "poids.de.l.epi"
   if (variable %in% names(Model2)) {
     comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-    #p_barplot_alpha = PPBstats::get_ggplot(comp.alpha, ggplot.type = "barplot")$alpha
+    #p_barplot_alpha =plot.PPBstats(comp.alpha, ggplot.type = "barplot")$alpha
     #p = p_barplot_alpha[c(1, length(p_barplot_alpha))]
     #out = list("figure" = list("caption" = "Effets génétiques minimum et maximum des populations dans le réseau pour le poids de l'épis", "content" = p, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     out = list("text" = "Le tableau ci-dessous présente les effets génétiques des populations dans le réseau pour le poids de l'épi."); OUT = c(OUT, out)
@@ -1340,6 +1380,25 @@ feedback_folder_1 = function(
     attributes(tab)$invert = FALSE
     tab_tail = tail(tab)
     tab_head = head(tab)
+    
+    #Récupérer les résultats des 2 meilleures et 2 moins bonnes populations sur la ferme
+    tab_pe = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median","groups")]
+    if(!is.null(tab_pe)){
+      tab_pe$parameter = paste(ex_between(tab_pe$parameter, "[", "]"),"*",sep=" ")
+      colnames(tab_pe) = c("Population","poids de l'épi","groupe")
+      tab_pe$groupe = NA
+      tab_pop_tail = tail(tab_pe,n=2)
+      tab_pop_head = head(tab_pe,n=2)
+      
+      
+      tab_tail=rbind(tab_tail,tab_pop_tail) ; tab_tail=tab_tail[order(tab_tail[,"poids de l'épi"]),]
+      tab_head=rbind(tab_head,tab_pop_head) ; tab_head=tab_head[order(tab_head[,"poids de l'épi"]),]
+      out = list("table" = list("caption" = "Effets génétiques (valeurs intrinsèques) minimums des populations dans le réseau pour le poids de l'épi.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des poids d'épis les plus faible chez vous cette année (*)", "content" = tab_head)); OUT = c(OUT, out)
+      out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de l'épi.
+                              A titre comparatif sont reportées dans le tableau les deux populations ayant donné des poids d'épis les plus importants chez vous cette année (*)", "content" = tab_tail)); OUT = c(OUT, out)
+      
+    }else{
     out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de l'épi", "content" = tab_head)); OUT = c(OUT, out)
     out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de l'épi", "content" = tab_tail)); OUT = c(OUT, out)
   }
@@ -1397,10 +1456,10 @@ feedback_folder_1 = function(
     comp.beta = res_model2[[variable]]$comp.par$comp.beta
     comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
     colnames(comp.beta$mean.comparisons) = c("median","parameter")
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains de toutes les populations.
                                ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de mille grains.
                                ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
@@ -1411,10 +1470,10 @@ feedback_folder_1 = function(
     comp.beta = res_model2[[variable]]$comp.par$comp.beta
     comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
     colnames(comp.beta$mean.comparisons) = c("median","parameter")
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine de toutes les populations.", 
                                "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le taux de protéine.", 
                                "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
@@ -1425,10 +1484,10 @@ feedback_folder_1 = function(
     comp.beta = res_model2[[variable]]$comp.par$comp.beta
     comp.beta$mean.comparisons = cbind(comp.beta$mean.comparisons,rownames(comp.beta$mean.comparisons))
     colnames(comp.beta$mean.comparisons) = c("median","parameter")
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi de toutes les populations.
                                ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-    p_alpha_beta = PPBstats::get_ggplot(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
+    p_alpha_beta =plot.PPBstats(data = comp.alpha, data_2 = comp.beta, data_version=NULL, ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 90)
     out = list("figure" = list("caption" = "Effet génétique en fonction de la sensibilité à l'environnement pour le poids de l'épi.
                                ", "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
@@ -1444,9 +1503,11 @@ feedback_folder_1 = function(
   # Comme tous modèles, il donne une information avec une certaine confiance qui est donnée en pourcentage.
   
   # Mettre l'intervalle de confiance dans notre cas: graph que pour les premiers ?!? A creuser
-  tab=rep(0,11)
+  name = NULL
+  tab=rep(0,14)
   variable1 = "poids.de.mille.grains"
   if (variable1 %in% names(Model2) & !is.null(res_model2[[variable1]]$predict.past)) {
+    name=c(name,"poids de mille grains")
     out = res_model2[[variable1]]$predict.past[[paste(person, year, sep = ":")]]$MCMC
     quantiles=NULL
     for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
@@ -1455,13 +1516,17 @@ feedback_folder_1 = function(
     if( nrow(quantiles) > 0 ) {
       quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
       quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
-      tab=cbind.data.frame(tab,rownames(quantiles), quantiles$`50%`)
+      quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
+      tab_pop = tail(tab_pmg,n=3)[1:2] ; tab_pop$parameter = paste(ex_between(tab_pop$parameter, "[", "]"),"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
+      quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
+      tab=cbind.data.frame(tab,quantiles)
       colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable1))
     }
   } 
   
   variable2 = "taux.de.proteine"
   if (variable2 %in% names(Model2) & !is.null(res_model2[[variable2]]$predict.past)) {
+    name=c(name,"taux de protéine")
     out = res_model2[[variable2]]$predict.past[[paste(person, year, sep = ":")]]$MCMC
     quantiles=NULL
     for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
@@ -1470,13 +1535,17 @@ feedback_folder_1 = function(
     if( nrow(quantiles) > 0 ) {
       quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
       quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
-      tab=cbind.data.frame(tab,rownames(quantiles), quantiles$`50%`)
+      quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
+      tab_pop = tail(tab_prot,n=3)[1:2] ; tab_pop$parameter = paste(ex_between(tab_pop$parameter, "[", "]"),"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
+      quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
+      tab=cbind.data.frame(tab,quantiles)
       colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable2))
     }
   }
   
   variable3 = "poids.de.l.epi"
   if (variable3 %in% names(Model2) & !is.null(res_model2[[variable3]]$predict.past)) {
+    name=c(name,"poids de l'épi")
     out = res_model2[[variable3]]$predict.past[[paste(person, year, sep = ":")]]$MCMC
     quantiles=NULL
     for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
@@ -1485,7 +1554,10 @@ feedback_folder_1 = function(
     if( nrow(quantiles) > 0 ) {
       quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
       quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
-      tab=cbind.data.frame(tab,rownames(quantiles), quantiles$`50%`)
+      quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
+      tab_pop = tail(tab_pe,n=3)[1:2] ; tab_pop$parameter = paste(ex_between(tab_pop$parameter, "[", "]"),"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
+      quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
+      tab=cbind.data.frame(tab,quantiles)
       colnames(tab)[(ncol(tab)-1):ncol(tab)] = c(paste(c("germplasm", "valeur"), variable3))
     }
   } 
@@ -1493,8 +1565,7 @@ feedback_folder_1 = function(
   if (!is.null(dim(tab))){
     tab=tab[,-1]
     attributes(tab)$invert = FALSE
-    out = list("table" = list("caption" = "Prédiction du passé pour le poids de mille grains et le poids de l'épis.", "content" = tab)); OUT = c(OUT, out)
-  }else{
+    out = list("table" = list("caption" = paste("Prédiction du passé pour le ",paste(name,collapse=", "),". A titre de comparaison, les meilleures populations pour ces variables cette année sur votre fermes sont notées avec *.",sep=""), "content" = tab)); OUT = c(OUT, out)  }else{
     out = list("text" = "
 Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
 "); OUT = c(OUT, out)
@@ -1514,7 +1585,3 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
   )
   
   }
-
-
-
-
