@@ -422,19 +422,26 @@ feedback_folder_1 = function(
   graph.fiche = function(OUT, data, variable) {
     
     if(variable == "note.globale.hiver---global"){ in.cap = "d'hiver" }
-    if(variable == "note.globale.printemps---global"){ in.cap = "de printemps" }
+    if(variable == "note.globale.printemps---note.globale.printemps"){ in.cap = "de printemps" }
     if(variable == "note.globale.ete---global"){ in.cap = "d'été" }
     
-    colnames(data$data$data)[which(colnames(data$data$data) == variable )] = gsub("^([^---]*)---.*$", "\\1",	variable)
-    p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
-                   in.col = "germplasm", vec_variables = gsub("^([^---]*)---.*$", "\\1",	variable), 
-                   nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+    if(variable == "all_notes"){ 
+      in.cap = "d'hiver, de printemps et d'été"
+      variable = c("note.globale.hiver---global","note.globale.printemps---note.globale.printemps","note.globale.ete---global")
+			p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8)
+			
+    }else{
+      p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
+                     in.col = "germplasm", vec_variables = variable, 
+                     nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+    }
     
     if( !is.null(p) ) {
       out = list("figure" = list("caption" = paste("Evolution des notes globales", in.cap, "."), "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
     } else { 
       out = list("figure" = NULL)
     }
+    
     OUT = c(OUT, out)
     
     return(OUT)
@@ -482,6 +489,8 @@ feedback_folder_1 = function(
   
   out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains : \\textbf{", a,"}",sep="")); OUT = c(OUT, out)
   
+  # 2.0.1. Evolution des notes globales au cours du cycle
+  out = list("subsection" = "Evolution des notes globales de ces populations au cours de l'année"); OUT = c(OUT, out)
   
   
   # 2.1. Automne ----------
@@ -562,7 +571,7 @@ feedback_folder_1 = function(
   
   # 2.3.1. Evolution de la note globale ----------
   out = list("subsection" = "Note globale"); OUT = c(OUT, out)
-  OUT = graph.fiche(OUT, data_all, "note.globale.printemps---global")
+  OUT = graph.fiche(OUT, data_all, "note.globale.printemps---note.globale.printemps")
   
   # 2.3.2. Données printemps pour year ----------
   out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
