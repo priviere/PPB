@@ -1434,6 +1434,7 @@ feedback_folder_1 = function(
     }else{
     out = list("table" = list("caption" = "Effets génétiques minimums des populations dans le réseau pour le poids de l'épi", "content" = tab_head)); OUT = c(OUT, out)
     out = list("table" = list("caption" = "Effets génétiques maximums des populations dans le réseau pour le poids de l'épi", "content" = tab_tail)); OUT = c(OUT, out)
+    }
   }
   
   
