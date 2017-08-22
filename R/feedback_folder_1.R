@@ -152,7 +152,6 @@ feedback_folder_1 = function(
           \\end{center} \\vspace{-20pt}
           \\end{wrapfigure}
           \\noindent
-          Sophie Pin \\href{mailto:sophie.pin@inra.fr}{sophie.pin@inra.fr} \\\\
           Isabelle Goldringer \\href{mailto:isabelle.goldringer@inra.fr}{isabelle.goldringer@inra.fr} \\\\
           Gaëlle van Frank \\href{mailto:gaelle.van-frank@inra.fr}{gaelle.van-frank@inra.fr} \\\\
           Equipe DEAP, INRA Le Moulon  \\\\
@@ -404,9 +403,6 @@ feedback_folder_1 = function(
           
           Pierre Rivière, RSP ; \\url{pierre@semencespaysannes.org} ; 06 87 13 46 98
           
-          Sophie Pin, INRA ; \\url{jouanne@moulon.inra.fr} ; 01 69 15 70 59
-          
-          
           \\newpage
           ", sep="/")
   
@@ -419,7 +415,7 @@ feedback_folder_1 = function(
   # 2. Partie sur la ferme ----------
   
   # les graph pour les fiches
-  graph.fiche = function(OUT, data, variable) {
+  graph.fiche = function(data, variable) {
     
     if(variable == "note.globale.hiver---global"){ in.cap = "d'hiver" }
     if(variable == "note.globale.printemps---note.globale.printemps"){ in.cap = "de printemps" }
@@ -441,10 +437,7 @@ feedback_folder_1 = function(
     } else { 
       out = list("figure" = NULL)
     }
-    
-    OUT = c(OUT, out)
-    
-    return(OUT)
+    return(out)
   }
   
   # Traduire les vec_variables
@@ -490,12 +483,17 @@ feedback_folder_1 = function(
   out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains : \\textbf{", a,"}",sep="")); OUT = c(OUT, out)
   
   # 2.0.1. Evolution des notes globales au cours du cycle
-  out = list("subsection" = "Evolution des notes globales de ces populations au cours de l'année"); OUT = c(OUT, out)
-  OUT = graph.fiche(OUT, data_all, "all_notes")
+  graph = graph.fiche(data_all, "all_notes")
+  if(!is.null(graph$figure)){
+    out = list("subsection" = "Evolution des notes globales de ces populations au cours de l'année"); OUT = c(OUT, out)
+    OUT=c(OUT,graph)
+  }
+  
+  
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
-  
+
   vec_variables = c(
     "topographie---notice.topographie.semis.2",
     "pratiques.semis---notice.pratiques.semis",
@@ -520,7 +518,7 @@ feedback_folder_1 = function(
   tab=traduction(tab,row_or_col = "row")
   
   
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out)}
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out); comp = 1}
   
   vec_variables = 
     c("pluies.automne---pluies", 
@@ -530,21 +528,26 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab= traduction(tab,"col")
   
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat d'automne", "content" = tab)); OUT = c(OUT, out)}
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat d'automne", "content" = tab)); OUT = c(OUT, out) ; comp = 1}
+  if(is.null(comp)){out=list("text" = "Pas de données"); OUT=c(OUT,out)}
   
   
   # 2.2. Hiver ----------
   out = list("section" = "Notations d'hiver"); OUT = c(OUT, out)
+  comp=NULL
   
   # 2.2.1. Evolution de la note globale ----------
-  out = list("subsection" = "Note globale"); OUT = c(OUT, out)
-  OUT = graph.fiche(OUT, data_all, "note.globale.hiver---global")
+  graph = graph.fiche(data_all, "note.globale.hiver---global")
+  if(!is.null(graph$figure)){
+    out = list("subsection" = "Note globale"); OUT = c(OUT, out)
+    OUT = c(OUT,graph)
+    comp=1
+  }
+
   
   
   # 2.2.2. Données hiver pour year ----------
-  out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
-  
-  vec_variables = c("date.observation.hiver---date.observation", 
+    vec_variables = c("date.observation.hiver---date.observation", 
                     "reprise---reprise", 
                     "attitude des feuilles---attitude des feuilles", 
                     "port.au.tallage---port.au.tallage", 
@@ -553,7 +556,11 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche hiver", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
+  if(!is.null(tab)){
+    out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
+    out = list("table" = list("caption" = "Sommaire de la fiche hiver", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
+    comp=1
+  }
   
   vec_variables = c("pluies.hiver---pluies", 
                     "températures.hiver---températures",
@@ -564,18 +571,21 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat de l'hiver", "content" = tab)); OUT = c(OUT, out)}
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat de l'hiver", "content" = tab)); OUT = c(OUT, out) ; comp = 1}
+  if(is.null(comp)){out=list("text" = "Pas de données"); OUT=c(OUT,out)}
   
   # 2.3. Printemps ----------
   out = list("section" = "Notations de printemps"); OUT = c(OUT, out)
-  
+  comp=NULL
   # 2.3.1. Evolution de la note globale ----------
-  out = list("subsection" = "Note globale"); OUT = c(OUT, out)
-  OUT = graph.fiche(OUT, data_all, "note.globale.printemps---note.globale.printemps")
+  graph = graph.fiche(data_all, "note.globale.printemps---note.globale.printemps")
+  if(!is.null(graph$figure)){
+    out = list("subsection" = "Note globale"); OUT = c(OUT, out)
+    OUT = c(OUT,graph)
+  }
+
   
   # 2.3.2. Données printemps pour year ----------
-  out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
-  
   vec_variables = c(
     "date.observation.printemps---date.observation",
     "tallage---tallage",
@@ -589,7 +599,11 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche printemps", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
+  if(!is.null(tab)){
+    out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
+    out = list("table" = list("caption" = "Sommaire de la fiche printemps", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
+    comp=1
+  }
   
   
   vec_variables = c("pluies.printemps---pluies", 
@@ -601,19 +615,21 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat du printemps", "content" = tab)); OUT = c(OUT, out)}
-  
+  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat du printemps", "content" = tab)); OUT = c(OUT, out); comp=1}
+  if(is.null(comp)){out=list("text" = "Pas de données"); OUT=c(OUT,out)}
   
   # 2.4. Ete ----------
   out = list("section" = "Notations d'été"); OUT = c(OUT, out)
   
   # 2.3.1. Evolution de la note globale ----------
-  out = list("subsection" = "Note globale"); OUT = c(OUT, out)	
-  OUT = graph.fiche(OUT, data_all, "note.globale.ete---global")
+  graph = graph.fiche(data_all, "note.globale.ete---global")
+  if(!is.null(graph$figure)){
+    out = list("subsection" = "Note globale"); OUT = c(OUT, out)	
+    OUT = c(OUT,graph)
+  }
+
   
   # 2.3.2. Données ete pour year ----------
-  out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
-  
   vec_variables = c("date.observation.été---date.observation", 
                     "biomasse---biomasse", 
                     "hétérogénéité---hétérogénéité", 
@@ -634,8 +650,12 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = NULL, merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur le climat de l'été", "content" = tab)); OUT = c(OUT, out)}
-  
+  if(!is.null(tab)){ 
+    out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
+    out = list("table" = list("caption" = "Informations sur le climat de l'été", "content" = tab)); OUT = c(OUT, out)
+    comp=1
+  }
+  if(is.null(comp)){out=list("text" = "Pas de données"); OUT=c(OUT,out)}
   
   # 2.5. Mesure à la récolte ----------
   out = list("section" = "Mesures à la récolte"); OUT = c(OUT, out)
@@ -792,6 +812,19 @@ feedback_folder_1 = function(
   p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
                  vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
   out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
+  
+  # 2.5.1.7. Le rendement ----------
+  out = list("subsubsection" = "Le rendement"); OUT = c(OUT, out)
+  
+  
+# !!!!!!!!! A FAIRE !!!!!!!  
+  
+  
+  p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
+                 vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
+  out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
+  
+  
   
   
   # 2.5.2. Etude de la sélection intra-population ----------
@@ -1565,7 +1598,7 @@ feedback_folder_1 = function(
   if (!is.null(dim(tab))){
     tab=tab[,-1]
     attributes(tab)$invert = FALSE
-    out = list("table" = list("caption" = paste("Prédiction du passé pour le ",paste(name,collapse=", "),". A titre de comparaison, les meilleures populations pour ces variables cette année sur votre fermes sont notées avec *.",sep=""), "content" = tab)); OUT = c(OUT, out)  }else{
+    out = list("table" = list("caption" = paste("Prédiction du passé pour les ",paste(name,collapse=", "),". A titre de comparaison, les meilleures populations pour ces variables cette année sur votre fermes sont notées avec *.",sep=""), "content" = tab)); OUT = c(OUT, out)  }else{
     out = list("text" = "
 Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
 "); OUT = c(OUT, out)
@@ -1584,4 +1617,4 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
           color2 = "mln-brown"
   )
   
-  }
+}
