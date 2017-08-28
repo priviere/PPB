@@ -8,7 +8,7 @@ get_interaction_cycle <- function(data,
 # car pour l'intégrer au package il faudrait modifier toutes les fonctions pour pouvoir prendre un facteur autre que l'année, le germplasme ou la personne
 {
  library(reshape2)
-	d=data_all$data$data
+	d=data$data$data
 	d=d[,grep(paste(c(paste("^son$",sep=""),paste("^",vec_variables,"$",sep="")),collapse="|"),colnames(d))]
 	d$son = unlist(lapply(as.character(d$son),function(x){strsplit(x,"_")[[1]][1]}))
 	d=d[!is.na(d[,2:ncol(d)]),]
