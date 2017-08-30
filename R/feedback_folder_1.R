@@ -623,12 +623,13 @@ feedback_folder_1 = function(
   
   # 2.4. Ete ----------
   out = list("section" = "Notations d'été"); OUT = c(OUT, out)
-  
+  comp=NULL
   # 2.3.1. Evolution de la note globale ----------
   graph = graph.fiche(data_all, "note.globale.ete---global")
   if(!is.null(graph$figure)){
     out = list("subsection" = "Note globale"); OUT = c(OUT, out)	
-    OUT = c(OUT,graph)
+    OUT = c(OUT,graph);
+    comp=1
   }
 
   
@@ -676,7 +677,8 @@ feedback_folder_1 = function(
     
     # Interaction plot
     if(inter_plot){
-      p_interaction =plot.PPBstats(comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)[person]
+      p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
+      p_interaction = p_interaction_glob$data_mean_comparisons[person]
       out = list("figure" = list("caption" = paste("
                                Comparaisons de moyennes pour le ",variable," au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
@@ -698,12 +700,8 @@ feedback_folder_1 = function(
     
     
     # Interaction without statistical analysis
-    if(inter_plot){
-      d = res_model$model.outputs$model1.data_env_whose_param_did_not_converge
-      if(!is.null(d)) {
-        p_interaction_2 =PPBstats::get_ggplot(d, ggplot.type = "interaction")[person]
-        out = list("figure" = list("caption" = paste("Evolution du ",variable," au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_2, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-      }
+    if(inter_plot & person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
+        out = list("figure" = list("caption" = paste("Evolution du ",variable," au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
 
     # Table
