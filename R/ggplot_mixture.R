@@ -20,10 +20,11 @@
 #' @seealso \code{\link{shinemas2R::get.data}}
 #' 
 
-ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, model, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 8) 
+ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, year, model, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 8) 
 {
   melanges_PPB_mixture=melanges_PPB_mixture$data
   add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
+  data_S = data_S$data$data
   
   # 1. Compare, for each mixture in each farm, the mixture to its components and the mean of these components ----
   if ( plot.type == "comp.in.farm" | plot.type == "mix.comp.distribution"| plot.type == "mix.gain.distribution") {
@@ -36,17 +37,37 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
       # une table par mélange
       mix = plyr:::splitter_d(x, .(mixture_id))
       MIX = list()
-      for (i in 1:(length(mix)-1)) {
+      for (i in 1:length(mix)) {
         Mel = mix[[i]]
         Comp = mix[[length(mix)]] 
         MIX = c(MIX,list(rbind(Mel, Comp[Comp$expe %in% Mel$mixture_id,])))
       }
+      paysan = unique(mix[[1]]$location)
       
       # récupérer les données (MCMC) pour chaque mixture et les splitter
       mix_split = lapply(MIX , function(y) {
-        noms = as.data.frame(unique(y$germplasm_son))
-        noms$type = c("Mélange",rep("Composante",(nrow(noms)-1)))
-        colnames(noms)[1] = "germplasm"
+        noms = as.data.frame(c(unique(y$germplasm_son),unique(y$germplasm_father),stringsAsFactors = FALSE))
+        if(length(unique(y$germplasm_son == y$expe_melange))>1 | unique(y$germplasm_son == y$expe_melange) == FALSE ){ # Modality 2 of mixture experiment : we have only the name of the mixture and not the components since the selection 
+                              # that were done to create the mixture have not been sown. We want to get the selections that were sown (modality)
+          nom_melange=as.data.frame(unique(y$germplasm_son),stringsAsFactors = FALSE)
+          nom_melange$Type="Mélange"
+          noms=as.data.frame(unique(y$germplasm_father),stringsAsFactors = FALSE)
+          colnames(noms)[1] =  colnames(nom_melange)[1] ="germplasm"
+          data_S = unique(data_S[,c("son","expe","sl_statut","expe_name","expe_name_2","son_germplasm","father","father_germplasm","son_person")])
+          data_S = data_S[grep("bouquet",data_S$sl_statut),]
+          
+          noms$germplasm = lapply(as.character(noms$germplasm),function(x){
+            d = data_S[grep(strsplit(x,"#")[[1]][1],data_S$father_germplasm),]
+            d = d[d$son_person %in% paysan,]
+            germ = unlist(lapply(as.character(d$son),function(x){strsplit(x,"_")[[1]][1]}))
+            return(germ[grep("VA",germ)])
+          })
+          noms$Type="Composante"
+          noms=rbind(nom_melange,noms)
+        }else{
+          noms$type = c("Mélange",rep("Composante",(nrow(noms)-1)))
+          colnames(noms)[1] = "germplasm"
+        }
         
         mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, model,param = "mu", year = year)
         Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Mélange"),"germplasm"]]
@@ -60,7 +81,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
           colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
           colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",year,"]",sep="")
           M=list("MCMC"=M)
-          attributes(M)$PPBstats.object = "check_model_model_1"
+ #         attributes(M)$PPBstats.object = "check_model_model_1"
           comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
           
           C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
@@ -277,7 +298,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, variable, year, mode
       B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
       
       p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
-      p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.05), alpha=0.6, color="black")
+      p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.03), alpha=0.6, color="black")
       p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
       p = p + labs(x=paste("Différence normalisée entre les mélanges et 
 	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
