@@ -344,17 +344,42 @@ analyse_feedback_folder_1 = function(
   #data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
   
   #1.1.2. Get mixtures data
+  Mix = read.table("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/mixtures_PPBmelange.csv",header=T,sep=";")
   Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
                           db_name = info_db$db_name, db_password = info_db$db_password, # db infos
-                          query.type = "data-mixture-1", # query for mixtures
+                          query.type = "data-classic", # query for mixtures
                           filter.on = "father-son", # filters on father AND son
                           data.type = "relation", # data linked to relation between seed-lots
-                          project.in="PPB-Mélange"
+                          project.in="PPB-Mélange",
+                          germplasm.in=as.character(Mix$Mixture),
+                          variable.in = "tkw"
   )
-  Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
-  Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
-  Mixtures_all$data$year = gsub("^.*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
-  Mixtures_all$data$location = gsub("[^._]*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
+  if(FALSE){ 
+    Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
+                                     db_name = info_db$db_name, db_password = info_db$db_password, # db infos
+                                     query.type = "data-mixture-1", # query for mixtures
+                                     filter.on = "father-son", # filters on father AND son
+                                     data.type = "relation", # data linked to relation between seed-lots
+                                     project.in="PPB-Mélange",
+                                     variable.in = "tkw"
+    )
+    
+    Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
+                            db_name = info_db$db_name, db_password = info_db$db_password, # db infos
+                            query.type = "data-classic", # query for mixtures
+                            filter.on = "father-son", # filters on father AND son
+                            data.type = "relation", # data linked to relation between seed-lots
+                            project.in="PPB-Mélange",
+                            relation.in = "mixture"
+                            
+    )
+    Mixtures_all$data =  Mixtures_all$data[as.character(Mixtures_all$data$son_germplasm) !=  as.character(Mixtures_all$data$father_germplasm),]
+    Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
+    Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
+    Mixtures_all$data$year = gsub("^.*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
+    Mixtures_all$data$location = gsub("[^._]*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
+  }
+ 
   
   
   # 1.2. model1 ----------
