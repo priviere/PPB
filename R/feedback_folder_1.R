@@ -666,9 +666,7 @@ feedback_folder_1 = function(
   
   # 2.5.1. Mesures sur les populations ----------
   out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
-  out = list("text" = "Cette année nous sommes dans l'incapacité de vous donner des résultats concernant le taux de protéine car nous avons fait les analyses sur une nouvelle machine 
-             et il nous faut faire des analyses complémentaires pour pouvoir calculer le taux de protéine des grains."); OUT = c(OUT, out)
-  
+
   interaction_and_score = function(OUT,res_model,variable,table=FALSE,titre,score=TRUE,inter_plot=TRUE){
     out = list("subsubsection" = titre); OUT = c(OUT, out)
     
@@ -751,23 +749,34 @@ feedback_folder_1 = function(
   
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
-  
+  comp=0
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
                  vec_variables ="verse---verse", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
-  out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  if(!is.null(p)){
+    out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+    OUT = c(OUT, out) ; comp=comp + 0.5
+  }else{
+    out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
+  }
   
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
                  vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
-  out = list("figure" = list("caption" = "Evolution de la hauteur au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-  
+   if(!is.null(p)){
+     out = list("figure" = list("caption" = "Evolution de la hauteur au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+     OUT = c(OUT, out) ; comp = comp+0.5
+   }else{
+    out = list("text" = "Pas de données pour la hauteur") ; OUT=c(OUT,out)
+  }
   
   # 2.5.1.6. La verse en fonction de la hauteur ----------
-  out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
-  
-  p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
-                 vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
-  out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
-  
+  if(comp ==1){
+    out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
+    
+    p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
+                   vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
+    out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
+  }
+   
 if(FALSE){
   # 2.5.1.7. Le rendement ----------
   out = list("subsubsection" = "Le rendement"); OUT = c(OUT, out)
