@@ -344,8 +344,7 @@ analyse_feedback_folder_1 = function(
   #data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
   
   #1.1.2. Get mixtures data
-  Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-                                     db_name = info_db$db_name, db_password = info_db$db_password, # db infos
+  Mixtures_all = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password,
                                      query.type = "data-mixture-1", # query for mixtures
                                      filter.on = "father-son", # filters on father AND son
                                      data.type = "relation", # data linked to relation between seed-lots
@@ -366,8 +365,7 @@ analyse_feedback_folder_1 = function(
 
 
 #1.1.3. Get selection data for Mixture experiment
-  data_S_Mixtures = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-                             db_name = info_db$db_name, db_password = info_db$db_password, # db infos
+  data_S_Mixtures = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password,
                              query.type = "data-S", # query for mixtures
                              filter.on = "father-son", # filters on father AND son
                              data.type = "relation", # data linked to relation between seed-lots
