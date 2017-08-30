@@ -920,20 +920,20 @@ if(FALSE){
     out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
     variable = "poids.de.mille.grains"
     if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
         }
-        }
+    }
     
     variable = "taux.de.proteine"
     if (variable %in% names(res_model1)){
       # 3.1.2. Taux de protéines -----
       out = list("subsection" = "Taux de protéines"); OUT = c(OUT, out)
       
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
+      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
@@ -947,7 +947,7 @@ if(FALSE){
     out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
     variable = "poids.de.l.epi"
     if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
+      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
@@ -959,7 +959,7 @@ if(FALSE){
     out = list("subsection" = "Hauteur"); OUT = c(OUT, out)
     variable = "hauteur"
     if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
+      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la hauteur du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
@@ -971,7 +971,7 @@ if(FALSE){
     out = list("subsection" = "Longueur de l'épi"); OUT = c(OUT, out)
     variable = "longueur.de.l.epi"
     if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
+      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la longueur de l'épi du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
@@ -1015,7 +1015,7 @@ if(FALSE){
     # Histogramme distribution de l'overyielding
     var = paste(strsplit(variable,"[.]")[[1]],collapse="")
     if (!file.exists(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
       save(p_melanges,file=paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
       png(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))
         p_melanges
@@ -1034,7 +1034,7 @@ if(FALSE){
     # Distribution des mélanges et composantes
     if(distrib){
         if (!file.exists(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))){
-          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
           save(p_melanges,file=paste(we_are_here,"/figures/Distribution_",var,".RData",sep=""))
           png(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))
           p_melanges
@@ -1051,7 +1051,7 @@ if(FALSE){
     }
      
     if(comp_global){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, variable, year=year, model="model_1",plot.type = "mixVScomp", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1",plot.type = "mixVScomp", person, nb_parameters_per_plot = 15)
       out = list("figure" = list("caption" = "Comparaison entre la moyenne des mélanges et la moyenne des composantes sur le réseau.
                              Les moyennes sont significativement différentes si les lettres diffèrent.
                              ", "content" = p_melanges$bp, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
