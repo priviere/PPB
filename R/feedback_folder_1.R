@@ -54,7 +54,8 @@ feedback_folder_1 = function(
   data_S_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year
   data_SR_year =  out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_SR_year
   data_PPB_mixture = out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
-  Mixtures_all = out_analyse_feedback_folder_1$Mixtures_all
+  Mixtures_all = out_analyse_feedback_folder_1$data_mixtures$Mixtures_all
+  Mixtures_S = out_analyse_feedback_folder_1$data_mixtures$Mixtures_selection
   
   levels(Mixtures_all$data$son) = c(levels(Mixtures_all$data$son) , "C70_ANB_2011_0001")
   Mixtures_all$data[Mixtures_all$data$son %in% "C70#S-crossés_ANB_2015_0001","son"] = as.factor("C70_ANB_2011_0001")
