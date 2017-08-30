@@ -700,8 +700,10 @@ feedback_folder_1 = function(
     
     
     # Interaction without statistical analysis
-    if(inter_plot & person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
+    if(inter_plot){
+      if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
         out = list("figure" = list("caption" = paste("Evolution du ",variable," au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+      }
     }
 
     # Table
