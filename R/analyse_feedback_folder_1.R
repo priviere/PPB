@@ -344,41 +344,35 @@ analyse_feedback_folder_1 = function(
   #data_stats[,vec_variables] = gsub(",",".",data_stats[,vec_variables])
   
   #1.1.2. Get mixtures data
-  Mix = read.table("/home/deap/Documents/Gaelle/scriptsR/dossiers_retour/mixtures_PPBmelange.csv",header=T,sep=";")
   Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-                          db_name = info_db$db_name, db_password = info_db$db_password, # db infos
-                          query.type = "data-classic", # query for mixtures
-                          filter.on = "father-son", # filters on father AND son
-                          data.type = "relation", # data linked to relation between seed-lots
-                          project.in="PPB-Mélange",
-                          germplasm.in=as.character(Mix$Mixture),
-                          variable.in = "tkw"
-  )
-  if(FALSE){ 
-    Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
                                      db_name = info_db$db_name, db_password = info_db$db_password, # db infos
                                      query.type = "data-mixture-1", # query for mixtures
                                      filter.on = "father-son", # filters on father AND son
                                      data.type = "relation", # data linked to relation between seed-lots
-                                     project.in="PPB-Mélange",
-                                     variable.in = "tkw"
+                                     project.in="PPB-Mélange"
     )
     
-    Mixtures_all = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
-                            db_name = info_db$db_name, db_password = info_db$db_password, # db infos
-                            query.type = "data-classic", # query for mixtures
-                            filter.on = "father-son", # filters on father AND son
-                            data.type = "relation", # data linked to relation between seed-lots
-                            project.in="PPB-Mélange",
-                            relation.in = "mixture"
-                            
-    )
+
     Mixtures_all$data =  Mixtures_all$data[as.character(Mixtures_all$data$son_germplasm) !=  as.character(Mixtures_all$data$father_germplasm),]
+    Mixtures_all$data = Mixtures_all$data[!is.na(Mixtures_all$data$son),]
     Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
     Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
     Mixtures_all$data$year = gsub("^.*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
-    Mixtures_all$data$location = gsub("[^._]*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
-  }
+    Mixtures_all$data$location = unlist(lapply(as.character(Mixtures_all$data$son),function(x){strsplit(x,"_")[[1]][2]}))
+    Mixtures_all$data$expe_melange = gsub("[^._]*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
+    Mixtures_all$data$expe_melange = ifelse(Mixtures_all$data$expe_melange == Mixtures_all$data$location, as.character(Mixtures_all$data$son_germplasm), 
+                              unlist(lapply(as.character(Mixtures_all$data$expe_melange),function(x){sub("[.]","-",x)})))
+   
+
+
+#1.1.3. Get selection data for Mixture experiment
+  data_S_Mixtures = get.data(db_user = info_db$db_user, db_host = info_db$db_host, # db infos
+                             db_name = info_db$db_name, db_password = info_db$db_password, # db infos
+                             query.type = "data-S", # query for mixtures
+                             filter.on = "father-son", # filters on father AND son
+                             data.type = "relation", # data linked to relation between seed-lots
+                             project.in="PPB-Mélange"
+  )
  
   
   
@@ -550,7 +544,7 @@ analyse_feedback_folder_1 = function(
   names(out_farmers_data) = vec_person
   
   out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model_varintra" = res_model_varintra, 
-                        "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "Mixtures_all" = Mixtures_all)
+                        "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "data_mixtures" = list("Mixtures_selection" = data_S_Mixtures, "Mixtures_all" = Mixtures_all))
   
   return(out_from_speed)
 }
