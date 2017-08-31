@@ -487,7 +487,7 @@ feedback_folder_1 = function(
   out = list("text" = paste("Voici la liste des populations que vous avez semé cette année et pour lesquelles vous nous avez envoyé des informations ou des grains : \\textbf{", a,"}",sep="")); OUT = c(OUT, out)
   
   # 2.0.1. Evolution des notes globales au cours du cycle
-  graph = graph.fiche(data_all, "all_notes")
+  graph = graph.fiche(data_all, "all_notes",year)
   if(!is.null(graph$figure)){
     out = list("subsection" = "Evolution des notes globales de ces populations au cours de l'année"); OUT = c(OUT, out)
     OUT=c(OUT,graph)
@@ -541,7 +541,7 @@ feedback_folder_1 = function(
   comp=NULL
   
   # 2.2.1. Evolution de la note globale ----------
-  graph = graph.fiche(data_all, "note.globale.hiver---global")
+  graph = graph.fiche(data_all, "note.globale.hiver---global",year)
   if(!is.null(graph$figure)){
     out = list("subsection" = "Note globale"); OUT = c(OUT, out)
     OUT = c(OUT,graph)
@@ -582,7 +582,7 @@ feedback_folder_1 = function(
   out = list("section" = "Notations de printemps"); OUT = c(OUT, out)
   comp=NULL
   # 2.3.1. Evolution de la note globale ----------
-  graph = graph.fiche(data_all, "note.globale.printemps---note.globale.printemps")
+  graph = graph.fiche(data_all, "note.globale.printemps---note.globale.printemps",year)
   if(!is.null(graph$figure)){
     out = list("subsection" = "Note globale"); OUT = c(OUT, out)
     OUT = c(OUT,graph)
@@ -626,7 +626,7 @@ feedback_folder_1 = function(
   out = list("section" = "Notations d'été"); OUT = c(OUT, out)
   comp=NULL
   # 2.3.1. Evolution de la note globale ----------
-  graph = graph.fiche(data_all, "note.globale.ete---global")
+  graph = graph.fiche(data_all, "note.globale.ete---global",year)
   if(!is.null(graph$figure)){
     out = list("subsection" = "Note globale"); OUT = c(OUT, out)	
     OUT = c(OUT,graph);
