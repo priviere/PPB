@@ -419,7 +419,7 @@ feedback_folder_1 = function(
   # 2. Partie sur la ferme ---------------------------------------------------------------------------------------------------------------------------------------
   
   # les graph pour les fiches
-  graph.fiche = function(data, variable) {
+  graph.fiche = function(data, variable, year) {
     
     if(variable == "note.globale.hiver---global"){ in.cap = "d'hiver" }
     if(variable == "note.globale.printemps---note.globale.printemps"){ in.cap = "de printemps" }
@@ -428,7 +428,7 @@ feedback_folder_1 = function(
     if(variable == "all_notes"){ 
       in.cap = "d'hiver, de printemps et d'été"
       variable = c("note.globale.hiver---global","note.globale.printemps---note.globale.printemps","note.globale.ete---global")
-			p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8)
+			p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8,year)
 			
     }else{
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
