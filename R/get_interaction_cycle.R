@@ -1,7 +1,8 @@
 get_interaction_cycle <- function(data,
 																	vec_variables,
 																	equal.ylim = TRUE, 
-																	nb_parameters_per_plot_in.col = NULL
+																	nb_parameters_per_plot_in.col = NULL,
+																	year
 																	)
 # Permet de récupérer le graphique de l'évolution des notes au cours du cycle de culture.
 # Adapté des fonction get.ggplot et get.ggplot_plot.it du package shinemas2R 
@@ -10,9 +11,15 @@ get_interaction_cycle <- function(data,
  library(reshape2)
 	d=data$data$data
 	d=d[,grep(paste(c(paste("^son$",sep=""),paste("^",vec_variables,"$",sep="")),collapse="|"),colnames(d))]
+	
+	# Keep only the year and get mean if there are repetitions
+	d=d[grep(year,d$son),]
 	d$son = unlist(lapply(as.character(d$son),function(x){strsplit(x,"_")[[1]][1]}))
 	d=d[!is.na(d[,2:ncol(d)]),]
 	d=d[!is.na(d$son),]
+	d[,2:ncol(d)] = lapply(d[,2:ncol(d)], function(x){as.numeric(x)})
+	d = aggregate(d[,2:ncol(d)],list(d[,"son"]),mean)
+  colnames(d)[1]="son"
 	
   a = grep(paste(paste("^",vec_variables,"$",sep=""),collapse="|"),colnames(d))
   var_not_in_data = setdiff(vec_variables,colnames(d)[a])
