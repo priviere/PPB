@@ -49,7 +49,7 @@ get_result_model = function(res_model, data, type_result = "comparison", variabl
 # 2. Get ID ------------------
 	if ( "data" %in% names(data) == TRUE ) {data = data$data}
 		
-	noms=unique(data$son)
+	noms=unique(c(as.character(data$son),as.character(data$father)))
 	noms = unique(gsub("^([^_]*_[^_]*_[^_]*)_.*$", "\\1", noms))
 	
 	germplasm = gsub("^([^_]*)_.*$", "\\1", noms)
