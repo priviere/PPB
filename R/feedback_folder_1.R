@@ -1246,13 +1246,17 @@ if(FALSE){
   out = list("text" = "
              Ici nous vous proposons de prédire les valeurs qu’auraient eu certaines populations dans votre fermes cette année : on prédit le passé ! 
              Cette information est issue des modèles statistiques que nous avons développés et est possible si nous avons reçu les épis cette année. 
-             Pour comparaison, vous retrouverez notées avec une * les valeurs des trois meilleures populations cultivées chez vous cette année.
+             A titre de comparaison, vous retrouverez notées avec une * les valeurs des trois meilleures populations cultivées chez vous cette année.
              "); OUT = c(OUT, out)
   
   # Comme tous modèles, il donne une information avec une certaine confiance qui est donnée en pourcentage.
   
   # Mettre l'intervalle de confiance dans notre cas: graph que pour les premiers ?!? A creuser
-  tab_predict_past = function(OUT,variable){
+  tab_predict_past = function(OUT,variable,data_S){
+    data_S=data_S$data$data
+    data_S = unique(data_S[,c("son","expe","sl_statut","expe_name","expe_name_2","son_germplasm","father","father_germplasm","son_person")])
+    data_S = data_S[grep("bouquet",data_S$sl_statut),]
+    Sel_year = unlist(lapply(as.character(data_S$son),function(x){strsplit(x,"_")[[1]][1]}))
     out = res_model2[[variable]]$predict.past[[paste(person, year, sep = ":")]]$MCMC
     quantiles=NULL
     for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
@@ -1262,7 +1266,9 @@ if(FALSE){
       quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
       quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
       quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
-      tab_pop = tail(res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median","groups")],n=3)[1:2] 
+      tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
+      tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]
+      tab_pop=tail(tab_pop,n=3)
       germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
       tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
       quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
@@ -1271,7 +1277,7 @@ if(FALSE){
     
     if (!is.null(quantiles)){
       attributes(quantiles)$invert = FALSE
-      out = list("table" = list("caption" = paste("Prédiction du passé pour le ",variable,". A titre de comparaison, les meilleures populations pour cette variable cette année sur votre fermes sont notées avec *.",sep=""), "content" = quantiles)); OUT = c(OUT, out)  
+      out = list("table" = list("caption" = paste("Populations qui auraient eu des ",variable," les plus importants chez vous cette année. A titre de comparaison, les meilleures populations pour cette variable semées cette année sur votre ferme sont notées avec *.",sep=""), "content" = quantiles)); OUT = c(OUT, out)  
     }else{
       out = list("text" = "
 Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
@@ -1282,9 +1288,9 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
   }
   
 
-  if ("poids.de.mille.grains" %in% names(Model2) & !is.null(res_model2[["poids.de.mille.grains"]]$predict.past)) {OUT = tab_predict_past(OUT,"poids.de.mille.grains")}
-  if ("taux.de.proteine" %in% names(Model2) & !is.null(res_model2[["taux.de.proteine"]]$predict.past)) {OUT = tab_predict_past(OUT,"taux.de.proteine")}
-  if ("poids.de.l.epi" %in% names(Model2) & !is.null(res_model2[["poids.de.l.epi"]]$predict.past)) {OUT = tab_predict_past(OUT,"poids.de.l.epi")}
+  if ("poids.de.mille.grains" %in% names(Model2) & !is.null(res_model2[["poids.de.mille.grains"]]$predict.past)) {OUT = tab_predict_past(OUT,"poids.de.mille.grains",data_S_year)}
+  if ("taux.de.proteine" %in% names(Model2) & !is.null(res_model2[["taux.de.proteine"]]$predict.past)) {OUT = tab_predict_past(OUT,"taux.de.proteine",data_S_year)}
+  if ("poids.de.l.epi" %in% names(Model2) & !is.null(res_model2[["poids.de.l.epi"]]$predict.past)) {OUT = tab_predict_past(OUT,"poids.de.l.epi",data_S_year)}
 
   
   system("mkdir ./feedback_folder/figures")
