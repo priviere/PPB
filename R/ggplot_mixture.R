@@ -47,7 +47,8 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, ye
       # récupérer les données (MCMC) pour chaque mixture et les splitter
       mix_split = lapply(MIX , function(y) {
         noms = as.data.frame(unique(y$germplasm_son),stringsAsFactors = FALSE)
-        if(length(unique(y$germplasm_son == y$expe_melange))>1 | unique(y$germplasm_son == y$expe_melange) == FALSE ){ # Modality 2 of mixture experiment : we have only the name of the mixture and not the components since the selection 
+        y_son = y[y$sl_statut %in%"son",]
+        if(length(unique(y_son$germplasm_son == y_son$expe_melange))>1 | unique(y_son$germplasm_son == y_son$expe_melange) == FALSE ){ # Modality 2 of mixture experiment : we have only the name of the mixture and not the components since the selection 
                               # that were done to create the mixture have not been sown. We want to get the selections that were sown (modality)
           nom_melange=data.frame(noms[1,],stringsAsFactors = FALSE)
           nom_melange$Type="Mélange"
