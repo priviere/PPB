@@ -680,7 +680,7 @@ feedback_folder_1 = function(
       p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
       p_interaction = p_interaction_glob$data_mean_comparisons[person]
       out = list("figure" = list("caption" = paste("
-                               Comparaisons de moyennes pour le ",variable," au cours du temps. 
+                               Comparaisons de moyennes pour le \\textbf{",variable,"} au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
                                Le pourcentage de confiance dans cette information est indiqué en dessous des points. 
                                Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
@@ -692,7 +692,7 @@ feedback_folder_1 = function(
     if(score){
       p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
       out = list("figure" = list("caption" = paste("
-                               Les chiffres donnés dans ce graphique correspondent à la valeur du ",variable," pour chaque population les différentes années sur votre ferme.
+                               Les chiffres donnés dans ce graphique correspondent à la valeur du \\textbf{",variable,"} pour chaque population les différentes années sur votre ferme.
                                L'échelle de couleur correspond aux groupes de significativité : des populations présentant des couleurs différentes sont significativement différentes.
                                Attention : Les groupements sont faits par année, donc on ne peut pas grouper des populations semées deux annés différentes selon leur couleur.
                                ",sep=""), "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
@@ -702,13 +702,13 @@ feedback_folder_1 = function(
     # Interaction without statistical analysis
     if(inter_plot){
       if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
-        out = list("figure" = list("caption" = paste("Evolution du ",variable," au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+        out = list("figure" = list("caption" = paste("Evolution du \\textbf{",variable,"} au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
       }
     }
 
     # Table
     if(table){
-      out = list("text" = paste("Le tableau ci-dessous présente le ",variable," pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
+      out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
       tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
                       nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
       tab=traduction(tab,"col")
@@ -868,15 +868,15 @@ if(FALSE){
     out = list("subsubsection" = "Le differentiel de sélection"); OUT = c(OUT, out)
     
     out = textS; OUT = c(OUT, out)
-    if( !is.null(pS1) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le poids de mille grains. Le symbole au-dessus des populations représentent
+    if( !is.null(pS1) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de mille grains}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
                                                     forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
-    if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le taux de protéine. Le symbole au-dessus des populations représentent
+    if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{taux de protéine}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
                                                     forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
-    if( !is.null(pS3) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le poids de l'épi. Le symbole au-dessus des populations représentent
+    if( !is.null(pS3) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de l'épi}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
                                                     forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
@@ -886,11 +886,11 @@ if(FALSE){
     out = list("subsubsection" = "La réponse à la sélection"); OUT = c(OUT, out)
     
     out = textSR; OUT = c(OUT, out)
-    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le poids de mille grains.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le taux de protéine.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le poids de l'épi. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
     ; OUT = c(OUT, out) }
   }
   
@@ -1164,12 +1164,14 @@ if(FALSE){
                             (on retire l'effet de l'environnement et de l'interaction plante x environnement).
                             Ces caractéristiques génétiques ont été estimées à partir du comportement des populations dans le réseau de fermes pour l'ensemble des années.
                             A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
+                            Attention : sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
+                            (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) 
                             ")); OUT = c(OUT, out)
   
   effet_genet = function(OUT,variable,col_name){
       comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
       
-      out = list("text" = paste("Le tableau ci-dessous présente les populations qui ont des effets génétiques les plus faibles et les plus importants dans le réseau pour le ",variable,".",sep="")); OUT = c(OUT, out)
+      out = list("text" = paste("Le tableau ci-dessous présente les populations qui ont des effets génétiques les plus faibles et les plus importants dans le réseau pour le \\textbf{",variable,"}.",sep="")); OUT = c(OUT, out)
       tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
       tab$parameter = ex_between(tab$parameter, "[", "]")
       colnames(tab) = c("Population",col_name,"groupe")
@@ -1180,9 +1182,9 @@ if(FALSE){
       tab_head = rbind(head(tab),head(ferme,2)) ; tab_head = tab_head[order(tab_head[,2]),]
       
       out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus faibles dans le réseau pour le ",variable,".
-                              A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus faibles pour le ",variable," (*).",sep=""), "content" = tab_head)); OUT = c(OUT, out)
+                              A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus faibles pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_head)); OUT = c(OUT, out)
       out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus importants dans le réseau pour le ",variable,".
-                                A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus importants pour le ",variable," (*).",sep=""), "content" = tab_tail)); OUT = c(OUT, out)
+                                A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus importants pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_tail)); OUT = c(OUT, out)
       
       return(OUT)
   }
@@ -1282,7 +1284,7 @@ if(FALSE){
     
     if (!is.null(quantiles)){
       attributes(quantiles)$invert = FALSE
-      out = list("table" = list("caption" = paste("Populations qui auraient eu des ",variable," les plus importants chez vous cette année. A titre de comparaison, les meilleures populations pour cette variable semées cette année sur votre ferme sont notées avec *.",sep=""), "content" = quantiles)); OUT = c(OUT, out)  
+      out = list("table" = list("caption" = paste("Populations qui auraient eu des \\textbf{",variable,"} les plus importants chez vous cette année. A titre de comparaison, les meilleures populations pour cette variable semées cette année sur votre ferme sont notées avec *.",sep=""), "content" = quantiles)); OUT = c(OUT, out)  
     }else{
       out = list("text" = "
 Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
