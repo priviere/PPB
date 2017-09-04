@@ -1,7 +1,7 @@
 # 0. help -----------------------------------------------------------------
 #' Select parts of models results from PPBstats::analyse.outputs (eigher parameters comparisons or MCMC).
 #' 
-#' @param res_model output from the \code{PPBformation::analyse_feedback_folder_1} function
+#' @param res_model output from \code{model_1}, \code{model_2} or \code{model_varintra} function
 #' 
 #' @param data output from the \code{shinemas2R::get.data} function
 #' 
@@ -49,7 +49,7 @@ get_result_model = function(res_model, data, type_result = "comparison", variabl
 # 2. Get ID ------------------
 	if ( "data" %in% names(data) == TRUE ) {data = data$data}
 		
-	noms=unique(c(as.character(data$son),as.character(data$father)))
+	noms=unique(data$son)
 	noms = unique(gsub("^([^_]*_[^_]*_[^_]*)_.*$", "\\1", noms))
 	
 	germplasm = gsub("^([^_]*)_.*$", "\\1", noms)
