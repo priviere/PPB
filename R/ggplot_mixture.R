@@ -37,7 +37,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, ye
       # une table par mélange
       mix = plyr:::splitter_d(x, .(mixture_id))
       MIX = list()
-      for (i in 1:length(mix)) {
+      for (i in 1:(length(mix)-1)) {
         Mel = mix[[i]]
         Comp = mix[[length(mix)]] 
         MIX = c(MIX,list(rbind(Mel, Comp[Comp$expe %in% Mel$mixture_id,])))
@@ -46,12 +46,12 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, ye
       
       # récupérer les données (MCMC) pour chaque mixture et les splitter
       mix_split = lapply(MIX , function(y) {
-        noms = as.data.frame(c(unique(y$germplasm_son),unique(y$germplasm_father),stringsAsFactors = FALSE))
+        noms = as.data.frame(unique(y$germplasm_son),stringsAsFactors = FALSE)
         if(length(unique(y$germplasm_son == y$expe_melange))>1 | unique(y$germplasm_son == y$expe_melange) == FALSE ){ # Modality 2 of mixture experiment : we have only the name of the mixture and not the components since the selection 
                               # that were done to create the mixture have not been sown. We want to get the selections that were sown (modality)
-          nom_melange=as.data.frame(unique(y$germplasm_son),stringsAsFactors = FALSE)
+          nom_melange=data.frame(noms[1,],stringsAsFactors = FALSE)
           nom_melange$Type="Mélange"
-          noms=as.data.frame(unique(y$germplasm_father),stringsAsFactors = FALSE)
+          noms=data.frame(noms[-1,],stringsAsFactors = FALSE)
           colnames(noms)[1] =  colnames(nom_melange)[1] ="germplasm"
           data_S = unique(data_S[,c("son","expe","sl_statut","expe_name","expe_name_2","son_germplasm","father","father_germplasm","son_person")])
           data_S = data_S[grep("bouquet",data_S$sl_statut),]
