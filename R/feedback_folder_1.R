@@ -586,6 +586,7 @@ feedback_folder_1 = function(
   if(!is.null(graph$figure)){
     out = list("subsection" = "Note globale"); OUT = c(OUT, out)
     OUT = c(OUT,graph)
+    comp=1
   }
 
   
