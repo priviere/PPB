@@ -1134,8 +1134,13 @@ if(FALSE){
   
   clust = parameter_groups(Model2, parameter = "theta")
   p_PCA = plot.PPBstats(clust)
-  out = list("figure" = list("caption" = paste("Analyse  en composantes principales sur les effets fermes:année"), "content" = p_PCA$ind, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-  
+  if(paste(person,year,sep=":") %in% p_PCA$clust$cluster_1$data$name){
+    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années."), "content" = p_PCA$clust$cluster_1, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  }
+  if(paste(person,year,sep=":") %in% p_PCA$clust$cluster_2$data$name){
+    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années."), "content" = p_PCA$clust$cluster_2, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+  }
+
   clust_of_personyear = clust$clust$clust[paste(person, year, sep = ":"),"clust"]
   farm_in_the_group = rownames(clust$clust$clust)[which(clust$clust$clust$clust == clust_of_personyear)]
   farm_in_the_group = farm_in_the_group[-which(farm_in_the_group == paste(person, year, sep = ":"))]
