@@ -27,6 +27,7 @@ get_interaction_cycle <- function(data,
 	    
 	    if(length(var_not_in_data)==1){vec_variables = vec_variables[-grep(var_not_in_data,vec_variables)]}
 	      variable= gsub("^([^---]*)---.*$", "\\1",	vec_variables)
+	      a = grep(paste(paste("^",vec_variables,"$",sep=""),collapse="|"),colnames(d))
 	      colnames(d)[a] =variable
 	      
 	      q=melt(d,id.vars="son",measure.vars=variable)
@@ -47,7 +48,7 @@ get_interaction_cycle <- function(data,
 	        p = ggplot(data, aes(y = value, x = factor(variable), colour = factor(son), group = factor(son))) 
 	        if(equal.ylim){p = p + coord_cartesian(ylim = c(0.5,as.numeric(y.lim)))}
 	        p = p + stat_summary(fun.y = mean, geom = "line") + stat_summary(fun.y = mean, geom = "point") 
-	        p = p + labs(x="Evolution des notes",y="notes globales")
+	        p = p + labs(x="Evolution des notes au cours du cycle",y="notes globales")
 	        p = p + labs(color="population")
 	        return(p)
 	      })
