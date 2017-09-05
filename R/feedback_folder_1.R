@@ -798,29 +798,31 @@ if(FALSE){
   selection_intra = function(res_model1, data_S_year, data_SR_year, variable){
     if (!is.null(data_S_year$data) & is.element(paste(variable,"---",variable,sep=""),colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      pS1 =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
+      pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                          nb_parameters_per_plot=8)
-    } else {pS1=NULL}
+      
+    } else {pS=NULL}
     
     if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      pSR1 =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
+      pSR =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                           nb_parameters_per_plot=8)
-    } else {pSR1=NULL}
-    return(list("pS1"=pS1, "pSR1"=pSR1))
+      
+    } else {pSR=NULL}
+    return(list("pS"=pS, "pSR"=pSR))
   }
   
   # 2.5.2.1. Poids de mille grains ----------
   a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.mille.grains")
-  pS1 = a$pS1 ; pSR1 = a$pSR1
+  pS1 = a$pS ; pSR1 = a$pSR
   
   # 2.5.2.2. Protéine ----------
   a = selection_intra(res_model1, data_S_year, data_SR_year, "taux.de.proteine")
-  pS2 = a$pS2 ; pSR2 = a$pSR2
+  pS2 = a$pS ; pSR2 = a$pSR
   
   # 2.5.2.3. Poids de l'épi ----------
   a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.l.epi")
-  pS3 = a$pS3 ; pSR3 = a$pSR3
+  pS3 = a$pS ; pSR3 = a$pSR
  
   
   textS = list("text" = paste("
