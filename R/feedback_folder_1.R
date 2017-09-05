@@ -755,7 +755,7 @@ feedback_folder_1 = function(
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
                  vec_variables ="verse---verse", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
   if(!is.null(p)){
-    out = list("figure" = list("caption" = "Evolution de la verse au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
     OUT = c(OUT, out) ; comp=comp + 0.5
   }else{
     out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
@@ -764,7 +764,7 @@ feedback_folder_1 = function(
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
                  vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
    if(!is.null(p)){
-     out = list("figure" = list("caption" = "Evolution de la hauteur au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+     out = list("figure" = list("caption" = "Evolution de la \\textbf{hauteur} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
      OUT = c(OUT, out) ; comp = comp+0.5
    }else{
     out = list("text" = "Pas de données pour la hauteur") ; OUT=c(OUT,out)
@@ -776,7 +776,7 @@ feedback_folder_1 = function(
     
     p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
                    vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
-    out = list("figure" = list("caption" = "Relation entre la verse et la hauteur", "content" = p, "width" = 1)); OUT = c(OUT, out)
+    out = list("figure" = list("caption" = "Relation entre la \\textbf{verse} et la \\textbf{hauteur}", "content" = p, "width" = 1)); OUT = c(OUT, out)
   }
    
 if(FALSE){
@@ -917,70 +917,38 @@ if(FALSE){
   }else{
     out = list("text" = "Les gaphiques suivant permettent de comparer la valeur du mélange à celles de ses composantes et à la valeur moyenne des composantes."); OUT=c(OUT,out)
     
-    # 3.1.1. Poids de mille grains -----
-    out = list("subsection" = "Poids de mille grains"); OUT = c(OUT, out)
-    variable = "poids.de.mille.grains"
-    if (variable %in% names(res_model1)){
+    
+  graphs_ferme_melanges = function(OUT,variable,titre){
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20)
       for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de mille grains du mélange et de ses composantes. 
+        if(!is.null(p_melanges[[1]][[i]]$barplot)){
+          out = list("subsection" = titre); OUT = c(OUT, out)
+          out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-    }
+                                                                              ",sep=""), "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+      }
+      return(OUT)
+  }
     
-    variable = "taux.de.proteine"
-    if (variable %in% names(res_model1)){
-      # 3.1.2. Taux de protéines -----
-      out = list("subsection" = "Taux de protéines"); OUT = c(OUT, out)
-      
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
-      for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du taux de protéine du mélange et de ses composantes. 
-                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-      
-        }
+    # 3.1.1. Poids de mille grains -----
+    if ("poids.de.mille.grains" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
     
-    
+    # 3.1.2. Taux de protéine -----
+    if ("taux.de.proteine" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
+  
     # 3.1.3. Poids de l'épi -----
-    out = list("subsection" = "Poids de l'épi"); OUT = c(OUT, out)
-    variable = "poids.de.l.epi"
-    if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
-      for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison du poids de l'épi du mélange et de ses composantes. 
-                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
-    
+    if ("poids.de.l.epi" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"poids.de.l.epi","Poids de l'épi")}
+  
     # 3.1.4. Hauteur -----
-    out = list("subsection" = "Hauteur"); OUT = c(OUT, out)
-    variable = "hauteur"
-    if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
-      for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la hauteur du mélange et de ses composantes. 
-                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
-    
-    # 3.1.5. Longueur de l'épi -----
-    out = list("subsection" = "Longueur de l'épi"); OUT = c(OUT, out)
-    variable = "longueur.de.l.epi"
-    if (variable %in% names(res_model1)){
-      p_melanges = ggplot_mixture1(res_model1, Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 17)
-      for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){out = list("figure" = list("caption" = "Comparaison de la longueur de l'épi du mélange et de ses composantes. 
-                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ", "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
-        }
-        }
-    
-    
+   if ("hauteur" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"hauteur","Hauteur")}
+  
+     # 3.1.5. Longueur de l'épi -----
+    if ("longueur.de.l.epi" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"longueur.de.l.epi","Longueur de l'épi")}
+  
+    # 3.1.6. LLSD -----
+   if ("LLSD" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"LLSD","Distance dernière feuille - base de l'épi")}
+
+
     # 3.1.4. La hauteur et la verse ----------
     # A faire !
     # out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
@@ -1146,6 +1114,7 @@ if(FALSE){
   farm_in_the_group = farm_in_the_group[-which(farm_in_the_group == paste(person, year, sep = ":"))]
   toget = c(grep(year, farm_in_the_group), grep(as.character(as.numeric(year)-1), farm_in_the_group))
   if( length(toget) > 0 ) { farm_in_the_group = farm_in_the_group[toget] }
+  farm_in_the_group = farm_in_the_group[order(farm_in_the_group)]
   
   out = list("text" = paste("Les fermes présentes dans le même groupe que votre ferme pour les années ", as.character(as.numeric(year)-1), " et ", year  ," sont : ", paste(farm_in_the_group, collapse = ", "))); OUT = c(OUT, out)
   
@@ -1160,13 +1129,20 @@ if(FALSE){
   out = list("subsection" = "Effets génétiques des populations"); OUT = c(OUT, out)
   
   out = list("text" = paste("
-                            Les effets génétiques correpondent à la valeur intrinsèque des populations : c'est la part de la valeur du caractère qui est due à la génétique de la plante 
+                            Les \\textbf{effets génétiques correpondent à la valeur intrinsèque des populations} : c'est la part de la valeur du caractère qui est due à la génétique de la plante 
                             (on retire l'effet de l'environnement et de l'interaction plante x environnement).
                             Ces caractéristiques génétiques ont été estimées à partir du comportement des populations dans le réseau de fermes pour l'ensemble des années.
-                            A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
-                            Attention : sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
-                            (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) 
                             ")); OUT = c(OUT, out)
+  
+  out = list("text" = paste("
+                            Les tableaux suivant présentent les effets génétiques de populations présentes dans le réseau.
+                             A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
+                             \textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
+                             (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) 
+                            ")); OUT = c(OUT, out)
+  
+  
+
   
   effet_genet = function(OUT,variable,col_name){
       comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
@@ -1200,6 +1176,7 @@ if(FALSE){
   out = list("text" = paste("
                             La sensibilité à l'interation des populations renseigne sur leur comportement en moyenne dans le réseau par rapport aux autres populations.
                             Moins elles sont sensibles à l’interaction, plus elles se comportent moyennement de la même manière dans les fermes par rapport aux autres populations.
+                            Plus elles sont sensibles et plus leur comportement va différer du comportement moyen des population lorsqu'on la cultive sur d'autres fermes.
                             ")); OUT = c(OUT, out)
   
   sensibilite = function(tab,variable){
@@ -1237,7 +1214,7 @@ if(FALSE){
     colnames(comp.beta$mean.comparisons) = c("median","parameter")
     p_alpha_beta =plot.PPBstats(x = comp.alpha, y = comp.beta,  ggplot.type = "biplot-alpha-beta", nb_parameters_per_plot = 100)
     p_alpha_beta=lapply(p_alpha_beta,function(x){x=x+labs(x="Effet génétique",y="sensibilité")})
-    out = list("figure" = list("caption" = paste("Effet génétique en fonction de la sensibilité à l'environnement pour le ",variable," de toutes les populations.
+    out = list("figure" = list("caption" = paste("Effet génétique en fonction de la sensibilité à l'environnement pour le \\textbf{",variable,"} de toutes les populations.
                                ",sep=""), "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     return(OUT)
   }
