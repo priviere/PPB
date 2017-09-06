@@ -20,6 +20,7 @@ get_interaction_cycle <- function(data,
 	  d$son = unlist(lapply(as.character(d$son),function(x){strsplit(x,"_")[[1]][1]}))
 	  d=d[!is.na(d[,2:ncol(d)]),]
 	  d=d[!is.na(d$son),]
+	  d[,2:ncol(d)] = lapply(d[,2:ncol(d)], function(x){gsub(",",".",x)})
 	  d[,2:ncol(d)] = lapply(d[,2:ncol(d)], function(x){as.numeric(x)})
 	  if(nrow(d)>1){
 	    d = aggregate(d[,2:ncol(d)],list(d[,"son"]),mean)
