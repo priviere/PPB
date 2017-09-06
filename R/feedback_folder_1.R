@@ -800,13 +800,14 @@ if(FALSE){
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                          nb_parameters_per_plot=8)
-      
+      if(is.null(unlist(pS[[1]])) & is.null(pS[[2]]) & is.null(pS[[3]])){pS=NULL}
     } else {pS=NULL}
     
     if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       pSR =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                           nb_parameters_per_plot=8)
+      if(is.null(unlist(pSR[[1]])) & is.null(pSR[[2]]) & is.null(pSR[[3]])){pSR=NULL}
       
     } else {pSR=NULL}
     return(list("pS"=pS, "pSR"=pSR))
