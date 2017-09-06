@@ -774,7 +774,7 @@ feedback_folder_1 = function(
     return(a)
   }))
   data_all$data$data$"verse---verse" = D$"verse---verse_2"
-  p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=20)
+  p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=25)
 
   if(!is.null(p)){
     out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
