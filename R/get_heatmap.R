@@ -27,7 +27,6 @@ get_interaction_cycle <- function(data,
   })
 
 
-
   return(p)
 }
 
