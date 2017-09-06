@@ -433,7 +433,7 @@ feedback_folder_1 = function(
     }else{
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
                      in.col = "germplasm", vec_variables = variable, 
-                     nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+                     nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
     }
     
     if( !is.null(p) ) {
@@ -1140,8 +1140,9 @@ if(FALSE){
   out = list("text" = paste("
                             Les tableaux suivant présentent les effets génétiques de populations présentes dans le réseau.
                              A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
-                             \textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
-                             (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) 
+                             \\textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
+                             (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) : il est donc
+                              normal que ces valeurs ne soient pas celles présentées dans la partie \"Mesures à la récolte\"  
                             ")); OUT = c(OUT, out)
   
   
