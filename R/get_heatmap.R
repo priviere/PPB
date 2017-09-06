@@ -1,9 +1,8 @@
-get_interaction_cycle <- function(data,
-																	vec_variables,
-																	equal.ylim = TRUE, 
-																	nb_parameters_per_plot_in.col = NULL,
-																	year
-																	)
+get_heatmap <- function(data,
+												vec_variables,
+												nb_parameters_per_plot = NULL
+                        )
+
 # Permet de récupérer une heatmap pour les données non moulinées par le modèle
 {
   d=data$data$data
@@ -13,7 +12,7 @@ get_interaction_cycle <- function(data,
   HM=HM[!(HM$var == "NA"),]
   HM$var = factor(HM$var)
   HM$son = unlist(lapply(as.character(HM$son),function(x){strsplit(x,"_")[[1]][1]}))
-  split = rep(seq(1,100,1),nb_parameters_per_plot_in.col)
+  split = rep(seq(1,100,1),nb_parameters_per_plot)
   split = split[order(split)]
   split=split[1:length(unique(HM$son))]
   names(split)=unique(HM$son)
