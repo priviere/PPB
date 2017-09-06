@@ -752,15 +752,7 @@ feedback_folder_1 = function(
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
   comp=0
-  p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
-                 vec_variables ="verse---verse", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
-  if(!is.null(p)){
-    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
-    OUT = c(OUT, out) ; comp=comp + 0.5
-  }else{
-    out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
-  }
-  
+
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
                  vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
    if(!is.null(p)){
@@ -768,6 +760,27 @@ feedback_folder_1 = function(
      OUT = c(OUT, out) ; comp = comp+0.5
    }else{
     out = list("text" = "Pas de données pour la hauteur") ; OUT=c(OUT,out)
+  }
+  
+  # Notations verse : couché, droit... -> mettre sous format 1->5 pour les graphs. 1:à plat ; 5:droit
+  D=data_all$data$data
+  D$"verse---verse_2" = unlist(lapply(D$"verse---verse_2",function(x){
+    if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"}
+    if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"}
+    if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"}
+    if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"}
+    if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"}
+    if(is.null(x) | is.na(x)){a="NA"}
+    return(a)
+  }))
+  data_all$data$data$"verse---verse" = D$"verse---verse_2"
+  p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=20)
+
+  if(!is.null(p)){
+    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+    OUT = c(OUT, out) ; comp=comp + 0.5
+  }else{
+    out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
   }
   
   # 2.5.1.6. La verse en fonction de la hauteur ----------
