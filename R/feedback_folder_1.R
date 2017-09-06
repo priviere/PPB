@@ -765,12 +765,14 @@ feedback_folder_1 = function(
   # Notations verse : couché, droit... -> mettre sous format 1->5 pour les graphs. 1:à plat ; 5:droit
   D=data_all$data$data
   D$"verse---verse_2" = unlist(lapply(D$"verse---verse_2",function(x){
-    if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"}
-    if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"}
-    if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"}
-    if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"}
-    if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"}
-    if(is.null(x) | is.na(x)){a="NA"}
+    b=NULL
+    if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"; b=1}
+    if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"; b=1}
+    if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"; b=1}
+    if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"; b=1}
+    if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"; b=1}
+    if(is.null(x) | is.na(x)){a="NA"; b=1}
+    if(is.null(b)){a="NA"}
     return(a)
   }))
   data_all$data$data$"verse---verse" = D$"verse---verse_2"
