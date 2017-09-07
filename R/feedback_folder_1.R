@@ -820,6 +820,7 @@ if(FALSE){
     
     if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
+      data_version = data_version[grep("(R)",data_version$group),]
       pSR =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                           nb_parameters_per_plot=8)
       if(is.null(unlist(pSR[[1]])) & is.null(pSR[[2]]) & is.null(pSR[[3]])){pSR=NULL}
@@ -1157,7 +1158,7 @@ if(FALSE){
                              A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
                              \\textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
                              (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) : il est donc
-                              normal que ces valeurs ne soient pas celles présentées dans la partie \"Mesures à la récolte\"  
+                              normal que ces valeurs ne soient pas identiques à celles présentées dans la partie \"Mesures à la récolte\".
                             ")); OUT = c(OUT, out)
   
   
