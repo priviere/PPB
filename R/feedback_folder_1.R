@@ -694,7 +694,8 @@ feedback_folder_1 = function(
       out = list("figure" = list("caption" = paste("
                                Les chiffres donnés dans ce graphique correspondent à la valeur du \\textbf{",variable,"} pour chaque population les différentes années sur votre ferme.
                                L'échelle de couleur correspond aux groupes de significativité : des populations présentant des couleurs différentes sont significativement différentes.
-                               Attention : Les groupements sont faits par année, donc on ne peut pas grouper des populations semées deux annés différentes selon leur couleur.
+                               Attention : Les groupements sont faits par année, donc on ne peut pas interpréter 2 pop présentes deux années différentes comme étant dans le même groupe si elles ont la même couleur 
+grouper des populations semées deux annés différentes selon leur couleur.
                                ",sep=""), "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
     
@@ -764,20 +765,23 @@ feedback_folder_1 = function(
   
   # Notations verse : couché, droit... -> mettre sous format 1->5 pour les graphs. 1:à plat ; 5:droit
   D=data_all$data$data
-  D$"verse---verse_2" = unlist(lapply(D$"verse---verse_2",function(x){
-    b=NULL
-    if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"; b=1}
-    if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"; b=1}
-    if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"; b=1}
-    if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"; b=1}
-    if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"; b=1}
-    if(is.null(x) | is.na(x)){a="NA"; b=1}
-    if(is.null(b)){a="NA"}
-    return(a)
-  }))
-  data_all$data$data$"verse---verse" = D$"verse---verse_2"
-  p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=25)
-
+  if(!is.null(D$"verse---verse_2")){
+    D$"verse---verse_2" = unlist(lapply(D$"verse---verse_2",function(x){
+      b=NULL
+      if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"; b=1}
+      if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"; b=1}
+      if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"; b=1}
+      if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"; b=1}
+      if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"; b=1}
+      if(is.null(x) | is.na(x)){a="NA"; b=1}
+      if(is.null(b)){a="NA"}
+      return(a)
+    }))
+    data_all$data$data$"verse---verse" = D$"verse---verse_2"
+    
+    p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=25)
+  }else{p=NULL}
+ 
   if(!is.null(p)){
     out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
     OUT = c(OUT, out) ; comp=comp + 0.5
@@ -996,8 +1000,8 @@ if(FALSE){
   # 3.2.1. Distribution du gain du mélange par rapport à la moyenne de ses composantes sur le réseau -----
   out = list("subsection" = "Distribution du gain du mélange par rapport à la moyenne de ses composantes sur le réseau"); OUT = c(OUT, out)
   out = list("text" = "Ces graphiques présentent le comportement des mélanges par rapport à la moyenne de leurs composantes respectives. 
-             Un histogramme décallé vers la droite par rapport à 0 indique qu'une majorité des mélanges se sont mieux comportés que la moyenne de leurs composantes. 
-             A l'inverse si l'histogramme est décallé vers la gauche la majorité des mélanges se sont moins bien comportés que la moyenne de leurs composantes."); OUT = c(OUT, out)
+             Un histogramme décalé vers la droite par rapport à 0 indique qu'une majorité des mélanges se sont mieux comportés que la moyenne de leurs composantes. 
+             A l'inverse si l'histogramme est décalé vers la gauche la majorité des mélanges se sont moins bien comportés que la moyenne de leurs composantes."); OUT = c(OUT, out)
   
   melanges_reseau = function(OUT,variable,titre,distrib=TRUE,comp_global=FALSE){
     # Histogramme distribution de l'overyielding
@@ -1013,7 +1017,7 @@ if(FALSE){
     }
     out = list("subsection" = titre); OUT = c(OUT, out)
     out = list("includeimage" = list("caption" = paste("Distribution des rapports entre les comportement des mélanges et les comportements moyens
-                                                      des leurs composantes respectives pour le ",variable,".
+                                                      de leurs composantes respectives pour le ",variable,".
                                                       La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
                                                       tandis que la ligne pointillée noire est fixée sur un gain nul.",sep=""), 
                                       "content" = paste("./figures/Histo_",var,".png",sep=""), "width" = 0.7))
@@ -1248,7 +1252,7 @@ if(FALSE){
   out = list("section" = "Prédire le passé"); OUT = c(OUT, out)
   
   out = list("text" = "
-             Ici nous vous proposons de prédire les valeurs qu’auraient eu certaines populations dans votre fermes cette année : on prédit le passé ! 
+             Ici nous vous proposons de prédire les valeurs qu’auraient eu certaines populations dans votre ferme cette année : on prédit le passé ! 
              Cette information est issue des modèles statistiques que nous avons développés et est possible si nous avons reçu les épis cette année. 
              A titre de comparaison, vous retrouverez notées avec une * les valeurs des trois meilleures populations cultivées chez vous cette année.
              "); OUT = c(OUT, out)
