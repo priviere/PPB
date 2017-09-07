@@ -1,7 +1,7 @@
 # 0. help -----------------------------------------------------------------
 #' Select parts of models results from PPBstats::analyse.outputs (eigher parameters comparisons or MCMC).
 #' 
-#' @param res_model output from the \code{PPBformation::analyse_feedback_folder_1} function
+#' @param res_model output from \code{model_1}, \code{model_2} or \code{model_varintra} function
 #' 
 #' @param data output from the \code{shinemas2R::get.data} function
 #' 
