@@ -721,11 +721,11 @@ feedback_folder_1 = function(
   
   # 2.5.1.1. Poids de mille grains ----------
   variable = "poids.de.mille.grains"
-  if(variable %in% names(res_model1)){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids de mille grains",score=TRUE,inter_plot=TRUE)}
+  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids de mille grains",score=TRUE,inter_plot=TRUE)}
   
   # 2.5.1.2. Taux de protéine ----------
   variable = "taux.de.proteine"
-  if(variable %in% names(res_model1)){
+  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){
     OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le taux de protéine",score=TRUE,inter_plot=TRUE)
     # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
     out = list("subsubsection" = "Le taux de protéine en fonction du poids de mille grains"); OUT = c(OUT, out)
@@ -745,7 +745,7 @@ feedback_folder_1 = function(
   
   # 2.5.1.4. Poids de l'épi ----------
   variable = "poids.de.l.epi"
-  if(variable %in% names(res_model1)){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
+  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
   
 
   
@@ -950,22 +950,22 @@ if(FALSE){
   }
     
     # 3.1.1. Poids de mille grains -----
-    if ("poids.de.mille.grains" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
+    if ("poids.de.mille.grains" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
     
     # 3.1.2. Taux de protéine -----
-    if ("taux.de.proteine" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
+    if ("taux.de.proteine" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
   
     # 3.1.3. Poids de l'épi -----
-    if ("poids.de.l.epi" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"poids.de.l.epi","Poids de l'épi")}
+    if ("poids.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.l.epi","Poids de l'épi")}
   
     # 3.1.4. Hauteur -----
-   if ("hauteur" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"hauteur","Hauteur")}
+   if ("hauteur" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"hauteur","Hauteur")}
   
      # 3.1.5. Longueur de l'épi -----
-    if ("longueur.de.l.epi" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"longueur.de.l.epi","Longueur de l'épi")}
+    if ("longueur.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"longueur.de.l.epi","Longueur de l'épi")}
   
     # 3.1.6. LLSD -----
-   if ("LLSD" %in% names(res_model1)){OUT=graphs_ferme_melanges(OUT,"LLSD","Distance dernière feuille - base de l'épi")}
+   if ("LLSD" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"LLSD","Distance dernière feuille - base de l'épi")}
 
 
     # 3.1.4. La hauteur et la verse ----------
