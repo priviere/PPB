@@ -11,13 +11,14 @@ get_heatmap <- function(data,
   colnames(HM)[3] = "var"
   HM=HM[!(HM$var == "NA"),]
   HM$var = factor(HM$var)
+  
   HM$son = unlist(lapply(as.character(HM$son),function(x){strsplit(x,"_")[[1]][1]}))
   split = rep(seq(1,100,1),nb_parameters_per_plot)
   split = split[order(split)]
   split=split[1:length(unique(HM$son))]
   names(split)=unique(HM$son)
   HM$split = split[HM$son]
-  
+  if(vec_variables == "verse"){levels(HM) = c(1,2,3,4,5)}
   to_plot =  plyr:::splitter_d(HM, .(split))
   
   p = lapply(to_plot,function(data){
