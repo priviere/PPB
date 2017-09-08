@@ -300,14 +300,12 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, ye
       
       p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
       p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.03), alpha=0.6, color="black")
-      p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") 
+      p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") + geom_vline(xintercept = 0,  linetype = "dotted")
       p = p + labs(x=paste("Différence normalisée entre les mélanges et 
 	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
-      p = p + geom_text(x=Mean,y=-0.1,label=paste("Gain moyen =",Gain,"%",sep=" "), size=5)
-      p = p + geom_vline(xintercept = 0,  linetype = "dotted")
       p = p + scale_fill_discrete(name = "Significativité")
-      p = p + annotate("text",label = c(paste("Cas positifs :",Positif,"%",sep=" "),paste("Cas négatifs :",Negatif,"%",sep=" ")),x=B,y=c(7,6.8))
-      
+      p = p + labs(title = paste(titre,":","Gain moyen =",Gain,"%",";
+                                 ","Cas positifs :",Positif,"%",";","Cas négatifs :",Negatif,"%",sep=" "))
   
       return(p)
     }else{
