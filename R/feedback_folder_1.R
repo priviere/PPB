@@ -24,8 +24,7 @@
 feedback_folder_1 = function(
   dir = ".",
   person,
-  out_analyse_feedback_folder_1,
-  score=TRUE)
+  out_analyse_feedback_folder_1)
   # go ----------
 {
   # Set the right folder and create folders tex_files and feedback_folder ----------
@@ -669,7 +668,7 @@ feedback_folder_1 = function(
   # 2.5.1. Mesures sur les populations ----------
   out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
 
-  interaction_and_score = function(OUT,res_model,variable,table=FALSE,titre,score=TRUE,inter_plot=TRUE){
+  interaction_and_score = function(OUT,res_model,variable,table=FALSE,titre,score=TRUE,inter_plot=FALSE){
     out = list("subsubsection" = titre); OUT = c(OUT, out)
     
     res_model = res_model[[variable]]
@@ -722,12 +721,12 @@ grouper des populations semées deux annés différentes selon leur couleur.
   
   # 2.5.1.1. Poids de mille grains ----------
   variable = "poids.de.mille.grains"
-  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids de mille grains",score=TRUE,inter_plot=TRUE)}
+  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le poids de mille grains",score=TRUE,inter_plot=FALSE)}
   
   # 2.5.1.2. Taux de protéine ----------
   variable = "taux.de.proteine"
   if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){
-    OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le taux de protéine",score=TRUE,inter_plot=TRUE)
+    OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le taux de protéine",score=TRUE,inter_plot=FALSE)
     # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
     out = list("subsubsection" = "Le taux de protéine en fonction du poids de mille grains"); OUT = c(OUT, out)
     a=data_all$data$data
@@ -746,16 +745,17 @@ grouper des populations semées deux annés différentes selon leur couleur.
   
   # 2.5.1.4. Poids de l'épi ----------
   variable = "poids.de.l.epi"
-  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=TRUE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
+  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
   
 
   
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
   comp=0
-
   p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
-                 vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+                   vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+
+  
    if(!is.null(p)){
      out = list("figure" = list("caption" = "Evolution de la \\textbf{hauteur} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
      OUT = c(OUT, out) ; comp = comp+0.5
@@ -766,24 +766,26 @@ grouper des populations semées deux annés différentes selon leur couleur.
   # Notations verse : couché, droit... -> mettre sous format 1->5 pour les graphs. 1:à plat ; 5:droit
   D=data_all$data$data
   if(!is.null(D$"verse---verse_2")){
-    D$"verse---verse_2" = unlist(lapply(D$"verse---verse_2",function(x){
+    D$"verse---verse" = unlist(lapply(D$"verse---verse_2",function(x){
       b=NULL
-      if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="1"; b=1}
-      if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="2"; b=1}
-      if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="3"; b=1}
-      if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a="4"; b=1}
-      if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="5"; b=1}
+      if(!is.null(x) & x %in% c("à plat","a plat","à  plat","plat","100% a plat","100 a plat")){a="à plat"; b=1}
+      if(!is.null(x) & x %in% c("couché","couche","100% couché")){a="couché"; b=1}
+      if(!is.null(x) & x %in% c("intermediaire","intermédiaire","intermédiaire- presque droit","100 intermédiaire","100% intermédiaire")){a="intermédiaire"; b=1}
+      if(!is.null(x) & x %in% c("presque droit","presque droits","presque droit- droit")){a=" presque droit"; b=1}
+      if(!is.null(x) & x %in% c("droit","100 droit","100% droit")){a="droit"; b=1}
       if(is.null(x) | is.na(x)){a="NA"; b=1}
       if(is.null(b)){a="NA"}
       return(a)
     }))
-    data_all$data$data$"verse---verse" = D$"verse---verse_2"
+    data_all$data$data$"verse---verse" = D$"verse---verse"
+    verse = c(1,2,3,4,5) ; names(verse) = c("à plat","couché","intermédiaire","presque droit","droit")
+    data_all$data$data$verse = verse[data_all$data$data$`verse---verse_2`]
     
-    p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=25)
+    p = get_heatmap(data = data_all, vec_variables="verse---verse",nb_parameters_per_plot=50)
   }else{p=NULL}
  
   if(!is.null(p)){
-    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(1, ncol = 1), "width" = 1))
     OUT = c(OUT, out) ; comp=comp + 0.5
   }else{
     out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
@@ -794,7 +796,7 @@ grouper des populations semées deux annés différentes selon leur couleur.
     out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
     
     p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
-                   vec_variables = c("verse---verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
+                   vec_variables = c("verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
     out = list("figure" = list("caption" = "Relation entre la \\textbf{verse} et la \\textbf{hauteur}", "content" = p, "width" = 1)); OUT = c(OUT, out)
   }
    
@@ -818,15 +820,29 @@ if(FALSE){
     if (!is.null(data_S_year$data) & is.element(paste(variable,"---",variable,sep=""),colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
-                         nb_parameters_per_plot=8)
+                         nb_parameters_per_plot=30)
+      if(!is.null(pS$data_mean_comparisons[[1]])){
+        pS$data_mean_comparisons[[1]] = lapply(pS$data_mean_comparisons[[1]],function(x){
+          x = x + labs(title = variable)
+          return(x)
+        })
+      }
+
       if(is.null(unlist(pS[[1]])) & is.null(pS[[2]]) & is.null(pS[[3]])){pS=NULL}
     } else {pS=NULL}
     
     if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      data_version = data_version[grep("(R)",data_version$group),]
+      group = unlist(lapply(as.character(data_version$group),function(x){strsplit(x," ")[[1]][length(strsplit(x," ")[[1]])]}))
+      data_version = data_version[grep("R",group),]
       pSR =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
-                          nb_parameters_per_plot=8)
+                          nb_parameters_per_plot=30)
+      if(!is.null(pSR$data_mean_comparisons[[1]])){
+        pSR$data_mean_comparisons[[1]] = lapply(pSR$data_mean_comparisons[[1]],function(x){
+          x = x + labs(title = variable)
+          return(x)
+        })
+      }
       if(is.null(unlist(pSR[[1]])) & is.null(pSR[[2]]) & is.null(pSR[[3]])){pSR=NULL}
       
     } else {pSR=NULL}
@@ -893,15 +909,15 @@ if(FALSE){
     out = textS; OUT = c(OUT, out)
     if( !is.null(pS1) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de mille grains}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
     if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{taux de protéine}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
     if( !is.null(pS3) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de l'épi}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
   }
   
@@ -909,11 +925,11 @@ if(FALSE){
     out = list("subsubsection" = "La réponse à la sélection"); OUT = c(OUT, out)
     
     out = textSR; OUT = c(OUT, out)
-    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 1))
+    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
   }
   
@@ -1144,7 +1160,7 @@ if(FALSE){
   #comp.theta = res_model2$comp.par[[variable]]$comp.theta
   #p_barplot_theta =plot.PPBstats(comp.theta, ggplot.type = "barplot")
   
-  
+if(FALSE){
   # 4.3. Caractéristiques génétiques des populations dans le réseau ----------
   out = list("section" = "Caractéristiques génétiques des populations dans le réseau"); OUT = c(OUT, out)
   
@@ -1159,36 +1175,36 @@ if(FALSE){
   
   out = list("text" = paste("
                             Les tableaux suivant présentent les effets génétiques de populations présentes dans le réseau.
-                             A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
-                             \\textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
-                             (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) : il est donc
-                              normal que ces valeurs ne soient pas identiques à celles présentées dans la partie \"Mesures à la récolte\".
+                            A titre comparatif sont ajoutés dans ces tableaux les effets génétiques de populations présentes dans votre ferme cette année. 
+                            \\textit{Attention :} sont reportés dans ce tableau les effets génétiques des populations, qui ne correspondent pas aux valeurs mesurées directement sur les populations 
+                            (ces dernières prenent en compte les effets de l'environnement et l'interaction population x environnement en plus de l'effet génétique) : il est donc
+                            normal que ces valeurs ne soient pas identiques à celles présentées dans la partie \"Mesures à la récolte\".
                             ")); OUT = c(OUT, out)
   
   
-
+  
   
   effet_genet = function(OUT,variable,col_name){
-      comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
-      
-      out = list("text" = paste("Le tableau ci-dessous présente les populations qui ont des effets génétiques les plus faibles et les plus importants dans le réseau pour le \\textbf{",variable,"}.",sep="")); OUT = c(OUT, out)
-      tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
-      tab$parameter = ex_between(tab$parameter, "[", "]")
-      colnames(tab) = c("Population",col_name,"groupe")
-      attributes(tab)$invert = FALSE
-      ferme = tab[grep(paste(pop_ferme,collapse="|"),tab$Population),]
-      ferme$Population = paste(ferme$Population,"*",sep=" ")
-      tab_tail = rbind(tail(tab),tail(ferme,2)) ; tab_tail = tab_tail[order(tab_tail[,2]),]
-      tab_head = rbind(head(tab),head(ferme,2)) ; tab_head = tab_head[order(tab_head[,2]),]
-      
-      out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus faibles dans le réseau pour le ",variable,".
-                              A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus faibles pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_head)); OUT = c(OUT, out)
-      out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus importants dans le réseau pour le ",variable,".
-                                A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus importants pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_tail)); OUT = c(OUT, out)
-      
-      return(OUT)
+    comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
+    
+    out = list("text" = paste("Le tableau ci-dessous présente les populations qui ont des effets génétiques les plus faibles et les plus importants dans le réseau pour le \\textbf{",variable,"}.",sep="")); OUT = c(OUT, out)
+    tab = comp.alpha$mean.comparisons[,c("parameter","median","groups")]
+    tab$parameter = ex_between(tab$parameter, "[", "]")
+    colnames(tab) = c("Population",col_name,"groupe")
+    attributes(tab)$invert = FALSE
+    ferme = tab[grep(paste(pop_ferme,collapse="|"),tab$Population),]
+    ferme$Population = paste(ferme$Population,"*",sep=" ")
+    tab_tail = rbind(tail(tab),tail(ferme,2)) ; tab_tail = tab_tail[order(tab_tail[,2]),]
+    tab_head = rbind(head(tab),head(ferme,2)) ; tab_head = tab_head[order(tab_head[,2]),]
+    
+    out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus faibles dans le réseau pour le ",variable,".
+                                                A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus faibles pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_head)); OUT = c(OUT, out)
+    out = list("table" = list("caption" = paste("Populations présentant des effets génétiques les plus importants dans le réseau pour le ",variable,".
+                                                A titre comparatif sont reportées dans le tableau les populations présentes chez vous cette année ayant les effets génétiques les plus importants pour le \\textbf{",variable,"} (*).",sep=""), "content" = tab_tail)); OUT = c(OUT, out)
+    
+    return(OUT)
   }
-
+  
   if("poids.de.mille.grains" %in% names(Model2)){OUT = effet_genet(OUT,"poids.de.mille.grains","Poids de mille grains moyen")}
   if("taux.de.proteine" %in% names(Model2)){OUT = effet_genet(OUT,"taux.de.proteine","Taux de protéine moyen")}
   if("poids.de.l.epi" %in% names(Model2)){OUT = effet_genet(OUT,"poids.de.l.epi","Poids d'épi moyen")}
@@ -1230,7 +1246,7 @@ if(FALSE){
   out = list("text" = paste("Sur les graphiques suivants sont placées les population selon leur effet génétique et leur sensibilité à l'interaction.
                             Les populations situées en bas à droite ont un effet génétique important et sont peu sensibles à l'interaction.
                             A l'inverse les populations en haut à gauche ont un effet génétique plus faibles que la moyenne des populations et sont sensibles à l'interaction.")); OUT = c(OUT, out)
-
+  
   genet_sensi = function(OUT,variable){
     comp.alpha = res_model2[[variable]]$comp.par$comp.alpha
     comp.beta = res_model2[[variable]]$comp.par$comp.beta
@@ -1242,11 +1258,12 @@ if(FALSE){
                                ",sep=""), "content" = p_alpha_beta, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     return(OUT)
   }
-
+  
   if ("poids.de.mille.grains" %in% names(Model2)) { OUT=genet_sensi(OUT,"poids.de.mille.grains") }
   if ("taux.de.proteine" %in% names(Model2)) { OUT=genet_sensi(OUT,"taux.de.proteine") }
-#  if ("poids.de.l.epi" %in% names(Model2)) { OUT=genet_sensi(OUT,"poids.de.l.epi") }
-  
+  #  if ("poids.de.l.epi" %in% names(Model2)) { OUT=genet_sensi(OUT,"poids.de.l.epi") }
+
+}
 
   # 4.4. Prédire le passé ----------
   out = list("section" = "Prédire le passé"); OUT = c(OUT, out)
