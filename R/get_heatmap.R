@@ -25,7 +25,7 @@ get_heatmap <- function(data,
   HM$split = split[HM$son]
   to_plot =  plyr:::splitter_d(HM, .(split))
   p = lapply(to_plot,function(data){
-    p = ggplot(data=data,aes(x=son_year,y=son,fill=var)) + geom_tile() + scale_fill_manual(drop=FALSE,values =c("chartreuse4","seagreen2","palegreen1","coral2","red3"))
+    p = ggplot(data=data,aes(x=son_year,y=son,fill=var)) + geom_tile() + scale_fill_manual(drop=FALSE,values =c("dodgerblue3","skyblue2","paleturquoise2","coral2","red3"))
     p = p +  scale_x_discrete(drop=FALSE)
     p = p + labs(x = "année", y="populations", fill=paste("note",vec_variables,sep=" "))
   })
