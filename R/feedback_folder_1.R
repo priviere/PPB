@@ -735,6 +735,7 @@ grouper des populations semées deux annés différentes selon leur couleur.
     pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
     to_add = merge(prot,pmg,by="son")
     a=rbind(prot_ok,to_add)
+    a = a[a$son_year %in% c(as.character(as.numeric(year)-1),year),]
     D=data_all
     D$data$data=a
     p = get.ggplot(data = D, ggplot.type = "data-biplot", in.col = "year", 
@@ -785,7 +786,7 @@ grouper des populations semées deux annés différentes selon leur couleur.
   }else{p=NULL}
  
   if(!is.null(p)){
-    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps. 1=à plat ; 2=couché ; 3=intermédiaire ; 4=presque debout ; 5=debout.", "content" = p, "layout" = matrix(1, ncol = 1), "width" = 1))
+    out = list("figure" = list("caption" = "Evolution de la \\textbf{verse} au cours du temps.", "content" = p, "layout" = matrix(1, ncol = 1), "width" = 1))
     OUT = c(OUT, out) ; comp=comp + 0.5
   }else{
     out = list("text" = "Pas de données pour la verse") ; OUT=c(OUT,out)
