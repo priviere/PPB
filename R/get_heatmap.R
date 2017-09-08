@@ -12,7 +12,7 @@ get_heatmap <- function(data,
   HM=HM[!(HM$var == "NA"),]
   HM$var = factor(HM$var)
   
-  if(vec_variables == "verse---verse_2"){HM$var = factor(HM$var,levels(HM$var)[c(3,5,4,2,1)])}
+  if(vec_variables == "verse---verse"){HM$var = factor(HM$var,levels(HM$var)[c(3,5,4,2,1)])}
   
   HM$son = unlist(lapply(as.character(HM$son),function(x){strsplit(x,"_")[[1]][1]}))
   split = rep(seq(1,100,1),nb_parameters_per_plot)
