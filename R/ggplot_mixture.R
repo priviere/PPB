@@ -20,7 +20,14 @@
 #' @seealso \code{\link{shinemas2R::get.data}}
 #' 
 
-ggplot_mixture1 = function(res_model, melanges_PPB_mixture, data_S, variable, year, model, plot.type = "comp.in.farm", person, nb_parameters_per_plot = 8) 
+ggplot_mixture1 = function(res_model, melanges_PPB_mixture, 
+                           data_S, 
+                           variable, 
+                           year, 
+                           model, 
+                           plot.type = "comp.in.farm", 
+                           person,
+                           nb_parameters_per_plot = 8) 
 {
   melanges_PPB_mixture=melanges_PPB_mixture$data
   add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
