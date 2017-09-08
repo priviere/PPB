@@ -1070,22 +1070,22 @@ if(FALSE){
   }
   
   # 3.2.1.1. poids de mille grains -----
-  OUT = melanges_reseau(OUT,variable="poids.de.mille.grains",titre="Poids de mille grains",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="poids.de.mille.grains",titre="Poids de mille grains",distrib=FALSE,comp_global=FALSE)
   
   # 3.2.1.2. Poids de l'épi -----
-  OUT = melanges_reseau(OUT,variable="poids.de.l.epi",titre="Poids de l'épi",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="poids.de.l.epi",titre="Poids de l'épi",distrib=FALSE,comp_global=FALSE)
   
   # 3.2.1.3. Hauteur -----
-  OUT = melanges_reseau(OUT,variable="hauteur",titre="Hauteur moyenne",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="hauteur",titre="Hauteur moyenne",distrib=FALSE,comp_global=FALSE)
 
   # 3.2.1.4. Longueur de l'épi -----
-  OUT = melanges_reseau(OUT,variable="longueur.de.l.epi",titre="Longueur de l'épi",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="longueur.de.l.epi",titre="Longueur de l'épi",distrib=FALSE,comp_global=FALSE)
   
   # 3.2.1.5. LLSD -----
-  OUT = melanges_reseau(OUT,variable="LLSD",titre="Distance dernière feuille - base de l'épi",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="LLSD",titre="Distance dernière feuille - base de l'épi",distrib=FALSE,comp_global=FALSE)
   
   # 3.2.1.6. Nombre moyen de grains par épi  -----
-  OUT = melanges_reseau(OUT,variable="nbr.estime.grain.par.epi",titre="Nombre moyen de grains par épi",distrib=TRUE,comp_global=FALSE)
+  OUT = melanges_reseau(OUT,variable="nbr.estime.grain.par.epi",titre="Nombre moyen de grains par épi",distrib=FALSE,comp_global=FALSE)
   
 if(FALSE){
   # 3.2.2. Distribution des mélanges, de la moins bonne composante & la meilleure composante -----
