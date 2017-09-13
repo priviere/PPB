@@ -1141,12 +1141,12 @@ if(FALSE){
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
-  p_PCA = plot.PPBstats(clust)
+  p_PCA = plot.PPBstats(clust,ind_to_highlight=paste(person,year,sep=":"))
   if(paste(person,year,sep=":") %in% p_PCA$clust$cluster_1$data$name){
-    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années."), "content" = p_PCA$clust$cluster_1, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années. Le point noir correspond à votre ferme cette année."), "content" = p_PCA$clust$cluster_1, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
   if(paste(person,year,sep=":") %in% p_PCA$clust$cluster_2$data$name){
-    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années."), "content" = p_PCA$clust$cluster_2, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+    out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années. Le point noir correspond à votre ferme cette année."), "content" = p_PCA$clust$cluster_2, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
 
   clust_of_personyear = clust$clust$clust[paste(person, year, sep = ":"),"clust"]
