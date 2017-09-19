@@ -20,16 +20,19 @@
 #' @seealso \code{\link{shinemas2R::get.data}}
 #' 
 
-ggplot_mixture1 = function(res_model, melanges_PPB_mixture, 
+ggplot_mixture1 = function(res_model, 
+                           melanges_PPB_mixture,
+                           melanges_tot,
                            data_S, 
                            variable, 
                            year, 
                            model, 
                            plot.type = "comp.in.farm", 
-                           person,
+                           person=NULL,
                            nb_parameters_per_plot = 8) 
 {
   melanges_PPB_mixture=melanges_PPB_mixture$data
+  melanges_tot=melanges_tot$data$data
   add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
   data_S = data_S$data$data
   
@@ -174,7 +177,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture,
     
     # Récupérer les résultats du modèle
     Result = lapply(list(Mélanges,Composantes), function(x){
-      mcmc = get_result_model(res_model, x, type_result = "MCMC", variable, model="model_1", param = "mu", year = "2016")
+      mcmc = get_result_model(res_model, x, type_result = "MCMC", variable, model="model_1", param = "mu", year = year)
       
       #concaténuer les chaines
       if (ncol(mcmc)>1) {
@@ -203,7 +206,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture,
     return(list("bp"=bp, "Tab" = Data))
   }
   
-  # 3.  Sur le réseau, comparer la distribution des mélanges à celles de la moins bonne et la meilleure composante pour chaque mélange ----------
+  # 3. Sur le réseau, comparer la distribution des mélanges à celles de la moins bonne et la meilleure composante pour chaque mélange ----------
   # Normalement ça marche, pas testé sur données
   if (plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") {
     if(Nul == FALSE){
@@ -331,4 +334,60 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture,
   
   
   
-} # end function
+  # 5. Compare, for each mixture, the different selection practices -----
+  if ( plot.type == "comp.mod" ){
+    d_env = plyr:::splitter_d(melanges_PPB_mixture, .(location))
+    if(!is.null(person)){d_env = list(d_env[[grep(person,names(d_env))]])}
+    d_env_b = lapply(d_env,function(D){
+      D = D[D$sl_statut %in% "son" & !is.na(D$expe_melange),]
+      D = plyr:::splitter_d(D, .(expe_melange))
+      
+      bp = lapply(D,function(x){
+        M = unique(melanges_tot[melanges_tot$son_germplasm %in% unique(x$son_germplasm),c("son","son_year","son_germplasm","father","father_germplasm","selection_id","block","X","Y")])
+        M = M[is.na(M$selection_id) & M$son_year %in% year,]
+        if(nrow(M)>1){
+          mcmc = get_result_model(res_model, M, type_result = "MCMC", variable, model="model_1", param = "mu", year = year)
+        }else{mcmc=data.frame(0)}
+        if(ncol(mcmc) > 1){
+          comp.mu = mean_comparisons.check_model_1(list("MCMC"=mcmc), "mu", get.at.least.X.groups = 1)
+          comp.mu=comp.mu$data_mean_comparisons[[1]]$mean.comparisons
+          comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
+          
+          comp.mu$mod = unlist(lapply(as.character(comp.mu$germplasm),function(y){
+            if(length(grep(".2",y)) == 1){return("Mélange issu 1 année sélection 
+  dans composantes (Mod 2)")}
+            if(length(grep("#B",y)) == 1){return("Mélange sélectionné (Mod3)")}
+            if(length(grep(".3",y)) == 1){return("Mélange issu 2 années sélection 
+  dans composantes (Mod 1)")}
+            if(length(grep(".2",y)) == 0 & length(grep("#B",y)) == 0 &  length(grep(".3",y)) == 0){return("Mélange non sélectionné")}
+          }))
+          
+          Data = arrange(comp.mu, median)
+          Data$max = max(Data$median, na.rm = TRUE)
+          
+          p = ggplot(Data, aes(x = reorder(germplasm, median), y = median, fill=unlist(Data$mod))) + geom_bar(stat = "identity")+ theme(legend.title = element_blank())
+          p = p + scale_fill_manual("legend",values=c("Mélange issu 1 année sélection 
+  dans composantes (Mod 2)"="gold","Mélange sélectionné (Mod3)"="steelblue3","Mélange issu 2 années sélection 
+  dans composantes (Mod 1)"="chartreuse3","Mélange non sélectionné"="red"))
+          
+          # ajouter les groupes de significativité
+          p = p + geom_text(data = Data, aes(x = reorder(germplasm, median), y = median/2, label = groups), angle = 90, color = "white")
+          p = p + ggtitle(title) + ylab(variable)
+          
+          # pivoter légende axe abscisses
+          p = p + xlab("") + theme(axis.text.x = element_text(angle = 90)) + ylim(0, Data[1,"max"])
+          
+          return(list("Tab"=Data,"bp"=p))
+        }else{return(NULL)}
+      })
+      
+    })
+    
+    
+  }
+  
+  
+  
+  
+  
+  } # end function
