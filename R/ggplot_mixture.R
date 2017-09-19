@@ -86,7 +86,7 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture,
         
         if (length(Mel) > 0) {
           Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Composante"),"son_germplasm"]]
-          if (ncol(Comp) < nrow(noms)-1){missingComp = TRUE}else{missingComp=FALSE}
+          if(!is.null(ncol(Comp))){if (ncol(Comp) < nrow(noms)-1){missingComp = TRUE}else{missingComp=FALSE}}else{missingComp=TRUE}
           if(!missingComp){
             MeanComp = apply(Comp, 1, mean)
             M = cbind(Mel, MeanComp, Comp)
