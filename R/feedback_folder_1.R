@@ -669,71 +669,86 @@ feedback_folder_1 = function(
   out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
 
   interaction_and_score = function(OUT,res_model,variable,table=FALSE,titre,score=TRUE,inter_plot=FALSE){
-    out = list("subsubsection" = titre); OUT = c(OUT, out)
     
-    res_model = res_model[[variable]]
-    comp.mu = res_model$comp.par$comp.mu
-    
-    # Interaction plot
-    if(inter_plot){
-      p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
-      p_interaction = p_interaction_glob$data_mean_comparisons[person]
-      out = list("figure" = list("caption" = paste("
+    if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){
+      out = list("subsubsection" = titre); OUT = c(OUT, out)
+      res_model = res_model[[variable]]
+      comp.mu = res_model$comp.par$comp.mu
+      
+      # Interaction plot
+      if(inter_plot){
+        p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
+        p_interaction = p_interaction_glob$data_mean_comparisons[person]
+        out = list("figure" = list("caption" = paste("
                                Comparaisons de moyennes pour le \\textbf{",variable,"} au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
                                Le pourcentage de confiance dans cette information est indiqué en dessous des points. 
                                Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
                                ",sep=""), "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-    }
-    
-    
-    # Score plot
-    if(score){
-      p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-      out = list("figure" = list("caption" = paste("
+      }
+      
+      
+      # Score plot
+      if(score){
+        p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+        out = list("figure" = list("caption" = paste("
                                Les chiffres donnés dans ce graphique correspondent à la valeur du \\textbf{",variable,"} pour chaque population les différentes années sur votre ferme.
                                L'échelle de couleur correspond aux groupes de significativité : des populations présentant des couleurs différentes sont significativement différentes.
                                Attention : Les groupements sont faits par année, donc on ne peut pas interpréter 2 pop présentes deux années différentes comme étant dans le même groupe si elles ont la même couleur 
 grouper des populations semées deux annés différentes selon leur couleur.
                                ",sep=""), "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-    }
-    
-    
-    # Interaction without statistical analysis
-    if(inter_plot){
-      if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
-        out = list("figure" = list("caption" = paste("Evolution du \\textbf{",variable,"} au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
       }
-    }
-
-    # Table
-    if(table){
+      
+      
+      # Interaction without statistical analysis
+      if(inter_plot){
+        if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
+          out = list("figure" = list("caption" = paste("Evolution du \\textbf{",variable,"} au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+        }
+      }
+      # Table
+      if(table){
+        out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
+        tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
+                        nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
+        tab=traduction(tab,"col")
+        tab$not_duplicated_infos$`set-1`[,variable] = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,variable])),2)
+        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
+      }
+    }else{
       out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
       tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
                       nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
       tab=traduction(tab,"col")
       tab$not_duplicated_infos$`set-1`[,variable] = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,variable])),2)
-      out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
+      if(!is.null(tab$not_duplicated_infos$`set-1`[,variable])){
+        out = list("subsubsection" = titre); OUT = c(OUT, out)
+        out = list("text" = "Si vous n'avez pas semé deux répétitions du témoin nous n'avons pas pu analyser statistiquement les données. 
+                   Voici un tableau présentant les données brutes mesurées sur les populations. 
+                   L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
+        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
+      }
     }
+    
+ 
+
    return(OUT)
   }
   
-  
-  # 2.5.1.1. Poids de mille grains ----------
-  variable = "poids.de.mille.grains"
-  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le poids de mille grains",score=TRUE,inter_plot=FALSE)}
-  
+    # 2.5.1.1. Poids de mille grains ----------
+  OUT=interaction_and_score(OUT,res_model1,"poids.de.mille.grains",table=FALSE,titre = "Le poids de mille grains",score=TRUE,inter_plot=FALSE)
+
   # 2.5.1.2. Taux de protéine ----------
-  variable = "taux.de.proteine"
-  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){
-    OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le taux de protéine",score=TRUE,inter_plot=FALSE)
-    # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
+  OUT=interaction_and_score(OUT,res_model1,"taux.de.proteine",table=FALSE,titre = "Le taux de protéine",score=TRUE,inter_plot=FALSE)
+  
+   # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
+  a=data_all$data$data
+  prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
+  prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
+  pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
+  to_add = merge(prot,pmg,by="son")
+  if(nrow(to_add)>0){
     out = list("subsubsection" = "Le taux de protéine en fonction du poids de mille grains"); OUT = c(OUT, out)
-    a=data_all$data$data
-    prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
-    prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
-    pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
-    to_add = merge(prot,pmg,by="son")
     a=rbind(prot_ok,to_add)
     a = a[a$son_year %in% c(as.character(as.numeric(year)-1),year),]
     D=data_all
@@ -743,12 +758,10 @@ grouper des populations semées deux annés différentes selon leur couleur.
                    hide.labels.parts = c("person:year"))
     out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
   }
+   
   
   # 2.5.1.4. Poids de l'épi ----------
-  variable = "poids.de.l.epi"
-  if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=interaction_and_score(OUT,res_model1,variable,table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
-  
-
+  OUT=interaction_and_score(OUT,res_model1,"poids.de.l.epi",table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
   
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
@@ -971,7 +984,7 @@ if(FALSE){
   }
     
     # 3.1.1. Poids de mille grains -----
-    if ("poids.de.mille.grains" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
+    if ("poids.de.mille.grains" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["poids.de.mille.grains"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
     
     # 3.1.2. Taux de protéine -----
     if ("taux.de.proteine" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
