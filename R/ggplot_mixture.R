@@ -53,77 +53,85 @@ ggplot_mixture1 = function(res_model, melanges_PPB_mixture,
       
       # récupérer les données (MCMC) pour chaque mixture et les splitter
       mix_split = lapply(MIX , function(y) {
-        noms = as.data.frame(unique(y$germplasm_son),stringsAsFactors = FALSE)
+        noms = as.data.frame(unique(y$son),stringsAsFactors = FALSE)
         y_son = y[y$sl_statut %in%"son",]
         if(length(unique(y_son$germplasm_son == y_son$expe_melange))>1 | unique(y_son$germplasm_son == y_son$expe_melange) == FALSE ){ # Modality 2 of mixture experiment : we have only the name of the mixture and not the components since the selection 
                               # that were done to create the mixture have not been sown. We want to get the selections that were sown (modality)
           nom_melange=data.frame(noms[1,],stringsAsFactors = FALSE)
+          nom_melange$germplasm_2 = nom_melange[,1]
           nom_melange$Type="Mélange"
           noms=data.frame(noms[-1,],stringsAsFactors = FALSE)
           colnames(noms)[1] =  colnames(nom_melange)[1] ="germplasm"
           data_S = unique(data_S[,c("son","expe","sl_statut","expe_name","expe_name_2","son_germplasm","father","father_germplasm","son_person")])
           data_S = data_S[grep("bouquet",data_S$sl_statut),]
-          
-          noms$germplasm = lapply(as.character(noms$germplasm),function(x){
-            d = data_S[grep(strsplit(x,"#")[[1]][1],data_S$father_germplasm),]
+          noms$germplasm_2 = lapply(as.character(noms$germplasm),function(x){
+            d = data_S[grep(strsplit(x,"#")[[1]][1],data_S$father),]
             d = d[d$son_person %in% paysan,]
-            germ = unlist(lapply(as.character(d$son),function(x){strsplit(x,"_")[[1]][1]}))
-            return(germ[grep("VA",germ)])
+            germ = d$son
+            return(as.character(germ[grep("VA",germ)]))
           })
           noms$Type="Composante"
-          noms=rbind(nom_melange,noms)
+          noms = rbind(as.matrix(nom_melange),as.matrix(noms))
+          noms=as.data.frame(noms)
+          y$son = unlist(lapply(as.character(y$son),function(x){return(noms[grep(x,noms$germplasm),"germplasm_2"])}))
         }else{
-          noms$type = c("Mélange",rep("Composante",(nrow(noms)-1)))
+          noms$Type = c("Mélange",rep("Composante",(nrow(noms)-1)))
           colnames(noms)[1] = "germplasm"
+          noms$germplasm_2 = noms$germplasm
+          
         }
-        
+        noms$son_germplasm = unlist(lapply(as.character(noms$germplasm_2),function(x){strsplit(x,"_")[[1]][1]}))
         mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, model,param = "mu", year = year)
-        Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Mélange"),"germplasm"]]
+        Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Mélange"),"son_germplasm"]]
         
         if (length(Mel) > 0) {
-          Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$type == "Composante"),"germplasm"]]
-          if (ncol(Comp) < nrow(y)/2){missingComp = TRUE}else{missingComp=FALSE}
-          MeanComp = apply(Comp, 1, mean)
-          M = cbind(Mel, MeanComp, Comp)
-          attributes(M)$model = "model1"
-          colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
-          colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$type %in% "Mélange","germplasm"],",",unique(y$location),":",year,"]",sep="")
-          M=list("MCMC"=M)
- #         attributes(M)$PPBstats.object = "check_model_model_1"
-          comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
-          
-          C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
-          A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$type == "Mélange"),"germplasm"],",",unique(y$location),":",year,"]",sep=""))]
-          if(A == 0){A = C[which(rownames(C) == paste("mu[",noms[which(noms$type == "Mélange"),"germplasm"],",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep=""))]}
-          
-          comp.mu=comp.mu$data_mean_comparisons[[1]]$mean.comparisons
-          comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
-          comp.mu$pval=A
-          
-          type = NULL
-          for (i in 1:nrow(comp.mu)) { 
-            a = noms[noms$germplasm %in% comp.mu[i,"germplasm"],"type"]
-            if (!is.null(a)) {type = c(type, a)}
-            if (comp.mu[i,"germplasm"] == "MoyenneComposantes") { type = c(type, "MoyenneComposantes")}
-          }
-          
-          Data = cbind(comp.mu, type)
-          Data = arrange(Data, median)
-          Data$max = max(Data$median, na.rm = TRUE)
-          
-          if (plot.type == "comp.in.farm") {
-            Data$split = add_split_col(Data, nb_parameters_per_plot)
-            Data_split = plyr:::splitter_d(Data, .(split))
+          Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Composante"),"son_germplasm"]]
+          if (ncol(Comp) < nrow(noms)-1){missingComp = TRUE}else{missingComp=FALSE}
+          if(!missingComp){
+            MeanComp = apply(Comp, 1, mean)
+            M = cbind(Mel, MeanComp, Comp)
+       #     attributes(M)$model = "model1"
+            colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
+            colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$Type %in% "Mélange","son_germplasm"],",",unique(y$location),":",year,"]",sep="")
+            M=list("MCMC"=M)
+            #         attributes(M)$PPBstats.object = "check_model_model_1"
+            comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
             
-            # faire le graph pour chaque split
-            bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, variable, sep=" : ")))})
+            C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
+            A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",year,"]",sep=""))]
+            if(A == 0){A = C[which(rownames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep=""))]}
             
-            return(list("barplot"= bp, "Tab" = Data))
+            comp.mu=comp.mu$data_mean_comparisons[[1]]$mean.comparisons
+            comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
+            comp.mu$pval=A
+            
+            type = NULL
+            for (i in 1:nrow(comp.mu)) { 
+              a = unlist(noms[noms$son_germplasm %in% comp.mu[i,"germplasm"],"Type"])
+              if (!is.null(a)) {type = c(type, a)}
+              if (comp.mu[i,"germplasm"] == "MoyenneComposantes") { type = c(type, "MoyenneComposantes")}
+            }
+            
+            Data = cbind(comp.mu, type)
+            Data = arrange(Data, median)
+            Data$max = max(Data$median, na.rm = TRUE)
+            
+            if (plot.type == "comp.in.farm") {
+              Data$split = add_split_col(Data, nb_parameters_per_plot)
+              Data_split = plyr:::splitter_d(Data, .(split))
+              
+              # faire le graph pour chaque split
+              bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, variable, sep=" : ")))})
+              
+              return(list("barplot"= bp, "Tab" = Data))
+            }
+            if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
+              return(list("barplot" = NULL, "Tab" = Data))
+            }
+          }else{
+            warning("No data for all components")
+            return(list("barplot"= NULL, "Tab" = NULL))
           }
-          if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
-            return(list("barplot" = NULL, "Tab" = Data))
-          }
-          
         } else {
           warning("No data for the mixture")}
         return(list("barplot"= NULL, "Tab" = NULL))
