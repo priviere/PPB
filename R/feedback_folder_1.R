@@ -761,7 +761,7 @@ grouper des populations semées deux annés différentes selon leur couleur.
    
   
   # 2.5.1.4. Poids de l'épi ----------
-  OUT=interaction_and_score(OUT,res_model1,"poids.de.l.epi",table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)}
+  OUT=interaction_and_score(OUT,res_model1,"poids.de.l.epi",table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)
   
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
