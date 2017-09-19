@@ -427,8 +427,12 @@ feedback_folder_1 = function(
     if(variable == "all_notes"){ 
       in.cap = "d'hiver, de printemps et d'été"
       variable = c("note.globale.hiver---global","note.globale.printemps---note.globale.printemps","note.globale.ete---global")
-			p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8,year)
-			
+      if(length(unique(variable %in% colnames(data))) == 1 & unique(variable %in% colnames(data))==FALSE){
+        p=NULL
+      }else{
+          p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8,year)
+      }
+		
     }else{
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
                      in.col = "germplasm", vec_variables = variable, 
