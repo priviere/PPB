@@ -52,8 +52,8 @@ get_result_model = function(res_model, data, type_result = "comparison", variabl
 	noms=unique(data$son)
 	noms = unique(gsub("^([^_]*_[^_]*_[^_]*)_.*$", "\\1", noms))
 	
-	germplasm = gsub("^([^_]*)_.*$", "\\1", noms)
-	env = gsub("[^._]*_([^_]*)_.*$","\\1", noms)
+	germplasm = unlist(lapply(as.character(noms),function(x){strsplit(x,"_")[[1]][1]}))
+	env = unlist(lapply(as.character(noms),function(x){strsplit(x,"_")[[1]][2]}))
 	block = data$block
 	
   
