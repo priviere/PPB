@@ -124,7 +124,7 @@ ggplot_mixture1 = function(res_model,
               Data_split = plyr:::splitter_d(Data, .(split))
               
               # faire le graph pour chaque split
-              bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, variable, sep=" : ")))})
+              bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, " : ",variable,", ","données ",year, sep="")))})
               
               return(list("barplot"= bp, "Tab" = Data))
             }
@@ -372,7 +372,7 @@ ggplot_mixture1 = function(res_model,
           
           # ajouter les groupes de significativité
           p = p + geom_text(data = Data, aes(x = reorder(germplasm, median), y = median/2, label = groups), angle = 90, color = "white")
-          p = p + ggtitle(title) + ylab(variable)
+          p = p + ggtitle(paste(title,", données ",year,sep="")) + ylab(variable)
           
           # pivoter légende axe abscisses
           p = p + xlab("") + theme(axis.text.x = element_text(angle = 90)) + ylim(0, Data[1,"max"])
