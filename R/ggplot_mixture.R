@@ -75,12 +75,14 @@ ggplot_mixture1 = function(res_model,
           })
           noms$Type="Composante"
           noms = rbind(as.matrix(nom_melange),as.matrix(noms))
-          noms=as.data.frame(noms)
-          y$son = unlist(lapply(as.character(y$son),function(x){return(noms[grep(x,noms$germplasm),"germplasm_2"])}))
+          noms = as.data.frame(noms)
         }else{
           noms$Type = c("Mélange",rep("Composante",(nrow(noms)-1)))
           colnames(noms)[1] = "germplasm"
           noms$germplasm_2 = noms$germplasm
+        }
+        if(length(unlist(noms$germplasm_2)) == nrow(noms)){
+          y$son = unlist(lapply(as.character(y$son),function(x){return(noms[which(noms$germplasm ==x),"germplasm_2"])}))
           
         }
         noms$son_germplasm = unlist(lapply(as.character(noms$germplasm_2),function(x){strsplit(x,"_")[[1]][1]}))
@@ -126,18 +128,18 @@ ggplot_mixture1 = function(res_model,
               # faire le graph pour chaque split
               bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, " : ",variable,", ","données ",year, sep="")))})
               
-              return(list("barplot"= bp, "Tab" = Data))
+              return(list("Tab" = Data,"plot"= bp))
             }
             if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
-              return(list("barplot" = NULL, "Tab" = Data))
+              return(list("Tab" = Data,"plot" = NULL))
             }
           }else{
             warning("No data for all components")
-            return(list("barplot"= NULL, "Tab" = NULL))
+            return(list("Tab" = NULL,"plot"= NULL))
           }
         } else {
           warning("No data for the mixture")}
-        return(list("barplot"= NULL, "Tab" = NULL))
+        return(list("Tab" = NULL,"plot"= NULL))
       }) # end lapply(y)
       return(mix_split)
     }) # end lapply(x)
@@ -203,7 +205,7 @@ ggplot_mixture1 = function(res_model,
     Data$max = max(Data$median, na.rm = TRUE)
     # graphique mélanges vs composantes
     bp = barplot.mixture1(Data,variable)
-    return(list("bp"=bp, "Tab" = Data))
+    return(list("Tab" = Data,"plot"=bp))
   }
   
   # 3. Sur le réseau, comparer la distribution des mélanges à celles de la moins bonne et la meilleure composante pour chaque mélange ----------
@@ -270,7 +272,7 @@ ggplot_mixture1 = function(res_model,
         p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
         p = p + geom_line()
         p = p + theme(legend.position="none")
-        return(p)
+        return(list("Tab"=toPlot,"plot"=p))
       }
       
     }else{
@@ -325,7 +327,7 @@ ggplot_mixture1 = function(res_model,
       p = p + labs(title = paste(titre,":","Gain moyen =",Gain,"%",";
                                  ","Cas positifs :",Positif,"%",";","Cas négatifs :",Negatif,"%",sep=" "))
   
-      return(p)
+      return(list("Tab"=Data,"plot"=p))
     }else{
       return(NULL)
     }
@@ -355,39 +357,56 @@ ggplot_mixture1 = function(res_model,
           
           comp.mu$mod = unlist(lapply(as.character(comp.mu$germplasm),function(y){
             if(length(grep(".2",y)) == 1){return("Mélange issu 1 année sélection 
-  dans composantes (Mod 2)")}
+  dans composantes (Mod2)")}
             if(length(grep("#B",y)) == 1){return("Mélange sélectionné (Mod3)")}
             if(length(grep(".3",y)) == 1){return("Mélange issu 2 années sélection 
-  dans composantes (Mod 1)")}
-            if(length(grep(".2",y)) == 0 & length(grep("#B",y)) == 0 &  length(grep(".3",y)) == 0){return("Mélange non sélectionné")}
+  dans composantes (Mod1)")}
+            if(length(grep(".2",y)) == 0 & length(grep("#B",y)) == 0 &  length(grep(".3",y)) == 0){return("Mélange non sélectionné (Mod4)")}
           }))
           
           Data = arrange(comp.mu, median)
           Data$max = max(Data$median, na.rm = TRUE)
+          Data$gain = Data$median/Data[grep("Mod4",Data$mod),"median"]-1
           
           p = ggplot(Data, aes(x = reorder(germplasm, median), y = median, fill=unlist(Data$mod))) + geom_bar(stat = "identity")+ theme(legend.title = element_blank())
           p = p + scale_fill_manual("legend",values=c("Mélange issu 1 année sélection 
-  dans composantes (Mod 2)"="gold","Mélange sélectionné (Mod3)"="steelblue3","Mélange issu 2 années sélection 
-  dans composantes (Mod 1)"="chartreuse3","Mélange non sélectionné"="red"))
+  dans composantes (Mod2)"="gold","Mélange sélectionné (Mod3)"="steelblue3","Mélange issu 2 années sélection 
+  dans composantes (Mod1)"="chartreuse3","Mélange non sélectionné (Mod4)"="red"))
           
           # ajouter les groupes de significativité
           p = p + geom_text(data = Data, aes(x = reorder(germplasm, median), y = median/2, label = groups), angle = 90, color = "white")
-          p = p + ggtitle(paste(title,", données ",year,sep="")) + ylab(variable)
+          p = p + ggtitle(paste("Comparaison modalités de sélection",", données ",year,sep="")) + ylab(variable)
           
           # pivoter légende axe abscisses
           p = p + xlab("") + theme(axis.text.x = element_text(angle = 90)) + ylim(0, Data[1,"max"])
           
-          return(list("Tab"=Data,"bp"=p))
+          return(list("Tab"=Data,"plot"=p))
         }else{return(NULL)}
       })
       
     })
     
+    Nul = TRUE
+    for (i in 1:length(d_env_b)){
+      for (j in 1:length(d_env_b[[i]])){
+        for (k in 1:length(d_env_b[[i]][[j]])){
+          if(!is.null(d_env_b[[i]][[j]][[k]])){Nul = FALSE}
+        }
+      }
+    }
     
+    if(is.null(person) & Nul == FALSE){
+      Gain_sel = lapply(d_env_b, function(x){return(x[[1]]$Tab)})
+      Mat=NULL
+      for (i in 1:length(Gain_sel)){Mat = rbind(Mat,Gain_sel[[i]])}
+    }  
   }
   
   
   
   
   
-  } # end function
+  # 6. Compare selection practices on the network
+  
+  
+} # end function
