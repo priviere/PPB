@@ -55,6 +55,7 @@ feedback_folder_1 = function(
   data_PPB_mixture = out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_PPB_mixture
   Mixtures_all = out_analyse_feedback_folder_1$data_mixtures$Mixtures_all
   Mixtures_S = out_analyse_feedback_folder_1$data_mixtures$Mixtures_selection
+  Mix_tot = out_analyse_feedback_folder_1$data_mixtures$Mix_tot
   
   levels(Mixtures_all$data$son) = c(levels(Mixtures_all$data$son) , "C70_ANB_2011_0001")
   Mixtures_all$data[Mixtures_all$data$son %in% "C70#S-crossés_ANB_2015_0001","son"] = as.factor("C70_ANB_2011_0001")
@@ -679,45 +680,57 @@ feedback_folder_1 = function(
       res_model = res_model[[variable]]
       comp.mu = res_model$comp.par$comp.mu
       
-      # Interaction plot
-      if(inter_plot){
-        p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
-        p_interaction = p_interaction_glob$data_mean_comparisons[person]
+      mcmc=names(res_model$model.outputs$MCMC)
+      mcmc=mcmc[grep(person,mcmc)] ; mcmc=mcmc[grep("sigma",mcmc)]
+      if(length(mcmc) == 1){
+        # first year
+        p =  plot.PPBstats(x=comp.mu, ggplot.type = "barplot", nb_parameters_per_plot = 10)$data_mean_comparisons[paste(person,year,sep=":")]
         out = list("figure" = list("caption" = paste("
+                               Comparaisons de moyennes pour le \\textbf{",variable,"} cette année. 
+                               Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
+                               ",sep=""), "content" = p, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+        
+      }else{
+        # Interaction plot
+        if(inter_plot){
+          p_interaction_glob = plot.PPBstats(x=comp.mu, ggplot.type = "interaction", nb_parameters_per_plot = 10)
+          p_interaction = p_interaction_glob$data_mean_comparisons[person]
+          out = list("figure" = list("caption" = paste("
                                Comparaisons de moyennes pour le \\textbf{",variable,"} au cours du temps. 
                                Les populations qui partagent le même groupe pour une année donnée (représenté par une barre) ne sont pas significativement différentes.
                                Le pourcentage de confiance dans cette information est indiqué en dessous des points. 
                                Imp veut dire impossible : nous n’avons pas pu faire de groupe car la variabilité due au sol était trop importante.
                                ",sep=""), "content" = p_interaction, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-      }
-      
-      
-      # Score plot
-      if(score){
-        p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
-        out = list("figure" = list("caption" = paste("
+        }
+        
+        
+        # Score plot
+        if(score){
+          p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+          out = list("figure" = list("caption" = paste("
                                Les chiffres donnés dans ce graphique correspondent à la valeur du \\textbf{",variable,"} pour chaque population les différentes années sur votre ferme.
                                L'échelle de couleur correspond aux groupes de significativité : des populations présentant des couleurs différentes sont significativement différentes.
                                Attention : Les groupements sont faits par année, donc on ne peut pas interpréter 2 pop présentes deux années différentes comme étant dans le même groupe si elles ont la même couleur 
 grouper des populations semées deux annés différentes selon leur couleur.
                                ",sep=""), "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
-      }
-      
-      
-      # Interaction without statistical analysis
-      if(inter_plot){
-        if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
-          out = list("figure" = list("caption" = paste("Evolution du \\textbf{",variable,"} au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
         }
-      }
-      # Table
-      if(table){
-        out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
-        tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
-                        nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
-        tab=traduction(tab,"col")
-        tab$not_duplicated_infos$`set-1`[,variable] = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,variable])),2)
-        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
+        
+        
+        # Interaction without statistical analysis
+        if(inter_plot){
+          if(person %in% names(p_interaction_glob$data_env_whose_param_did_not_converge)){
+            out = list("figure" = list("caption" = paste("Evolution du \\textbf{",variable,"} au cours du temps sans analyses statistiques.",sep=""), "content" = p_interaction_glob$data_env_whose_param_did_not_converge[person], "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+          }
+        }
+        # Table
+        if(table){
+          out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
+          tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
+                          nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
+          tab=traduction(tab,"col")
+          tab$not_duplicated_infos$`set-1`[,variable] = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,variable])),2)
+          out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
+        }
       }
     }else{
       out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
@@ -734,7 +747,6 @@ grouper des populations semées deux annés différentes selon leur couleur.
       }
     }
     
- 
 
    return(OUT)
   }
@@ -976,7 +988,18 @@ if(FALSE){
     
     
   graphs_ferme_melanges = function(OUT,variable,titre){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20)
+      # Comparaison mélange vs composantes
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = NULL, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20,save=TRUE)
+      for (i in 1:length(p_melanges[[1]])){
+        if(!is.null(p_melanges[[1]][[i]]$barplot)){
+          out = list("subsection" = titre); OUT = c(OUT, out)
+          out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
+                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
+                                                                              ",sep=""), "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+      }
+      
+      # Comparaison modalités de sélection
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model = "model_1", plot.type = "comp.mod", person, nb_parameters_per_plot = 20,save=TRUE)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
@@ -1041,7 +1064,7 @@ if(FALSE){
     # Histogramme distribution de l'overyielding
     var = paste(strsplit(variable,"[.]")[[1]],collapse="")
     if (!file.exists(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
       save(p_melanges,file=paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
       png(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))
         p_melanges
@@ -1060,7 +1083,7 @@ if(FALSE){
     # Distribution des mélanges et composantes
     if(distrib){
         if (!file.exists(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))){
-          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
           save(p_melanges,file=paste(we_are_here,"/figures/Distribution_",var,".RData",sep=""))
           png(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))
           p_melanges
@@ -1077,7 +1100,7 @@ if(FALSE){
     }
      
     if(comp_global){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, variable, year=year, model="model_1",plot.type = "mixVScomp", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model="model_1",plot.type = "mixVScomp", person, nb_parameters_per_plot = 15)
       out = list("figure" = list("caption" = "Comparaison entre la moyenne des mélanges et la moyenne des composantes sur le réseau.
                              Les moyennes sont significativement différentes si les lettres diffèrent.
                              ", "content" = p_melanges$bp, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
