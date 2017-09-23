@@ -29,7 +29,9 @@ ggplot_mixture1 = function(res_model,
                            model, 
                            plot.type = "comp.in.farm", 
                            person=NULL,
-                           nb_parameters_per_plot = 8) 
+                           nb_parameters_per_plot = 8,
+                           save=NULL,
+                           col_plot = "pval") 
 {
   melanges_PPB_mixture=melanges_PPB_mixture$data
   melanges_tot=melanges_tot$data$data
@@ -86,60 +88,70 @@ ggplot_mixture1 = function(res_model,
           
         }
         noms$son_germplasm = unlist(lapply(as.character(noms$germplasm_2),function(x){strsplit(x,"_")[[1]][1]}))
-        mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, model,param = "mu", year = year)
-        Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Mélange"),"son_germplasm"]]
         
-        if (length(Mel) > 0) {
-          Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Composante"),"son_germplasm"]]
-          if(!is.null(ncol(Comp))){if (ncol(Comp) < nrow(noms)-1){missingComp = TRUE}else{missingComp=FALSE}}else{missingComp=TRUE}
-          if(!missingComp){
-            MeanComp = apply(Comp, 1, mean)
-            M = cbind(Mel, MeanComp, Comp)
-       #     attributes(M)$model = "model1"
-            colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")
-            colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$Type %in% "Mélange","son_germplasm"],",",unique(y$location),":",year,"]",sep="")
-            M=list("MCMC"=M)
-            #         attributes(M)$PPBstats.object = "check_model_model_1"
-            comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
-            
-            C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
-            A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",year,"]",sep=""))]
-            if(A == 0){A = C[which(rownames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",year,"]",sep="")), which(colnames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",year,"]",sep=""))]}
-            
-            comp.mu=comp.mu$data_mean_comparisons[[1]]$mean.comparisons
-            comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
-            comp.mu$pval=A
-            
-            type = NULL
-            for (i in 1:nrow(comp.mu)) { 
-              a = unlist(noms[noms$son_germplasm %in% comp.mu[i,"germplasm"],"Type"])
-              if (!is.null(a)) {type = c(type, a)}
-              if (comp.mu[i,"germplasm"] == "MoyenneComposantes") { type = c(type, "MoyenneComposantes")}
-            }
-            
-            Data = cbind(comp.mu, type)
-            Data = arrange(Data, median)
-            Data$max = max(Data$median, na.rm = TRUE)
-            
-            if (plot.type == "comp.in.farm") {
-              Data$split = add_split_col(Data, nb_parameters_per_plot)
-              Data_split = plyr:::splitter_d(Data, .(split))
+        res_year = lapply(year,function(yr){
+          mcmc = get_result_model(res_model, y, type_result = "MCMC", variable, model,param = "mu", year = yr)
+          Mel = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Mélange"),"son_germplasm"]]
+          
+          if (length(Mel) > 0) {
+            Comp = mcmc[,unlist(rm_between(colnames(mcmc), "[", ",", extract=TRUE)) %in% noms[which(noms$Type == "Composante"),"son_germplasm"]]
+            if(!is.null(ncol(Comp))){if (ncol(Comp) < length(unique(noms$son_germplasm))-1){missingComp = TRUE}else{missingComp=FALSE}}else{missingComp=TRUE}
+            if(!missingComp){
+              MeanComp = apply(Comp, 1, mean)
+              M = cbind(Mel, MeanComp, Comp)
+              #     attributes(M)$model = "model1"
+              colnames(M)[colnames(M) %in% "MeanComp"] = paste("mu[","MoyenneComposantes",",",unique(y$location),":",yr,"]",sep="")
+              colnames(M)[colnames(M) %in% "Mel"] = paste("mu[", noms[noms$Type %in% "Mélange","son_germplasm"],",",unique(y$location),":",yr,"]",sep="")
+              M=list("MCMC"=M)
+              #         attributes(M)$PPBstats.object = "check_model_model_1"
+              comp.mu = mean_comparisons.check_model_1(M, "mu", get.at.least.X.groups = 1)
               
-              # faire le graph pour chaque split
-              bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, " : ",variable,", ","données ",year, sep="")))})
+              C=comp.mu$data_mean_comparisons[[1]]$Mpvalue
+              A=C[which(rownames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",yr,"]",sep="")), which(colnames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",yr,"]",sep=""))]
+              if(A == 0){A = C[which(rownames(C) == paste("mu[",noms[which(noms$Type == "Mélange"),"son_germplasm"],",",unique(y$location),":",yr,"]",sep="")), which(colnames(C) == paste("mu[","MoyenneComposantes",",",unique(y$location),":",yr,"]",sep=""))]}
               
-              return(list("Tab" = Data,"plot"= bp))
+              comp.mu=comp.mu$data_mean_comparisons[[1]]$mean.comparisons
+              comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
+              comp.mu$pval=A
+              
+              type = NULL
+              for (i in 1:nrow(comp.mu)) { 
+                a = unique(unlist(noms[noms$son_germplasm %in% comp.mu[i,"germplasm"],"Type"]))
+                if (!is.null(a)) {type = c(type, a)}
+                if (comp.mu[i,"germplasm"] == "MoyenneComposantes") { type = c(type, "MoyenneComposantes")}
+              }
+              
+              Data = cbind(comp.mu, type)
+              Data = arrange(Data, median)
+              Data$max = max(Data$median, na.rm = TRUE)
+              Data$melange = Data[grep("Mélange",Data$type),"germplasm"]
+              
+              if (plot.type == "comp.in.farm") {
+                Data$split = add_split_col(Data, nb_parameters_per_plot)
+                Data_split = plyr:::splitter_d(Data, .(split))
+                
+                # faire le graph pour chaque split
+                bp = lapply(Data_split , function(z){return(barplot.mixture1(z,title = paste(person, " : ",variable,", ","données ",yr, sep="")))})
+                
+                return(list("Tab" = Data,"plot"= bp))
+              }
+              if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
+                return(list("Tab" = Data,"plot" = NULL))
+              }
+            }else{
+              warning("No data for all components")
+              return(list("Tab" = NULL,"plot"= NULL))
             }
-            if ((plot.type == "mix.comp.distribution" | plot.type == "mix.gain.distribution") & missingComp == FALSE) {
-              return(list("Tab" = Data,"plot" = NULL))
-            }
-          }else{
-            warning("No data for all components")
+          } else {
+            warning("No data for the mixture")
             return(list("Tab" = NULL,"plot"= NULL))
           }
-        } else {
-          warning("No data for the mixture")}
-        return(list("Tab" = NULL,"plot"= NULL))
+        }) # end lapply(yr)
+       # ne garder l'overyielding que de la première année
+        comp=NULL
+        for (yr in 1:length(res_year)){if(!is.null(res_year[[yr]]$Tab) & is.null(comp)){comp=yr}}
+        if(!is.null(comp)){if(comp < length(res_year)){for(i in (comp+1):length(res_year)){res_year[[i]]=list("Tab"=NULL,"plot"=NULL)}}}
+       return(res_year)
       }) # end lapply(y)
       return(mix_split)
     }) # end lapply(x)
@@ -153,13 +165,15 @@ ggplot_mixture1 = function(res_model,
       }
     }
     if(plot.type == "comp.in.farm") {return(d_env_b)}
+    
     Mat = NULL
     for (i in 1:length(d_env_b)){
       for (j in 1:length(d_env_b[[i]])){
-        if (!is.null(d_env_b[[i]][[j]]$Tab)){
-          M=d_env_b[[i]][[j]]$Tab
-          M$melange = M[M$type %in% "Mélange","germplasm"]
-          Mat = rbind(Mat,M)
+        for(yr in 1:length(year)){
+          if (!is.null(d_env_b[[i]][[j]][[yr]]$Tab)){
+            M=d_env_b[[i]][[j]][[yr]]$Tab
+            Mat = rbind(Mat,M)
+          }
         }
       }
     }
@@ -214,31 +228,37 @@ ggplot_mixture1 = function(res_model,
     if(Nul == FALSE){
       Distrib = lapply(d_env_b, function(x){
         Worst = Best = Mel = MeanComp = NULL
-        
         Mat = lapply(x, function(y) {
-          Tab=y$Tab
-          Data = Tab[Tab$type %in% "Composante",]
-          nb_comp = nrow(Data)
-          if (!is.null(Data)){
-            Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
-            Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
-            Mel = Tab[Tab$type %in% "Mélange","median"]
-            MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
-            pval = Data$pval
-            
-            # get significance
-            grepMel = grep("Mélange",Tab$type)
-            grepMeanComp = grep("MoyenneComposantes",Tab$type)
-            
-            M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"),pval[1:4])
-            M=as.data.frame(M)
-            
-            colnames(M) = c("median","Type","pval")
-            rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
-          }else{
-            M = NULL
-          }
-          return(list("plot" = NULL, "tab"= M, "nbComp" =  nb_comp))
+          mat = lapply(y,function(yr){
+            Tab=yr$Tab
+            Data = Tab[Tab$type %in% "Composante",]
+            nb_comp = nrow(Data)
+            if (!is.null(Data)){
+              Worst = Data[which(Data$median == min(Data$median, na.rm = TRUE)),"median"]
+              Best = Data[which(Data$median == max(Data$median, na.rm = TRUE)),"median"]
+              Mel = Tab[Tab$type %in% "Mélange","median"]
+              MeanComp = Tab[Tab$type %in% "MoyenneComposantes","median"]
+              pval = Data$pval
+              
+              # get significance
+              grepMel = grep("Mélange",Tab$type)
+              grepMeanComp = grep("MoyenneComposantes",Tab$type)
+              
+              M = cbind(c(Worst,MeanComp,Mel,Best),c("1.moins bonne","2.moyenne composantes","3.mélange","4.meilleure"),pval[1:4])
+              M=as.data.frame(M)
+              M$melange = unique(Data$melange)
+              M$year = unique(Data$year)
+              M$location= unique(Data$location)
+              
+              colnames(M) = c("median","Type","pval","melange","year","location")
+              rownames(M) = c("Worst","MoyenneComposantes","Mélange","Best")
+            }else{
+              M = NULL
+            }
+            return(list("plot" = NULL, "tab"= M, "nbComp" =  nb_comp))
+          })
+          names(mat)=year
+          return(mat)
         })
         return(Mat)
       })
@@ -246,11 +266,13 @@ ggplot_mixture1 = function(res_model,
       if (plot.type == "mix.comp.distribution"){
         toPlot=NULL
         D = lapply(Distrib,function(x) {
-          return(lapply(x,function(y){return(y$tab)}))
+          return(lapply(x,function(y){return(lapply(y,function(yr){return(yr$tab)}))}))
         })
         for ( i in 1:length(D)) {
           for (j in 1:length(D[[i]])){
-            if(!is.null(D[[i]][[j]])){toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))}
+            for(yr in 1:length(D[[i]][[j]])){
+              if(!is.null(D[[i]][[j]][[yr]])){toPlot=rbind(toPlot,cbind(as.matrix(D[[i]][[j]][[yr]]),rep(names(D)[i], 4),rep(paste("Paysan",i," Mélange",j,sep=""),4)))}
+            }
           }
         }
         
@@ -260,7 +282,7 @@ ggplot_mixture1 = function(res_model,
         #         
         #         plot(D)
         
-        colnames(toPlot) = c("Moyenne","Type","pvalue","Paysan","Group")
+        colnames(toPlot) = c("Moyenne","Type","pvalue","melange","year","location","Paysan","Group")
         rownames(toPlot)=NULL
         toPlot=as.data.frame(toPlot)
         toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
@@ -272,6 +294,8 @@ ggplot_mixture1 = function(res_model,
         p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
         p = p + geom_line()
         p = p + theme(legend.position="none")
+        
+        if(!is.null(save)){write.table(toPlot,file=paste(save,"/Distrib_",variable,".csv",sep=""),sep=";")}
         return(list("Tab"=toPlot,"plot"=p))
       }
       
@@ -287,45 +311,45 @@ ggplot_mixture1 = function(res_model,
     if(Nul==FALSE){
       Histo = lapply(Distrib,function(x){
         return(lapply(x, function(y){
-          z=y$tab
-          if(!is.null(z)){
-            diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
-            
-            return(c(unlist(diff),as.numeric(as.character(z[1,"pval"])),y$nbComp))
+          return(lapply(y,function(yr){
+            z=yr$tab
+            if(!is.null(z)){
+              diff = as.numeric(as.character(z["Mélange","median"]))/as.numeric(as.character(z["MoyenneComposantes","median"]))-1
+              return(c(unlist(diff),as.numeric(as.character(z[1,"pval"])),yr$nbComp,unique(z$melange),unique(z$year),unique(z$location)))
           }}))
+          }))
       })
       
       
       Data = cbind(
-        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[1]])}))})),
-        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[2]])}))})),
-        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(melange[[3]])}))}))
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[1]])}))}))})),
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[2]])}))}))})),
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[3]])}))}))})),
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[4]])}))}))})),
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[5]])}))}))})),
+        unlist(lapply(Histo,function(paysan){return(lapply(paysan, function(melange){return(lapply(melange,function(yr){return(yr[[6]])}))}))}))
       )
+      
       Data=cbind(rownames(Data),Data)
+      rownames(Data)=seq(1,nrow(Data),1)
       Data=as.data.frame(Data)
-      colnames(Data) = c("Paysan","overyielding","pvalue","nbComp")
+      colnames(Data) = c("Paysan","overyielding","pvalue","nbComp","melange","year","location")
       Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
       Mean=mean(as.numeric(as.character(Data$overyielding)))
       Positif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))>0])*100/length(Data$overyielding),2)
       Negatif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))<0])*100/length(Data$overyielding),2)
       
-      pval= NULL
-      for (i in 1:nrow(Data)){
-        if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){pval = c(pval,"Significatif à 0.01")}
-        if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.05 & as.numeric(as.character(Data[i,"pvalue"])) > 0.01 ){pval = c(pval,"Significatif à 0.05")}
-        if (as.numeric(as.character(Data[i,"pvalue"])) > 0.05){pval = c(pval,"Non significatif (pvalue >0.05)")}
-      }
       
       B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
+      Data$mod = unlist(lapply(as.character(Data$melange),function(x){
+        if(length(grep(".2",x))>0){return("mod2")
+        }else if(length(grep("[.]3",x))>0){return("mod1")
+        }else{return("mod4")}
+      }))
       
-      p =  ggplot(data=Data,aes(as.numeric(as.character(overyielding)),fill=as.factor(pval))) 
-      p = p + geom_histogram(breaks=seq(1.5*min(as.numeric(as.character(Data$overyielding))),1.5*max(as.numeric(as.character(Data$overyielding))),0.03), alpha=0.6, color="black")
-      p = p + geom_vline(xintercept = Mean, size = 1.2, color="red") + geom_vline(xintercept = 0,  linetype = "dotted")
-      p = p + labs(x=paste("Différence normalisée entre les mélanges et 
-	                         la moyenne de leurs composantes pour ",variable,sep=""), y="Nombre de mélanges")
-      p = p + scale_fill_discrete(name = "Significativité")
-      p = p + labs(title = paste(titre,":","Gain moyen =",Gain,"%",";
-                                 ","Cas positifs :",Positif,"%",";","Cas négatifs :",Negatif,"%",sep=" "))
+      p = get_histo(Data,col_plot,breaks=0.05)
+      
+      if(!is.null(save)){write.table(Data,file=paste(save,"/Histo_",variable,".csv",sep=""),sep=";")}
   
       return(list("Tab"=Data,"plot"=p))
     }else{
@@ -333,7 +357,6 @@ ggplot_mixture1 = function(res_model,
     }
     
   }
-  
   
   
   # 5. Compare, for each mixture, the different selection practices -----
@@ -383,8 +406,10 @@ ggplot_mixture1 = function(res_model,
           return(list("Tab"=Data,"plot"=p))
         }else{return(NULL)}
       })
-      
+      return(bp)
     })
+    
+
     
     Nul = TRUE
     for (i in 1:length(d_env_b)){
@@ -401,10 +426,7 @@ ggplot_mixture1 = function(res_model,
       for (i in 1:length(Gain_sel)){Mat = rbind(Mat,Gain_sel[[i]])}
     }  
   }
-  
-  
-  
-  
+  return( d_env_b)
   
   # 6. Compare selection practices on the network
   
