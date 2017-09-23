@@ -989,7 +989,7 @@ if(FALSE){
     
   graphs_ferme_melanges = function(OUT,variable,titre){
       # Comparaison mélange vs composantes
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = NULL, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20,save=TRUE)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = NULL, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
@@ -999,7 +999,7 @@ if(FALSE){
       }
       
       # Comparaison modalités de sélection
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model = "model_1", plot.type = "comp.mod", person, nb_parameters_per_plot = 20,save=TRUE)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model = "model_1", plot.type = "comp.mod", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$barplot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
@@ -1064,7 +1064,9 @@ if(FALSE){
     # Histogramme distribution de l'overyielding
     var = paste(strsplit(variable,"[.]")[[1]],collapse="")
     if (!file.exists(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))){
-      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+      p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, 
+                                   year=c("2016","2017"), model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15,
+                                   save=paste(we_are_here,"/AnalyseDonnees/donnees_brutes",sep=""))
       save(p_melanges,file=paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
       png(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))
         p_melanges
@@ -1083,7 +1085,8 @@ if(FALSE){
     # Distribution des mélanges et composantes
     if(distrib){
         if (!file.exists(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))){
-          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), model="model_1", plot.type = "mix.gain.distribution", person, nb_parameters_per_plot = 15)
+          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), 
+                                       model="model_1", plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15,save=paste(we_are_here,"/AnalyseDonnees/donnees_brutes",sep=""))
           save(p_melanges,file=paste(we_are_here,"/figures/Distribution_",var,".RData",sep=""))
           png(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))
           p_melanges
