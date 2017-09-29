@@ -43,3 +43,18 @@ get_stars = function(res) {
   codes = c("***" , "**","*", ".", " ")
   return(codes[stars])
 }
+
+# get duplicated data in 1 table
+dupl_table = function(tab){
+  tab = lapply(tab,function(x){return(cbind(x[[1]],x[[2]]))})
+  TAB = NULL
+  for (i in 1:length(tab)){TAB = rbind(TAB,tab[[i]])}
+  
+  attributes(tab)$invert=FALSE
+  return(tab)
+}
+
+
+
+
+
