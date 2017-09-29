@@ -39,7 +39,7 @@ get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variable
     p = p + labs(x="date",y="note maladie")
     p = p + scale_y_continuous(breaks = c(1,2,3))
     p = p + geom_jitter(inherit.aes=TRUE,width=0.1,height=0)
-    return(list("plot"=p,"Data"=x))
+    return(p)
   })
   return(list("plot" = p, "Data_groups"=Data_duplicated_groups))
   
