@@ -614,6 +614,33 @@ feedback_folder_1 = function(
     comp=1
   }
   
+  # Evolution maladies au cours du cycle
+  vec_variables = c( "sain_note1---sain_note1",
+                     "sain_note2---sain_note2",
+                     "sain_note3---sain_note3",
+                     "malade_note1---malade_note1",
+                     "malade_note2---malade_note2",
+                     "malade_note3---malade_note3",
+                     "tres_malade_note1---tres_malade_note1",
+                     "tres_malade_note2---tres_malade_note2",
+                     "tres_malade_note3---tres_malade_note3"
+    )
+  tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
+                  nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE)
+   if(!is.null(tab)){
+     p = get_interaction_plot_disease(tab,5)
+     a=NULL
+     for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}
+     out = list("figure" = list("caption" = paste("
+                              Evolution de la note de maladie au cours de l'année. Si plusieurs populations ont reçu les même notes elles se trouvent dans le même groupe.
+                              1 = sain ; 2 = malade ; 3 = très malade
+                              ", a,sep=""),"content" = p$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+     OUT=c(OUT,out)
+    comp=1
+   }
+  
+  # Evolution maladies au cours des années
+  
   
   vec_variables = c("pluies.printemps---pluies", 
                     "températures.printemps---températures", 
