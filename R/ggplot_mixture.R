@@ -83,6 +83,7 @@ ggplot_mixture1 = function(res_model,
           colnames(noms)[1] = "germplasm"
           noms$germplasm_2 = noms$germplasm
         }
+        if(length(unlist(noms$germplasm_2)) < nrow(noms)){noms$germplasm_2 = noms$germplasm}
         if(length(unlist(noms$germplasm_2)) == nrow(noms)){
           y$son = unlist(lapply(as.character(y$son),function(x){return(noms[which(noms$germplasm ==x),"germplasm_2"])}))
           
@@ -347,7 +348,7 @@ ggplot_mixture1 = function(res_model,
         }else{return("mod4")}
       }))
       
-      p = get_histo(Data,col_plot,breaks=0.05)
+      p = get_histo(Data,col_plot,breaks=0.05, titre=variable)
       
       if(!is.null(save)){write.table(Data,file=paste(save,"/Histo_",variable,".csv",sep=""),sep=";")}
   
@@ -379,17 +380,20 @@ ggplot_mixture1 = function(res_model,
           comp.mu$germplasm = unlist(rm_between(comp.mu$parameter, "[", ",", extract=TRUE))
           
           comp.mu$mod = unlist(lapply(as.character(comp.mu$germplasm),function(y){
-            if(length(grep(".2",y)) == 1){return("Mélange issu 1 année sélection 
+            if(length(grep("[.]2",y)) == 1){return("Mélange issu 1 année sélection 
   dans composantes (Mod2)")}
             if(length(grep("#B",y)) == 1){return("Mélange sélectionné (Mod3)")}
-            if(length(grep(".3",y)) == 1){return("Mélange issu 2 années sélection 
+            if(length(grep("[.]3",y)) == 1){return("Mélange issu 2 années sélection 
   dans composantes (Mod1)")}
-            if(length(grep(".2",y)) == 0 & length(grep("#B",y)) == 0 &  length(grep(".3",y)) == 0){return("Mélange non sélectionné (Mod4)")}
+            if(length(grep("[.]2",y)) == 0 & length(grep("#B",y)) == 0 &  length(grep(".3",y)) == 0){return("Mélange non sélectionné (Mod4)")}
           }))
           
           Data = arrange(comp.mu, median)
           Data$max = max(Data$median, na.rm = TRUE)
-          Data$gain = Data$median/Data[grep("Mod4",Data$mod),"median"]-1
+          if(length(grep("Mod4",Data$mod))>1){
+            Data$gain = Data$median/Data[grep("Mod4",Data$mod),"median"]-1
+          }else{Data$gain = NA}
+
           
           p = ggplot(Data, aes(x = reorder(germplasm, median), y = median, fill=unlist(Data$mod))) + geom_bar(stat = "identity")+ theme(legend.title = element_blank())
           p = p + scale_fill_manual("legend",values=c("Mélange issu 1 année sélection 
@@ -403,14 +407,19 @@ ggplot_mixture1 = function(res_model,
           # pivoter légende axe abscisses
           p = p + xlab("") + theme(axis.text.x = element_text(angle = 90)) + ylim(0, Data[1,"max"])
           
+          if(!is.null(save)){write.table(Data,file=paste(save,"/Selection_mod_",variable,".csv",sep=""),sep=";")}
+          
           return(list("Tab"=Data,"plot"=p))
         }else{return(NULL)}
       })
       return(bp)
     })
-    
+    return(d_env_b)
+  }
 
-    
+  
+  # 6. Compare selection practices on the network
+  if(plot.type == "comp.mod.network"){
     Nul = TRUE
     for (i in 1:length(d_env_b)){
       for (j in 1:length(d_env_b[[i]])){
@@ -424,11 +433,7 @@ ggplot_mixture1 = function(res_model,
       Gain_sel = lapply(d_env_b, function(x){return(x[[1]]$Tab)})
       Mat=NULL
       for (i in 1:length(Gain_sel)){Mat = rbind(Mat,Gain_sel[[i]])}
-    }  
+    }
   }
-  return( d_env_b)
-  
-  # 6. Compare selection practices on the network
-  
   
 } # end function
