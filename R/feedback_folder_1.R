@@ -720,8 +720,9 @@ feedback_folder_1 = function(
         colnames(tab)=c("Population",variable,"groupe")
         attributes(tab)$invert = FALSE
         #p =  plot.PPBstats(x=comp.mu, ggplot.type = "barplot", nb_parameters_per_plot = 10)$data_mean_comparisons[paste(person,year,sep=":")]
-        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,". 
-Deux populations partageant la même lettre (colonne groupe) ne sont pas significativement différentes.",sep=""), "content" = tab)); OUT = c(OUT, out)
+        if(!is.null(tab)){        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,". 
+Deux populations partageant la même lettre (colonne groupe) ne sont pas significativement différentes.",sep=""), "content" = tab)); OUT = c(OUT, out)}
+
         
       }else{
         # Interaction plot
