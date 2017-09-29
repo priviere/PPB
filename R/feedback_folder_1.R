@@ -468,6 +468,7 @@ feedback_folder_1 = function(
     return(tab)
   }
   
+
   out = list("chapter" = "Résultats dans la ferme"); OUT = c(OUT, out)
   
   out = list("text" = 
@@ -478,7 +479,7 @@ feedback_folder_1 = function(
   # 2.0. Populations présentes dans la ferme ----------
   out = list("section" = "Populations semées cette année dans votre ferme"); OUT = c(OUT, out)
   D=out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_year$data$data
-  a = unique(D[!is.na(D$block) |!is.na(D$X) | !is.na(D$Y) | !is.na(D$"nom.champ---notice nom.champ") | !is.na(D$"poids.grains.mesure---poids.grains.mesure") | 
+  a = unique(D[!is.na(D$block) |!is.na(D$X) | !is.na(D$Y) | !is.na(D$"poids.grains.mesure---poids.grains.mesure") | 
                  !is.na(D$"nbr_spikes---nbr.épiss") | !is.na(D$"poids.de.mille.grains---poids.de.mille.grains"),"son"])
   a = pop_ferme = unlist(lapply(as.character(a),function(x){strsplit(x,'_')[[1]][1]}))
   b = unique(out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year$data$data$expe_name_2)
@@ -501,7 +502,7 @@ feedback_folder_1 = function(
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
-
+  comp=NULL
   vec_variables = c(
     "topographie---notice.topographie.semis.2",
     "pratiques.semis---notice.pratiques.semis",
@@ -562,8 +563,11 @@ feedback_folder_1 = function(
                     "densité---densité", 
                     "commentaires.hiver---post_winter_observation_notes")
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
-                  nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
+                  nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE,nb_duplicated_rows=50)
   tab=traduction(tab,"col")
+  tab=tab$not_duplicated_infos$`set-1`[order(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,"reprise"]))),]
+ 
+
   if(!is.null(tab)){
     out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
     out = list("table" = list("caption" = "Sommaire de la fiche hiver", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
@@ -608,6 +612,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
   tab=traduction(tab,"col")
+  
   if(!is.null(tab)){
     out = list("subsection" = paste("Données détaillées pour", year)); OUT = c(OUT, out)
     out = list("table" = list("caption" = "Sommaire de la fiche printemps", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)
@@ -674,9 +679,9 @@ feedback_folder_1 = function(
                     "poids.battage---poids.battage", 
                     "commentaires.été---commentaires")
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
-                  nb_col = 5, nb_row = 7, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE)
+                  nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE,nb_duplicated_rows=200)
   tab=traduction(tab,"col")
-  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche été", "content" = tab, landscape = TRUE)); OUT = c(OUT, out)}
+  if(!is.null(tab)){out = list("table" = list("caption" = "Sommaire de la fiche été", "content" = tab, landscape = TRUE)); OUT = c(OUT, out); comp=1}
   
   vec_variables = c("pluies.été---pluies",
                     "températures.été---températures", 
@@ -711,11 +716,11 @@ feedback_folder_1 = function(
       mcmc=mcmc[grep(person,mcmc)] ; mcmc=mcmc[grep("sigma",mcmc)]
       if(length(mcmc) == 1){
         # first year
-        p =  plot.PPBstats(x=comp.mu, ggplot.type = "barplot", nb_parameters_per_plot = 10)$data_mean_comparisons[paste(person,year,sep=":")]
-        out = list("figure" = list("caption" = paste("
-                               Comparaisons de moyennes pour le \\textbf{",variable,"} cette année. 
-                               Les populations qui partagent le même groupe pour une année donnée (représenté par une même lettre) ne sont pas significativement différentes.
-                               ",sep=""), "content" = p, "layout" = matrix(c(1,2), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+        tab = comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("entry","median","groups")]
+        colnames(tab)=c("Population",variable,"groupe")
+        #p =  plot.PPBstats(x=comp.mu, ggplot.type = "barplot", nb_parameters_per_plot = 10)$data_mean_comparisons[paste(person,year,sep=":")]
+        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,". 
+Deux populations partageant la même lettre (colonne groupe) ne sont pas significativement différentes.",sep=""), "content" = tab)); OUT = c(OUT, out)
         
       }else{
         # Interaction plot
@@ -786,22 +791,25 @@ grouper des populations semées deux annés différentes selon leur couleur.
   
    # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
   a=data_all$data$data
-  prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
-  prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
-  pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
-  to_add = merge(prot,pmg,by="son")
-  if(nrow(to_add)>0){
-    out = list("subsubsection" = "Le taux de protéine en fonction du poids de mille grains"); OUT = c(OUT, out)
-    a=rbind(prot_ok,to_add)
-    a = a[a$son_year %in% c(as.character(as.numeric(year)-1),year),]
-    D=data_all
-    D$data$data=a
-    p = get.ggplot(data = D, ggplot.type = "data-biplot", in.col = "year", 
-                   vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), 
-                   hide.labels.parts = c("person:year"))
-    out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
+  if(length(grep(paste("^poids.de.mille.grains---poids.de.mille.grains$","^taux.de.proteine---taux.de.proteine$",collapse="|"),colnames(a))) == 2){
+    prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
+    prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
+    pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
+    to_add = merge(prot,pmg,by="son")
+    if(nrow(to_add)>0){
+      out = list("subsubsection" = "Le taux de protéine en fonction du poids de mille grains"); OUT = c(OUT, out)
+      a=rbind(prot_ok,to_add)
+      a = a[a$son_year %in% c(as.character(as.numeric(year)-1),year),]
+      D=data_all
+      D$data$data=a
+      p = get.ggplot(data = D, ggplot.type = "data-biplot", in.col = "year", 
+                     vec_variables = c("poids.de.mille.grains---poids.de.mille.grains", "taux.de.proteine---taux.de.proteine"), 
+                     hide.labels.parts = c("person:year"))
+      out = list("figure" = list("caption" = "Relation entre le poids de mille grains et le taux de protéine", "content" = p, "width" = 1)); OUT = c(OUT, out)
+    }
+    
   }
-   
+
   
   # 2.5.1.4. Poids de l'épi ----------
   OUT=interaction_and_score(OUT,res_model1,"poids.de.l.epi",table=FALSE,titre = "Le poids des épis",score=TRUE,inter_plot=FALSE)
@@ -992,9 +1000,12 @@ if(FALSE){
   
   
   # 3. Essai Mélanges --------------------------------------------------------------------------------------------------------------------------------------
-  
-  out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
-  out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
+  # 3.1. Résultats sur la ferme -----
+  if (is.null(data_PPB_mixture$data)) { 
+    out = list("text" = "Vous n'avez pas mis en place l'essai de sélection pour les mélanges sur votre ferme cette année."); OUT=c(OUT,out)
+  }else{
+    out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
+    out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
              Les pratiques testées sont : 
              \\begin{itemize}
              \\item deux années de sélection dans les composantes avant de mélanger ; 
@@ -1005,12 +1016,8 @@ if(FALSE){
              Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leurs mélanges formés sans sélection dans
              les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
              composantes"); OUT = c(OUT, out)
-  
-  # 3.1. Résultats sur la ferme -----
-  out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
-  if (is.null(data_PPB_mixture$data)) { 
-    out = list("text" = "Vous n'avez pas mis en place cet essai sur votre ferme cette année."); OUT=c(OUT,out)
-  }else{
+    
+    out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
     out = list("text" = "Les gaphiques suivant permettent de comparer la valeur du mélange à celles de ses composantes et à la valeur moyenne des composantes."); OUT=c(OUT,out)
     
     
@@ -1071,6 +1078,7 @@ if(FALSE){
     
       }
   
+if(FALSE){
   # 3.2. Résultats sur le réseau de fermes -----
   out = list("section" = "Résultats sur le réseau de fermes"); OUT = c(OUT, out)
   out = list("text" = "Dans cette partie sont présentés les résultats de l'essai mélange sur le réseau de ferme. 
@@ -1096,48 +1104,48 @@ if(FALSE){
                                    save=paste(we_are_here,"/AnalyseDonnees/donnees_brutes",sep=""))
       save(p_melanges,file=paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
       png(paste(we_are_here,"/figures/Histo_",var,".png",sep=""))
-        p_melanges
+      p_melanges
       dev.off()
-#    }else{
-#      load(paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
+      #    }else{
+      #      load(paste(we_are_here,"/figures/Histo_",var,".RData",sep=""))
     }
     out = list("subsection" = titre); OUT = c(OUT, out)
     out = list("includeimage" = list("caption" = paste("Distribution des rapports entre les comportement des mélanges et les comportements moyens
-                                                      de leurs composantes respectives pour le ",variable,".
-                                                      La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
-                                                      tandis que la ligne pointillée noire est fixée sur un gain nul.",sep=""), 
-                                      "content" = paste("./figures/Histo_",var,".png",sep=""), "width" = 0.7))
+                                                       de leurs composantes respectives pour le ",variable,".
+                                                       La ligne rouge verticale indique le gain moyen des mélanges par rapport à la moyenne de leurs composantes respectives 
+                                                       tandis que la ligne pointillée noire est fixée sur un gain nul.",sep=""), 
+                                     "content" = paste("./figures/Histo_",var,".png",sep=""), "width" = 0.7))
     OUT = c(OUT, out)
     
     # Distribution des mélanges et composantes
     if(distrib){
-        if (!file.exists(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))){
-          p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), 
-                                       model="model_1", plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15,save=paste(we_are_here,"/AnalyseDonnees/donnees_brutes",sep=""))
-          save(p_melanges,file=paste(we_are_here,"/figures/Distribution_",var,".RData",sep=""))
-          png(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))
-          p_melanges
-          dev.off()
-          #    }else{
-          #      load(paste(we_are_here,"/figures/Distribution",var,".RData",sep=""))
-        }
-
-        out = list("includeimage" = list("caption" = paste("Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
-                                                      ainsi que de la moyenne des composantes pour chaque mélange pour le ",variable,".
-                                                      Le X noir représente la valeur moyenne pour chaque type.",sep=""), 
-                                         "content" = paste("./figures/Distribution_",var,".png",sep=""),  "width" = 0.7))
-        OUT = c(OUT, out)
+      if (!file.exists(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))){
+        p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=c("2016","2017"), 
+                                     model="model_1", plot.type = "mix.comp.distribution", person, nb_parameters_per_plot = 15,save=paste(we_are_here,"/AnalyseDonnees/donnees_brutes",sep=""))
+        save(p_melanges,file=paste(we_are_here,"/figures/Distribution_",var,".RData",sep=""))
+        png(paste(we_are_here,"/figures/Distribution_",var,".png",sep=""))
+        p_melanges
+        dev.off()
+        #    }else{
+        #      load(paste(we_are_here,"/figures/Distribution",var,".RData",sep=""))
+      }
+      
+      out = list("includeimage" = list("caption" = paste("Distribution sur le réseau des mélanges, des moins bonnes et meilleures composantes 
+                                                         ainsi que de la moyenne des composantes pour chaque mélange pour le ",variable,".
+                                                         Le X noir représente la valeur moyenne pour chaque type.",sep=""), 
+                                       "content" = paste("./figures/Distribution_",var,".png",sep=""),  "width" = 0.7))
+      OUT = c(OUT, out)
     }
-     
+    
     if(comp_global){
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model="model_1",plot.type = "mixVScomp", person, nb_parameters_per_plot = 15)
       out = list("figure" = list("caption" = "Comparaison entre la moyenne des mélanges et la moyenne des composantes sur le réseau.
-                             Les moyennes sont significativement différentes si les lettres diffèrent.
-                             ", "content" = p_melanges$bp, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
+                                 Les moyennes sont significativement différentes si les lettres diffèrent.
+                                 ", "content" = p_melanges$bp, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)
     }
-  
+    
     return(OUT)
-  }
+    }
   
   # 3.2.1.1. poids de mille grains -----
   OUT = melanges_reseau(OUT,variable="poids.de.mille.grains",titre="Poids de mille grains",distrib=FALSE,comp_global=FALSE)
@@ -1147,7 +1155,7 @@ if(FALSE){
   
   # 3.2.1.3. Hauteur -----
   OUT = melanges_reseau(OUT,variable="hauteur",titre="Hauteur moyenne",distrib=FALSE,comp_global=FALSE)
-
+  
   # 3.2.1.4. Longueur de l'épi -----
   OUT = melanges_reseau(OUT,variable="longueur.de.l.epi",titre="Longueur de l'épi",distrib=FALSE,comp_global=FALSE)
   
@@ -1157,20 +1165,22 @@ if(FALSE){
   # 3.2.1.6. Nombre moyen de grains par épi  -----
   OUT = melanges_reseau(OUT,variable="nbr.estime.grain.par.epi",titre="Nombre moyen de grains par épi",distrib=FALSE,comp_global=FALSE)
   
-if(FALSE){
-  # 3.2.2. Distribution des mélanges, de la moins bonne composante & la meilleure composante -----
-  out = list("subsection" = "Distributions des mélanges, de la moins bonne et la meilleure composante pour chaque mélange"); OUT = c(OUT, out)
-  out = list("text" = "Ces graphiques présentent, pour chacun des mélanges testés cette année, le comportement du mélange, de sa moins bonne composantes,
+  if(FALSE){
+    # 3.2.2. Distribution des mélanges, de la moins bonne composante & la meilleure composante -----
+    out = list("subsection" = "Distributions des mélanges, de la moins bonne et la meilleure composante pour chaque mélange"); OUT = c(OUT, out)
+    out = list("text" = "Ces graphiques présentent, pour chacun des mélanges testés cette année, le comportement du mélange, de sa moins bonne composantes,
              de sa meilleure composante et le comportement moyen de ses composantes. 
              On peut observer sur ces graphiques la variabilité de comportement des mélanges ainsi que celle de leurs moins bonne
              et meilleure composantes.
              "); OUT = c(OUT, out)
-  
-  #  3.2.3. Comparaison de l'effet mélange par rapport à variété "pure" -----
-  #  A virer...? 
-  out = list("subsection" = "Comparaison de la performance moyenne des mélanges par rapport àa la performance moyenne des composantes"); OUT = c(OUT, out)
-  out = list("text" = "On se pose la question de savoir s'il y a une différence significative entre la moyenne de tous les mélanges de l'essai 
+    
+    #  3.2.3. Comparaison de l'effet mélange par rapport à variété "pure" -----
+    #  A virer...? 
+    out = list("subsection" = "Comparaison de la performance moyenne des mélanges par rapport àa la performance moyenne des composantes"); OUT = c(OUT, out)
+    out = list("text" = "On se pose la question de savoir s'il y a une différence significative entre la moyenne de tous les mélanges de l'essai 
              et la moyenne de toutes leurs composantes."); OUT = c(OUT, out)
+  }
+  
 }
 
   
@@ -1212,6 +1222,8 @@ if(FALSE){
   
   clust = parameter_groups(Model2, parameter = "theta")
   p_PCA = plot.PPBstats(clust,ind_to_highlight=paste(person,year,sep=":"))
+  out = list("figure" = list("caption" = paste("Groupement des fermes en cluster selon le comportement des populations. Le point noir correspond à votre ferme cette année."),
+                             "content" = p_PCA$clust$cluster_all, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   if(paste(person,year,sep=":") %in% p_PCA$clust$cluster_1$data$name){
     out = list("figure" = list("caption" = paste("Représentation des fermes groupées avec la votre pour différentes années. Le point noir correspond à votre ferme cette année."), "content" = p_PCA$clust$cluster_1, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
   }
@@ -1391,7 +1403,7 @@ Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données p
   
   system("mkdir ./feedback_folder/figures")
   system("cp ./figures/*.png ./feedback_folder/figures")
-  rm(list=setdiff(ls(), c("we_are_here","OUT","person","year","out_analyse_feedback_folder_1")))
+#  rm(list=setdiff(ls(), c("we_are_here","OUT","person","year","out_analyse_feedback_folder_1")))
   
   # /!\ Get pdf ----------
   get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
