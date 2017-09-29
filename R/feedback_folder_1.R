@@ -636,10 +636,8 @@ feedback_folder_1 = function(
      p = get_interaction_plot_disease(tab,5,vec_variables)
      a=NULL
      for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}
-     out = list("figure" = list("caption" = paste("
-                              Evolution de la note de maladie au cours de l'année. Si plusieurs populations ont reçu les même notes elles se trouvent dans le même groupe.
-                              1 = sain ; 2 = malade ; 3 = très malade
-                              ", a,sep=""),"content" = p$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+     out = list("figure" = list("caption" = paste("Evolution de la note de maladie au cours de l'année. Si plusieurs populations ont reçu les même notes elles se trouvent dans le même groupe. 1 = sain ; 2 = malade ; 3 = très malade",
+                                                  a,sep=""),"content" = p$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
      OUT=c(OUT,out)
     comp=1
    }
@@ -720,8 +718,11 @@ feedback_folder_1 = function(
         colnames(tab)=c("Population",variable,"groupe")
         attributes(tab)$invert = FALSE
         #p =  plot.PPBstats(x=comp.mu, ggplot.type = "barplot", nb_parameters_per_plot = 10)$data_mean_comparisons[paste(person,year,sep=":")]
-        if(!is.null(tab)){        out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,". 
-Deux populations partageant la même lettre (colonne groupe) ne sont pas significativement différentes.",sep=""), "content" = tab)); OUT = c(OUT, out)}
+        if(!is.null(tab)){
+          out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
+          out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,". 
+Deux populations partageant la même lettre (colonne groupe) ne sont pas significativement différentes.",sep=""), "content" = tab)); OUT = c(OUT, out)
+        }
 
         
       }else{
@@ -767,13 +768,13 @@ grouper des populations semées deux annés différentes selon leur couleur.
         }
       }
     }else{
-      out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
       tab = get.table(data = data_year, table.type = "mean", vec_variables = paste(variable,"---",variable,sep=""), 
                       nb_col = 5, col_to_display = "germplasm", merge_g_and_s = TRUE, order_var = paste(variable,"---",variable,sep=""))
       tab=traduction(tab,"col")
       tab$not_duplicated_infos$`set-1`[,variable] = round(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,variable])),2)
       if(!is.null(tab$not_duplicated_infos$`set-1`[,variable])){
         out = list("subsubsection" = titre); OUT = c(OUT, out)
+        out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
         out = list("text" = "Si vous n'avez pas semé deux répétitions du témoin nous n'avons pas pu analyser statistiquement les données. 
                    Voici un tableau présentant les données brutes mesurées sur les populations. 
                    L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
