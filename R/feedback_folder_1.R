@@ -633,7 +633,7 @@ feedback_folder_1 = function(
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE)
    if(!is.null(tab)){
-     p = get_interaction_plot_disease(tab,5)
+     p = get_interaction_plot_disease(tab,5,vec_variables)
      a=NULL
      for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}
      out = list("figure" = list("caption" = paste("
