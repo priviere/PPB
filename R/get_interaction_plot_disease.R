@@ -1,4 +1,4 @@
-get_interaction_plot_disease <- function(tab, nb_parameter_per_plot)
+get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variables)
 {
   
   add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
