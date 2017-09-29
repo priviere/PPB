@@ -12,7 +12,7 @@ get_heatmap <- function(data,
   HM=HM[!(HM$var == "NA"),]
   HM$var = factor(HM$var)
   HM$son_year = factor(HM$son_year)
-  if(vec_variables == "verse---verse"){HM$var = factor(HM$var,levels(HM$var)[c(3,5,4,2,1)])}
+  if(vec_variables == "verse---verse"){HM$var = factor(HM$var,c("droit","presque droit","intermédiaire","couché","à plat"))}
   
   HM$son = unlist(lapply(as.character(HM$son),function(x){strsplit(x,"_")[[1]][1]}))
   HM=HM[order(as.numeric(as.character(HM$son_year)),decreasing=TRUE),]
