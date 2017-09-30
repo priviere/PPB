@@ -1220,8 +1220,10 @@ if(FALSE){
              Les dossiers de chaque paysan(ne) est disponible à la demande."); OUT = c(OUT, out)
   
   
-  
-  Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
+  variables = names(res_model2)
+  variables=variables[-c(3,6)]
+ # Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
+  Model2 = lapply(res_model2$variables,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
   p_PCA = plot.PPBstats(clust,ind_to_highlight=paste(person,year,sep=":"))
