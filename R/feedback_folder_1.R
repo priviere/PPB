@@ -1223,7 +1223,8 @@ if(FALSE){
   variables = names(res_model2)
   variables=variables[-c(3,6)]
  # Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
-  Model2 = lapply(res_model2$variables,function(x){return(x$model.outputs)})
+  Model2=res_model2[grep(paste(variables,collapse="|"),names(res_model2))]
+  Model2 = lapply(Model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
   p_PCA = plot.PPBstats(clust,ind_to_highlight=paste(person,year,sep=":"))
@@ -1380,7 +1381,7 @@ if(FALSE){
       quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
       quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
       tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
-      tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]
+      if(!is.null(Sel_year)){tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]}
       tab_pop=tail(tab_pop,n=3)
       germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
       tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
