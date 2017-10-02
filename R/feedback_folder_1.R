@@ -147,11 +147,11 @@ feedback_folder_1 = function(
           
           \\vfill
           
-          \\begin{wrapfigure}{l}{.20\\textwidth}
+        %  \\begin{wrapfigure}{l}{.20\\textwidth}
           \\begin{center} \\vspace{-20pt}
           \\includegraphics[width=.20\\textwidth]{",we_are_here,"tex_files/Logo-UMRGV.jpg}
           \\end{center} \\vspace{-20pt}
-          \\end{wrapfigure}
+       %   \\end{wrapfigure}
           \\noindent
           Isabelle Goldringer \\href{mailto:isabelle.goldringer@inra.fr}{isabelle.goldringer@inra.fr} \\\\
           Gaëlle van Frank \\href{mailto:gaelle.van-frank@inra.fr}{gaelle.van-frank@inra.fr} \\\\
@@ -166,28 +166,33 @@ feedback_folder_1 = function(
           
           \\begin{longtable}{p{.5\\textwidth}p{.5\\textwidth}}
           
-          ARDEAR Rhône-Alpes	& Graines de Noé \\\\
+          textbf{ARDEAR Rhône-Alpes}	& textbf{Graines de Noé} \\\\
           Alexandre HYACINTHE & Hélène MONTAZ \\\\
           \\href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr} & \\href{mailto:technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
           58 rue Raulin	69007	Lyon & Technopole Agro-Environnement \\\\
           04 72 41 79 22	& Agronov RD-31, 21110	Bretenière \\\\
            & 03 80 56 37 07 - 07 70 45 43 12 \\\\
-          
+           & \\\\
+           & \\\\
                     
-          ARDEAR Centre	& ARDEAR Nord \\\\\\\\
+          textbf{ARDEAR Centre}	& textbf{ARDEAR Nord} \\\\
           Sophie WOEHLING	& Clémentine HEITZ \\\\	
           \\href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} & \\href{mailto:semencespaysannes@adearn.fr}{semencespaysannes@adearn.fr} \\\\
           Village d'entreprises de l'Arrou, 87A Route de Château-Renault,	41000	Blois & 40 avenue Salengro	62223	Saint Laurent Blangy	\\\\
           02 54 43 32 94 - 06 79 29 13 95 & 09 77 95 56 78	
+           & \\\\
+           & \\\\
           
-          ADEAR 32 & Li mestère	\\\\
+          textbf{ADEAR 32} & textbf{Li mestère}	\\\\
           Charleyne BARTHOMEUF & 	Sofia Costa Santos BALTAZAR \\\\	
           \\href{mailto:adear32@free.fr}{adear32@free.fr} & \\href{mailto:sofia.baltazar@unamur.be}{sofia.baltazar@unamur.be}
           1 rue Dupont de l'Eure,	32000	Auch	& 48 Rue Albert Billy	5370	Porcheresse	Belgique	\\\\
           05 62 05 30 86 - 06 87 58 35 95 & \\\\
+           & \\\\
+           & \\\\
           
           
-          GAB 65	& \\\\
+          textbf{GAB 65}	& \\\\
           Frédéric FURET	& \\\\
           frederic.furet.gab65@gmail.com		& \\\\
           Chemin de Lalette, BP449	65004	Tarbes Cedex & \\\\
@@ -507,13 +512,30 @@ feedback_folder_1 = function(
     "précédent.cultural---notice.précédent.cultural",
     "remarques.automne---commentaires")
   
-  tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, col_to_display =NULL, 
-                  invert_row_col = TRUE, merge_g_and_s = TRUE, nb_duplicated_rows = 1, nb_row =NULL,
+  tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, col_to_display = c("germplasm", "block"), 
+                  invert_row_col = FALSE, merge_g_and_s = TRUE, nb_duplicated_rows = 2, nb_row =NULL,
                   nb_col = NULL)
   tab=traduction(tab,row_or_col = "row")
-  
-  
-  if(!is.null(tab)){out = list("table" = list("caption" = "Informations sur les pratiques culturales", "content" = tab)); OUT = c(OUT, out); comp = 1}
+  if(!is.null(tab$duplicated_infos)){
+    variables = colnames(tab$duplicated_infos$`set-1`$duplicated_infos_variables)
+    TAB =NULL
+    noms = NULL
+    for (i in 1:length(tab$duplicated_infos)){
+      a = c(paste("Groupe",i,sep=" "),as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))
+      names(a) = c("seed_lot","value")
+      TAB = rbind(TAB,a)
+      noms=paste(noms,"Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`," \\
+                 ",sep="")
+    }
+    TAB = cbind(TAB[,1],NA,TAB[,2:ncol(TAB)])
+    colnames(TAB) = c("germplasm","block",variables)
+  }
+  if(!is.null(tab$not_duplicated_infos)){
+    tab$not_duplicated_infos[[1]] = rbind(tab$not_duplicated_infos[[1]],TAB)
+    attributes(tab$not_duplicated_infos)$invert=FALSE
+    tab$duplicated_infos = NULL
+  }
+  if(!is.null(tab)){out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = tab,"landscape"=TRUE)); OUT = c(OUT, out); comp = 1}
   
   vec_variables = 
     c("pluies.automne---pluies", 
@@ -977,11 +999,11 @@ if(FALSE){
     ; OUT = c(OUT, out) }
     if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{taux de protéine}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
     if( !is.null(pS3) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de l'épi}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
   }
   
@@ -991,9 +1013,9 @@ if(FALSE){
     out = textSR; OUT = c(OUT, out)
     if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
-    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
   }
   
@@ -1021,11 +1043,12 @@ if(FALSE){
     
     
   graphs_ferme_melanges = function(OUT,variable,titre){
+    out = list("subsection" = titre); OUT = c(OUT, out)
+    
       # Comparaison mélange vs composantes
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = NULL, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]][[1]]$plot)){
-          out = list("subsection" = titre); OUT = c(OUT, out)
           out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ",sep=""), "content" = p_melanges[[1]][[i]][[1]]$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
