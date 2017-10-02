@@ -1061,19 +1061,19 @@ if(FALSE){
     if ("poids.de.mille.grains" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["poids.de.mille.grains"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.mille.grains","poids de mille grains")}
     
     # 3.1.2. Taux de protéine -----
-    if ("taux.de.proteine" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
+    if ("taux.de.proteine" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["taux.de.proteine"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"taux.de.proteine","Taux de protéine")}
   
     # 3.1.3. Poids de l'épi -----
-    if ("poids.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.l.epi","Poids de l'épi")}
+    if ("poids.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["poids.de.l.epi"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"poids.de.l.epi","Poids de l'épi")}
   
     # 3.1.4. Hauteur -----
-   if ("hauteur" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"hauteur","Hauteur")}
+   if ("hauteur" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["hauteur"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"hauteur","Hauteur")}
   
      # 3.1.5. Longueur de l'épi -----
-    if ("longueur.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"longueur.de.l.epi","Longueur de l'épi")}
+    if ("longueur.de.l.epi" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["longueur.de.l.epi"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"longueur.de.l.epi","Longueur de l'épi")}
   
     # 3.1.6. LLSD -----
-   if ("LLSD" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"LLSD","Distance dernière feuille - base de l'épi")}
+   if ("LLSD" %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[["LLSD"]]$model.outputs$MCMC)))>0){OUT=graphs_ferme_melanges(OUT,"LLSD","Distance dernière feuille - base de l'épi")}
 
 
     # 3.1.4. La hauteur et la verse ----------
