@@ -86,8 +86,9 @@ if(type=="all_year"){
     p = ggplot(data=M,aes(x=year,y=x, colour = germplasm, group=germplasm)) + stat_summary(fun.y = mean, geom = "point") + stat_summary(fun.y = mean, geom = "line") 
     p = p + labs(x="année",y="note maladie")
     p = p + scale_y_continuous(breaks = c(1,2,3))
-    
+    return(p)
 })
+  return("plot"=p)
 }
 
 }
