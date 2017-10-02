@@ -166,46 +166,32 @@ feedback_folder_1 = function(
           
           \\begin{longtable}{p{.5\\textwidth}p{.5\\textwidth}}
           
-          Julien Lacanette 									& \\\\
-          CETAB 												& Triptolème \\\\
-          3 avenue de la Gare, 47190 AIGUILLON 				& chez Carole Gruel, Launay 35330 BOVEL \\\\
-          05.53.93.14.62										& \\\\
-          \\href{mailto:cetab@laposte.net}{cetab@laposte.net} 	& \\href{mailto:Triptoleme.CA@gmail.com}{Triptoleme.CA@gmail.com} \\\\
-          \\href{www.cetab.fr.nf}{www.cetab.fr.nf} 			& \\href{ www.semencespaysannes.org/qui_sommes-nous_286.php}{www.semencespaysannes.org/qui\\_sommes-nous\\_286.php}\\\\
-          & \\\\
-          & \\\\
+          ARDEAR Rhône-Alpes	& Graines de Noé \\\\
+          Alexandre HYACINTHE & Hélène MONTAZ \\\\
+          \href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr} & \href{mailto:technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
+          58 rue Raulin	69007	Lyon & Technopole Agro-Environnement \\\\
+          04 72 41 79 22	& Agronov RD-31, 21110	Bretenière \\\\
+           & 03 80 56 37 07 - 07 70 45 43 12 \\\\
           
-          Lydie Carras & \\\\
-          Pétanielle & Touzelle \\\\
-          %& \\\\
-          07 82 08 09 15 & \\\\
-          \\href{mailto:lydiemsp@gmail.com}{lydiemsp@gmail.com} & \\\\
-          & \\\\
-          & \\\\
+                    
+          ARDEAR Centre	& ARDEAR Nord \\\\\\\\
+          Sophie WOEHLING	& Clémentine HEITZ \\\\	
+          \href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} & \href{mailto:semencespaysannes@adearn.fr}{semencespaysannes@adearn.fr} \\\\
+          Village d'entreprises de l'Arrou, 87A Route de Château-Renault,	41000	Blois & 40 avenue Salengro	62223	Saint Laurent Blangy	\\\\
+          02 54 43 32 94 - 06 79 29 13 95 & 09 77 95 56 78	
           
-          Alexandre Hyacinthe  													& Sophie WOEHLING \\\\ 
-          ARDEAR Rhones-Alpes 													& ARDEAR Centre \\\\
-          58 rue Raulin 69007 LYON 												& Village d'entreprises de l'Arrou, 87A Route de Château-Renault, 41000 Blois \\\\
-          04 72 41 79 22 															& 02 54 43 32 94 \\\\
-          \\href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr}	& \\href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} \\\\
-          & \\\\
-          & \\\\
+          ADEAR 32 & Li mestère	\\\\
+          Charleyne BARTHOMEUF & 	Sofia Costa Santos BALTAZAR \\\\	
+          \href{mailto:adear32@free.fr}{adear32@free.fr} & \href{mailto:sofia.baltazar@unamur.be}{sofia.baltazar@unamur.be}
+          1 rue Dupont de l'Eure,	32000	Auch	& 48 Rue Albert Billy	5370	Porcheresse	Belgique	\\\\
+          05 62 05 30 86 - 06 87 58 35 95 & \\\\
           
-          Bergerie de Villarceaux 																			& Graines de Noé \\\\
-          Héloïse Boureau 																					& Hélène Montaz \\\\
-          La Bergerie de Villarceaux, 95710 Chaussy 															& Technopole Agro-Environnement, Agronov RD-31, 21110 BRETENIERE \\\\
-          01 34 67 91 23																						& 07 70 45 43 12 \\\\
-          \\href{mailto:heloise.boureau@bergerie-villarceaux.org}{heloise.boureau@bergerie-villarceaux.org} 	& \\href{technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
-          \\href{www.bergerie-villarceaux.org}{www.bergerie-villarceaux.org} \\\\
-          & \\\\
-          & \\\\
           
-          Kerna ùn Sohma & \\\\
-          Anne Wanner & \\\\ 
-          5 place de la gare – 68000 Colmar & \\\\
-          03 89 24 43 19 & \\\\
-          \\href{mailto:semencesalsaciennes@yahoo.fr}{semencesalsaciennes@yahoo.fr} & \\\\ 
-          \\href{www.kernaunsohma.fr}{www.kernaunsohma.fr} & \\\\
+          GAB 65	& \\\\
+          Frédéric FURET	& \\\\
+          frederic.furet.gab65@gmail.com		& \\\\
+          Chemin de Lalette, BP449	65004	Tarbes Cedex & \\\\
+          05 62 35 27 73 - 06 80 18 26 29 & \\\\
           
           \\end{longtable}
           
@@ -1050,8 +1036,8 @@ if(FALSE){
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$plot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
-          out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
-                                                                              Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
+          out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} des différentes modalités de sélection des mélanges. 
+                                                                              Les modalités qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ",sep=""), "content" = p_melanges[[1]][[i]]$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
       }
       return(OUT)
