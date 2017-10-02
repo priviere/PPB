@@ -166,7 +166,7 @@ feedback_folder_1 = function(
           
           \\begin{longtable}{p{.5\\textwidth}p{.5\\textwidth}}
           
-          textbf{ARDEAR Rhône-Alpes}	& textbf{Graines de Noé} \\\\
+          \\textbf{ARDEAR Rhône-Alpes}	& \\textbf{Graines de Noé} \\\\
           Alexandre HYACINTHE & Hélène MONTAZ \\\\
           \\href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr} & \\href{mailto:technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
           58 rue Raulin	69007	Lyon & Technopole Agro-Environnement \\\\
@@ -175,7 +175,7 @@ feedback_folder_1 = function(
            & \\\\
            & \\\\
                     
-          textbf{ARDEAR Centre}	& textbf{ARDEAR Nord} \\\\
+          \\textbf{ARDEAR Centre}	& \\textbf{ARDEAR Nord} \\\\
           Sophie WOEHLING	& Clémentine HEITZ \\\\	
           \\href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} & \\href{mailto:semencespaysannes@adearn.fr}{semencespaysannes@adearn.fr} \\\\
           Village d'entreprises de l'Arrou, 87A Route de Château-Renault,	41000	Blois & 40 avenue Salengro	62223	Saint Laurent Blangy	\\\\
@@ -183,7 +183,7 @@ feedback_folder_1 = function(
            & \\\\
            & \\\\
           
-          textbf{ADEAR 32} & textbf{Li mestère}	\\\\
+          \\textbf{ADEAR 32} & \\textbf{Li mestère}	\\\\
           Charleyne BARTHOMEUF & 	Sofia Costa Santos BALTAZAR \\\\	
           \\href{mailto:adear32@free.fr}{adear32@free.fr} & \\href{mailto:sofia.baltazar@unamur.be}{sofia.baltazar@unamur.be}
           1 rue Dupont de l'Eure,	32000	Auch	& 48 Rue Albert Billy	5370	Porcheresse	Belgique	\\\\
@@ -192,7 +192,7 @@ feedback_folder_1 = function(
            & \\\\
           
           
-          textbf{GAB 65}	& \\\\
+          \\textbf{GAB 65}	& \\\\
           Frédéric FURET	& \\\\
           frederic.furet.gab65@gmail.com		& \\\\
           Chemin de Lalette, BP449	65004	Tarbes Cedex & \\\\
@@ -524,7 +524,7 @@ feedback_folder_1 = function(
       a = c(paste("Groupe",i,sep=" "),as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))
       names(a) = c("seed_lot","value")
       TAB = rbind(TAB,a)
-      noms=paste(noms,"Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`," \\
+      noms=paste(noms,"Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`," \\\\
                  ",sep="")
     }
     TAB = cbind(TAB[,1],NA,TAB[,2:ncol(TAB)])
