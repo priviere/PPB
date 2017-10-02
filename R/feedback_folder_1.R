@@ -750,12 +750,11 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
         
         # Score plot
         if(score){
-          p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 15)[person]
+          p_score =plot.PPBstats(comp.mu, ggplot.type = "score", nb_parameters_per_plot = 22)[person]
           out = list("figure" = list("caption" = paste("
                                Les chiffres donnés dans ce graphique correspondent à la valeur du \\textbf{",variable,"} pour chaque population les différentes années sur votre ferme.
                                L'échelle de couleur correspond aux groupes de significativité : des populations présentant des couleurs différentes sont significativement différentes.
-                               Attention : Les groupements sont faits par année, donc on ne peut pas interpréter 2 pop présentes deux années différentes comme étant dans le même groupe si elles ont la même couleur 
-grouper des populations semées deux annés différentes selon leur couleur.
+                               Attention : Les groupements sont faits par année, donc on ne peut pas interpréter 2 populations présentes deux années différentes comme étant dans le même groupe si elles ont la même couleur.
                                ",sep=""), "content" = p_score, "layout" = matrix(c(1), ncol = 1), "width" = 1)); OUT = c(OUT, out)
         }
         
@@ -829,16 +828,16 @@ grouper des populations semées deux annés différentes selon leur couleur.
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
   comp=0
-  p = get.ggplot(data = data_all, ggplot.type = "data-barplot", x.axis = "year", in.col = "germplasm", 
-                   vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
-
+ # p = get.ggplot(data = data_all, ggplot.type = "data-barplot", x.axis = "year", in.col = "germplasm", 
+ #                  vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
+  OUT=interaction_and_score(OUT,res_model1,"hauteur",table=FALSE,titre = "Hauteur",score=TRUE,inter_plot=FALSE)
   
-   if(!is.null(p)){
-     out = list("figure" = list("caption" = "Evolution de la \\textbf{hauteur} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
-     OUT = c(OUT, out) ; comp = comp+0.5
-   }else{
-    out = list("text" = "Pas de données pour la hauteur") ; OUT=c(OUT,out)
-  }
+#   if(!is.null(p)){
+#     out = list("figure" = list("caption" = "Evolution de la \\textbf{hauteur} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+#     OUT = c(OUT, out) ; comp = comp+0.5
+#   }else{
+#    out = list("text" = "Pas de données pour la hauteur") ; OUT=c(OUT,out)
+#  }
   
   # Notations verse : couché, droit... -> mettre sous format 1->5 pour les graphs. 1:à plat ; 5:droit
   D=data_all$data$data
@@ -896,6 +895,7 @@ if(FALSE){
   selection_intra = function(res_model1, data_S_year, data_SR_year, variable){
     if (!is.null(data_S_year$data) & is.element(paste(variable,"---",variable,sep=""),colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
+      levels(data_version$version) = c(levels(data_version$version) [grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))])
       pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                          nb_parameters_per_plot=30)
       if(!is.null(pS$data_mean_comparisons[[1]])){
@@ -911,6 +911,7 @@ if(FALSE){
     if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       group = unlist(lapply(as.character(data_version$group),function(x){strsplit(x," ")[[1]][length(strsplit(x," ")[[1]])]}))
+      levels(data_version$version) = c(levels(data_version$version) [grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))])
       data_version = data_version[grep("R",group),]
       pSR =plot.PPBstats(x= res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                           nb_parameters_per_plot=30)
@@ -986,7 +987,7 @@ if(FALSE){
     out = textS; OUT = c(OUT, out)
     if( !is.null(pS1) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de mille grains}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
     if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{taux de protéine}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
@@ -1002,7 +1003,7 @@ if(FALSE){
     out = list("subsubsection" = "La réponse à la sélection"); OUT = c(OUT, out)
     
     out = textSR; OUT = c(OUT, out)
-    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
+    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
     if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 1, "landscape"=TRUE))
     ; OUT = c(OUT, out) }
@@ -1037,21 +1038,21 @@ if(FALSE){
       # Comparaison mélange vs composantes
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = NULL, variable, year=year, model = "model_1", plot.type = "comp.in.farm", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){
+        if(!is.null(p_melanges[[1]][[i]][[1]]$plot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
           out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ",sep=""), "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+                                                                              ",sep=""), "content" = p_melanges[[1]][[i]][[1]]$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
       }
       
       # Comparaison modalités de sélection
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model = "model_1", plot.type = "comp.mod", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
-        if(!is.null(p_melanges[[1]][[i]]$barplot)){
+        if(!is.null(p_melanges[[1]][[i]]$plot)){
           out = list("subsection" = titre); OUT = c(OUT, out)
           out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} du mélange et de ses composantes. 
                                                                               Les populations qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
-                                                                              ",sep=""), "content" = p_melanges[[1]][[i]]$barplot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
+                                                                              ",sep=""), "content" = p_melanges[[1]][[i]]$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
       }
       return(OUT)
   }
