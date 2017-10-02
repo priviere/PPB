@@ -527,8 +527,13 @@ feedback_folder_1 = function(
       noms=paste(noms,"Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`," \\\\
                  ",sep="")
     }
-    TAB = cbind(TAB[,1],NA,TAB[,2:ncol(TAB)])
-    colnames(TAB) = c("germplasm","block",variables)
+    if(nrow(TAB) == 1 ){
+      TAB = c(TAB[,1],NA,TAB[,2:ncol(TAB)])
+      names(TAB) = c("germplasm","block",variables) 
+    }else{
+      TAB = cbind(TAB[,1],NA,TAB[,2:ncol(TAB)])
+     colnames(TAB) = c("germplasm","block",variables)  
+    }
   }
   if(!is.null(tab$not_duplicated_infos)){
     tab$not_duplicated_infos[[1]] = rbind(tab$not_duplicated_infos[[1]],TAB)
