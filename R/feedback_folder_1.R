@@ -168,7 +168,7 @@ feedback_folder_1 = function(
           
           ARDEAR Rhône-Alpes	& Graines de Noé \\\\
           Alexandre HYACINTHE & Hélène MONTAZ \\\\
-          \href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr} & \href{mailto:technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
+          \\href{mailto:ardear.semences@wanadoo.fr}{ardear.semences@wanadoo.fr} & \\href{mailto:technique.grainesdenoe@gmail.com}{technique.grainesdenoe@gmail.com} \\\\
           58 rue Raulin	69007	Lyon & Technopole Agro-Environnement \\\\
           04 72 41 79 22	& Agronov RD-31, 21110	Bretenière \\\\
            & 03 80 56 37 07 - 07 70 45 43 12 \\\\
@@ -176,13 +176,13 @@ feedback_folder_1 = function(
                     
           ARDEAR Centre	& ARDEAR Nord \\\\\\\\
           Sophie WOEHLING	& Clémentine HEITZ \\\\	
-          \href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} & \href{mailto:semencespaysannes@adearn.fr}{semencespaysannes@adearn.fr} \\\\
+          \\href{mailto:ardearcentre.semencespaysannes@gmail.com}{ardearcentre.semencespaysannes@gmail.com} & \\href{mailto:semencespaysannes@adearn.fr}{semencespaysannes@adearn.fr} \\\\
           Village d'entreprises de l'Arrou, 87A Route de Château-Renault,	41000	Blois & 40 avenue Salengro	62223	Saint Laurent Blangy	\\\\
           02 54 43 32 94 - 06 79 29 13 95 & 09 77 95 56 78	
           
           ADEAR 32 & Li mestère	\\\\
           Charleyne BARTHOMEUF & 	Sofia Costa Santos BALTAZAR \\\\	
-          \href{mailto:adear32@free.fr}{adear32@free.fr} & \href{mailto:sofia.baltazar@unamur.be}{sofia.baltazar@unamur.be}
+          \\href{mailto:adear32@free.fr}{adear32@free.fr} & \\href{mailto:sofia.baltazar@unamur.be}{sofia.baltazar@unamur.be}
           1 rue Dupont de l'Eure,	32000	Auch	& 48 Rue Albert Billy	5370	Porcheresse	Belgique	\\\\
           05 62 05 30 86 - 06 87 58 35 95 & \\\\
           
@@ -1035,7 +1035,6 @@ if(FALSE){
       p_melanges = ggplot_mixture1(res_model = res_model1, melanges_PPB_mixture = Mixtures_all, data_S = Mixtures_S, melanges_tot = Mix_tot, variable, year=year, model = "model_1", plot.type = "comp.mod", person, nb_parameters_per_plot = 20,save=NULL)
       for (i in 1:length(p_melanges[[1]])){
         if(!is.null(p_melanges[[1]][[i]]$plot)){
-          out = list("subsection" = titre); OUT = c(OUT, out)
           out = list("figure" = list("caption" = paste("Comparaison du \\textbf{",variable,"} des différentes modalités de sélection des mélanges. 
                                                                               Les modalités qui partagent le même groupe (représenté par une même lettre) ne sont pas significativement différentes.
                                                                               ",sep=""), "content" = p_melanges[[1]][[i]]$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1)); OUT = c(OUT, out)}
