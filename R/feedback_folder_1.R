@@ -631,9 +631,9 @@ feedback_folder_1 = function(
                      "tres_malade_note3---tres_malade_note3"
     )
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
-                  nb_col = 6, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE)
+                  nb_col = 10, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE)
    if(!is.null(tab)){
-     p = get_interaction_plot_disease(tab,5,vec_variables)
+     p = get_interaction_plot_disease(tab,5,vec_variables,type="year")
      a=NULL
      for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}
      out = list("figure" = list("caption" = paste("Evolution de la note de maladie au cours de l'année. Si plusieurs populations ont reçu les même notes elles se trouvent dans le même groupe. 1 = sain ; 2 = malade ; 3 = très malade",
@@ -643,6 +643,14 @@ feedback_folder_1 = function(
    }
   
   # Evolution maladies au cours des années
+  tab = get.table(data = data_all, table.type = "raw", vec_variables = vec_variables, 
+                  nb_col = 10, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE,nb_duplicated_rows = 500)
+  if(!is.null(tab)){
+    p = get_interaction_plot_disease(tab,20,vec_variables,type="all_year")
+    out = list("figure" = list("caption" = "Evolution de la note de maladie au cours des années. 1 = sain ; 2 = malade ; 3 = très malade","content" = p$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
+    OUT=c(OUT,out)
+    comp=1
+  }
   
   
   vec_variables = c("pluies.printemps---pluies", 
@@ -674,7 +682,8 @@ feedback_folder_1 = function(
                     "biomasse---biomasse", 
                     "hétérogénéité---hétérogénéité", 
                     "date.récolte---date.récolte", 
-                    "poids.battage---poids.battage", 
+                    "poids.battage---poids.battage",
+                    "rdt_parcelle---rdt_parcelle",
                     "commentaires.été---commentaires")
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE,nb_duplicated_rows=200)
@@ -820,8 +829,8 @@ grouper des populations semées deux annés différentes selon leur couleur.
   # 2.5.1.5. La hauteur et la verse ----------
   out = list("subsubsection" = "La hauteur et la verse"); OUT = c(OUT, out)
   comp=0
-  p = get.ggplot(data = data_all, ggplot.type = "data-interaction", x.axis = "year", in.col = "germplasm", 
-                   vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 5, merge_g_and_s = TRUE)
+  p = get.ggplot(data = data_all, ggplot.type = "data-barplot", x.axis = "year", in.col = "germplasm", 
+                   vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
 
   
    if(!is.null(p)){
@@ -1223,8 +1232,8 @@ if(FALSE){
   variables = names(res_model2)
   variables=variables[-c(3,6)]
  # Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
-  Model2=res_model2[grep(paste(variables,collapse="|"),names(res_model2))]
-  Model2 = lapply(Model2,function(x){return(x$model.outputs)})
+  res_model2=res_model2[grep(paste(variables,collapse="|"),names(res_model2))]
+  Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
   p_PCA = plot.PPBstats(clust,ind_to_highlight=paste(person,year,sep=":"))
