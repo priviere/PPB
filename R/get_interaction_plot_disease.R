@@ -1,8 +1,10 @@
-get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variables)
+get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variables,type="year")
 {
   
-  add_split_col = function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
+add_split_col= function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] } 
   
+if(type=="year"){
+ 
   if(!is.null(tab$duplicated_infos)){ 
     dup = lapply(tab$duplicated_infos,function(x){return(cbind(x[[1]],"block"=1,x[[2]]))})
     Dupl=NULL
@@ -20,11 +22,11 @@ get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variable
   Tab = rbind(Dupl,no_Dupl)
   
   dates = unique(unlist(sapply(Tab[,3:ncol(Tab)],function(x){unique(x[!is.na(x)])})))
-  lev = dates[sort.list(as.POSIXct(strptime(dates,"%d/%m/%y")))]
+  lev = dates[sort.list(as.POSIXct(strptime(dates,"%d/%m/%Y")))]
   
   Tab$split = add_split_col(Tab,nb_parameter_per_plot)
   Tab = plyr:::splitter_d(Tab, .(split))
-    
+  
   p <- lapply(Tab,function(x){
     x = melt(x,id.vars="germplasm",measure.vars = vec_variables[-grep(paste(setdiff(vec_variables,colnames(x)[3:ncol(x)]),collapse="|"),vec_variables)])
     x=x[!is.na(x$value),]
@@ -43,4 +45,49 @@ get_interaction_plot_disease <- function(tab, nb_parameter_per_plot,vec_variable
   })
   return(list("plot" = p, "Data_groups"=Data_duplicated_groups))
   
+}  
+  
+if(type=="all_year"){
+  Tab=tab$not_duplicated_infos$`set-1`
+  Tab = cbind(Tab[,1:2],apply(Tab[,3:ncol(Tab)],2,function(x){
+    return(unlist(lapply(x,function(y){
+      if(!is.na(y)){
+        yr = strsplit(y,"/")[[1]][3]
+        yr = ifelse(nchar(yr) == 2, paste("20",yr,sep=""),yr)
+        return(paste(strsplit(y,"/")[[1]][1],strsplit(y,"/")[[1]][2],yr,sep="/"))
+      }else{return(y)}
+    })))
+  }))
+    
+  dates = unique(unlist(sapply(Tab[,3:ncol(Tab)],function(x){unique(x[!is.na(x)])})))
+  lev = dates[sort.list(as.POSIXct(strptime(dates,"%d/%m/%Y")))]
+  
+  Tab$split = add_split_col(Tab,nb_parameter_per_plot)
+  Tab = lapply(unique(Tab$split),function(nb){
+    return(Tab[Tab$split %in% nb,])
+  })
+  
+  p <- lapply(Tab,function(TAB){
+    TAB = melt(TAB,id.vars="germplasm",measure.vars = vec_variables[-grep(paste(setdiff(vec_variables,colnames(TAB)[3:ncol(TAB)]),collapse="|"),vec_variables)])
+    TAB=TAB[!is.na(TAB$value),]
+    TAB$variable = unlist(lapply(as.character(TAB$variable),function(TAB){strsplit(TAB,"_")[[1]][1]}))
+    TAB$variable=unlist(lapply(TAB$variable,function(y){
+      if(y=="sain"){return(1)}
+      if(y=="malade"){return(2)}
+      if(y=="tres"){return(3)}
+    }))
+    TAB$value = factor(TAB$value,levels=lev)
+    TAB$year = unlist(lapply(as.character(TAB$value),function(x){strsplit(x,"/")[[1]][3]}))
+    TAB$BY = paste(TAB$germplasm,TAB$year,sep=":")
+    M = aggregate(TAB$variable,by=list(TAB$BY),mean)
+    M$year = unlist(lapply(as.character(M[,1]),function(x){strsplit(x,":")[[1]][2]}))
+    M$germplasm = unlist(lapply(as.character(M[,1]),function(x){strsplit(x,":")[[1]][1]}))
+    
+    p = ggplot(data=M,aes(x=year,y=x, colour = germplasm, group=germplasm)) + stat_summary(fun.y = mean, geom = "point") + stat_summary(fun.y = mean, geom = "line") 
+    p = p + labs(x="année",y="note maladie")
+    p = p + scale_y_continuous(breaks = c(1,2,3))
+    
+})
+}
+
 }
