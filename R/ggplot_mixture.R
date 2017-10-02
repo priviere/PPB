@@ -69,9 +69,12 @@ ggplot_mixture1 = function(res_model,
           colnames(noms)[1] =  colnames(nom_melange)[1] ="germplasm"
           data_S = unique(data_S[,c("son","expe","sl_statut","expe_name","expe_name_2","son_germplasm","father","father_germplasm","son_person")])
           data_S = data_S[grep("bouquet",data_S$sl_statut),]
+          mel_year = strsplit(as.character(nom_melange$germplasm),"_")[[1]][3]
           noms$germplasm_2 = lapply(as.character(noms$germplasm),function(x){
             d = data_S[grep(strsplit(x,"#")[[1]][1],data_S$father),]
             d = d[d$son_person %in% paysan,]
+            d$year = unlist(lapply(as.character(d$sl_statut),function(y){strsplit(y,":")[[1]][1]}))
+            d=d[d$year %in% mel_year,]
             germ = d$son
             return(as.character(germ[grep("VA",germ)]))
           })
