@@ -1243,10 +1243,6 @@ if(FALSE){
              Les dossiers de chaque paysan(ne) est disponible à la demande."); OUT = c(OUT, out)
   
   
-  variables = names(res_model2)
-  variables=variables[-c(3,6)]
- # Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
-  res_model2=res_model2[grep(paste(variables,collapse="|"),names(res_model2))]
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
