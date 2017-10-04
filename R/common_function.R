@@ -1,5 +1,13 @@
 get_histo = function(Data,col_plot="pval",breaks=0.03,titre){
   
+  Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
+  Mean=mean(as.numeric(as.character(Data$overyielding)))
+  Positif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))>0])*100/length(Data$overyielding),2)
+  Negatif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))<0])*100/length(Data$overyielding),2)
+  
+  B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
+  
+  
   pval= NULL
   for (i in 1:nrow(Data)){
     if (as.numeric(as.character(Data[i,"pvalue"])) <= 0.01){pval = c(pval,"Significatif à 0.01")}
