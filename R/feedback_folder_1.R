@@ -426,6 +426,10 @@ feedback_folder_1 = function(
       }
 		
     }else{
+      # 1ere année : mettre un tableau plutôt qu'un graph...
+      if(){
+        
+      }
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
                      in.col = "germplasm", vec_variables = variable, 
                      nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
@@ -921,7 +925,7 @@ if(FALSE){
       if(is.null(unlist(pS[[1]])) & is.null(pS[[2]]) & is.null(pS[[3]])){pS=NULL}
     } else {pS=NULL}
     
-    if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_S_year$data$data))) {
+    if (person != "ADP" & !is.null(data_SR_year$data)  & is.element(paste(variable,"---",variable,sep=""), colnames(data_SR_year$data$data))) {
       data_version = format.data(data_SR_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       group = unlist(lapply(as.character(data_version$group),function(x){strsplit(x," ")[[1]][length(strsplit(x," ")[[1]])]}))
       levels(data_version$version) = c(levels(data_version$version) [grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))])
