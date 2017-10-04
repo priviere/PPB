@@ -24,12 +24,14 @@
 feedback_folder_1 = function(
   dir = ".",
   person,
-  out_analyse_feedback_folder_1)
+  pathway = NULL)
   # go ----------
 {
   # Set the right folder and create folders tex_files and feedback_folder ----------
   a = dir(dir)
   if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
+  
+  out_analyse_feedback_folder_1 = get(load(pathway))
   
   
   setwd(dir)
@@ -913,15 +915,20 @@ if(FALSE){
     if (!is.null(data_S_year$data) & is.element(paste(variable,"---",variable,sep=""),colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
       levels(data_version$version) = c(levels(data_version$version) [grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))])
-      pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
-                         nb_parameters_per_plot=30)
-      if(!is.null(pS$data_mean_comparisons[[1]])){
-        pS$data_mean_comparisons[[1]] = lapply(pS$data_mean_comparisons[[1]],function(x){
-          x = x + labs(title = variable)
-          return(x)
-        })
+      if(paste(person,year,sep=":")%in% names(res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons)){
+        pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
+                          nb_parameters_per_plot=30)
+        if(!is.null(pS$data_mean_comparisons[[1]])){
+          pS$data_mean_comparisons[[1]] = lapply(pS$data_mean_comparisons[[1]],function(x){
+            x = x + labs(title = variable)
+            return(x)
+          })
+        }
+      }else{
+        pS =get.ggplot(data_S_year, ggplot.type = "data-barplot", vec_variables=paste(variable,variable,sep="---"), nb_parameters_per_plot_x.axis =20)
+        pS=list("data_mean_comparisons"=NULL,"data_env_with_no_controls"=pS,"data_env_whose_param_did_not_converge"=NULL)
       }
-
+     
       if(is.null(unlist(pS[[1]])) & is.null(pS[[2]]) & is.null(pS[[3]])){pS=NULL}
     } else {pS=NULL}
     
@@ -944,17 +951,26 @@ if(FALSE){
     return(list("pS"=pS, "pSR"=pSR))
   }
   
-  # 2.5.2.1. Poids de mille grains ----------
-  a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.mille.grains")
-  pS1 = a$pS ; pSR1 = a$pSR
+  vec_variables = c("poids.de.mille.grains","taux.de.proteine","poids.de.l.epi")
   
-  # 2.5.2.2. Protéine ----------
-  a = selection_intra(res_model1, data_S_year, data_SR_year, "taux.de.proteine")
-  pS2 = a$pS ; pSR2 = a$pSR
-  
-  # 2.5.2.3. Poids de l'épi ----------
-  a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.l.epi")
-  pS3 = a$pS ; pSR3 = a$pSR
+  dS = lapply(vec_variables,function(variable){
+    a = selection_intra(res_model1, data_S_year, data_SR_year, variable)
+    return(a)
+  })
+  names(dS) = vec_variables
+ 
+  #  # 2.5.2.1. Poids de mille grains ----------
+  # 
+  # a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.mille.grains")
+  # pS1 = a$pS ; pSR1 = a$pSR
+  # 
+  # # 2.5.2.2. Protéine ----------
+  # a = selection_intra(res_model1, data_S_year, data_SR_year, "taux.de.proteine")
+  # pS2 = a$pS ; pSR2 = a$pSR
+  # 
+  # # 2.5.2.3. Poids de l'épi ----------
+  # a = selection_intra(res_model1, data_S_year, data_SR_year, "poids.de.l.epi")
+  # pS3 = a$pS ; pSR3 = a$pSR
  
   
   textS = list("text" = paste("
@@ -993,49 +1009,50 @@ if(FALSE){
                                ",sep=""))
   
   
-  if( !is.null(pS1) | !is.null(pS2) | !is.null(pS3) | !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
+  if(!is.null(unlist(dS))){
     out = list("subsection" = "Etude de la réponse à la sélection"); OUT = c(OUT, out)
   }
   
-  
-  if( !is.null(pS1) | !is.null(pS2) | !is.null(pS3) ){
-    out = list("subsubsection" = "Le differentiel de sélection"); OUT = c(OUT, out)
+  pS = lapply(dS,function(x){return(x$pS)})
+  pSR = lapply(dS,function(x){return(x$SR)})
+get_pS_pSR <- function(data,variable){
+  if(!is.null(data)){ 
+    if(!is.null(data$data_mean_comparisons)){
+      out = list("figure" = list("caption" = paste("Différentiel de sélection pour le \\textbf{",variable,"}. Le symbole au-dessus des populations représentent
+                                                    la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.",sep=""), "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
+      OUT = c(OUT, out) 
+    }
     
+    if(!is.null(data$data_env_with_no_controls)){
+      out = list("figure" = list("caption" = paste("Différentiel de sélection pour le \\textbf{",variable,"}. Les symboles de significativité ne sont pas présents car 
+                                                   vous n'avez pas semé 2 répétitions du témoin ou vous ne nous avez pas envoyé des épis pour ces 2 répétitions.
+                                                   Les barres qui peuvent être présentent représentent l'écart-type des mesures faites sur les épis",sep=""), "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
+      OUT = c(OUT, out) 
+    }
+  }
+  return(OUT)
+}
+
+  
+  if( !is.null(unlist(pS)) ){
+    out = list("subsubsection" = "Le differentiel de sélection"); OUT = c(OUT, out)
     out = textS; OUT = c(OUT, out)
-    if( !is.null(pS1) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de mille grains}. Le symbole au-dessus des populations représentent
-                                                    la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
-    if( !is.null(pS2) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{taux de protéine}. Le symbole au-dessus des populations représentent
-                                                    la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS2, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
-    if( !is.null(pS3) ){ out = list("figure" = list("caption" = "Différentiel de sélection pour le \\textbf{poids de l'épi}. Le symbole au-dessus des populations représentent
-                                                    la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.", "content" = pS3, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
+    
+    for (variable in vec_variables){OUT=get_pS_pSR(pS[[variable]],variable)}
   }
   
-  if( !is.null(pSR1) | !is.null(pSR2) | !is.null(pSR3) ){
+  if(!is.null(unlist(pSR))){
     out = list("subsubsection" = "La réponse à la sélection"); OUT = c(OUT, out)
-    
     out = textSR; OUT = c(OUT, out)
-    if( !is.null(pSR1) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de mille grains}.", "content" = pSR1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
-    if( !is.null(pSR2) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{taux de protéine}.", "content" = pSR2, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
-    if( !is.null(pSR3) ){ out = list("figure" = list("caption" = "Réponse à la sélection pour le \\textbf{poids de l'épi}. La barre autour de la moyenne représente la variation. Plus elle est importante, plus la variation est grande autour de la moyenne.", "content" = pSR3, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
-    ; OUT = c(OUT, out) }
+    
+    for (variable in vec_variables){OUT=get_pS_pSR(pSR[[variable]],variable)}
   }
   
   
   # 3. Essai Mélanges --------------------------------------------------------------------------------------------------------------------------------------
-  # 3.1. Résultats sur la ferme -----
-  if (is.null(data_PPB_mixture$data)) { 
-    out = list("text" = "Vous n'avez pas mis en place l'essai de sélection pour les mélanges sur votre ferme cette année."); OUT=c(OUT,out)
-  }else{
-    out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
-    out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
+  out = list("chapter" = "Résultats de l'essai mélanges"); OUT = c(OUT, out)
+  out = list("text" = "Cet essai, mis en place à l'automne 2015, vise à comparer les effets de différentes pratiques de sélection des mélanges sur leur comportement. 
              Les pratiques testées sont : 
              \\begin{itemize}
              \\item deux années de sélection dans les composantes avant de mélanger ; 
@@ -1043,9 +1060,14 @@ if(FALSE){
              \\item à partir du mélange créé sans sélection dans les composantes, deux années de sélection dans le mélange.
              \\end{itemize}
              Ces pratiques de sélection sont comparées au mélange évoluant sans sélection massale. 
-             Lors de la saison 2015-2016, les paysans participant à l'essai ont semé leurs mélanges formés sans sélection dans
-             les composantes, ainsi que les composantes en pur. Les résultats obtenus cette année permettent de comparer le comportement des mélanges par rapport à leurs
-             composantes"); OUT = c(OUT, out)
+             Un dossier présentant les résultats des deux première années vous sera envoyé. Si vous voulez mettre en place cet essai chez vous, c'est tout à fait possible,
+             contactez votre animateur ou l'équipe de recherche !"); OUT = c(OUT, out)
+  
+  # 3.1. Résultats sur la ferme -----
+  if (is.null(data_PPB_mixture$data)) { 
+    out = list("text" = "Vous n'avez pas mis en place l'essai de sélection pour les mélanges sur votre ferme cette année."); OUT=c(OUT,out)
+  }else{
+  
     
     out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
     out = list("text" = "Les gaphiques suivant permettent de comparer la valeur du mélange à celles de ses composantes et à la valeur moyenne des composantes."); OUT=c(OUT,out)
