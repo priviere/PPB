@@ -424,11 +424,11 @@ feedback_folder_1 = function(
       }else{
           p = get_interaction_cycle(data,variable,equal.ylim = TRUE,nb_parameters_per_plot_in.col = 8,year)
       }
-		
-    }else{
-      # 1ere année : mettre un tableau plutôt qu'un graph...
-      if(){
-        
+	
+    # }else{
+    #   # 1ere année : mettre un tableau plutôt qu'un graph...
+    #   if(){
+    #     
       }
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
                      in.col = "germplasm", vec_variables = variable, 
