@@ -31,6 +31,7 @@ feedback_folder_1 = function(
   a = dir(dir)
   if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
   
+  message("Loading data....")
   out_analyse_feedback_folder_1 = get(load(pathway))
   
   
@@ -1020,14 +1021,14 @@ get_pS_pSR <- function(data,variable){
     if(!is.null(data$data_mean_comparisons)){
       out = list("figure" = list("caption" = paste("Différentiel de sélection pour le \\textbf{",variable,"}. Le symbole au-dessus des populations représentent
                                                     la significativité de la différence de moyenne : le \".\" représente une faible significativité tandis que \"***\" représente une
-                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.",sep=""), "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
+                                                    forte significativité. S'il n'y a aucun symbole la différence n'est pas significative.",sep=""), "content" = data$data_mean_comparisons, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
       OUT = c(OUT, out) 
     }
     
     if(!is.null(data$data_env_with_no_controls)){
       out = list("figure" = list("caption" = paste("Différentiel de sélection pour le \\textbf{",variable,"}. Les symboles de significativité ne sont pas présents car 
                                                    vous n'avez pas semé 2 répétitions du témoin ou vous ne nous avez pas envoyé des épis pour ces 2 répétitions.
-                                                   Les barres qui peuvent être présentent représentent l'écart-type des mesures faites sur les épis",sep=""), "content" = pS1, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
+                                                   Les barres qui peuvent être présentent représentent l'écart-type des mesures faites sur les épis",sep=""), "content" = data$data_env_with_no_controls, "layout" = matrix(c(1), ncol = 1), "width" = 0.8, "landscape"=TRUE))
       OUT = c(OUT, out) 
     }
   }
