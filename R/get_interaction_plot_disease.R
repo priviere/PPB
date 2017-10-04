@@ -15,7 +15,7 @@ if(type=="year"){
       Dupl = rbind(Dupl,dup[[i]])
     }
     colnames(Dupl)[1] = "germplasm"
-  }else{Dupl=NULL}
+  }else{Dupl=NULL; Data_duplicated_groups=NULL}
   no_Dupl=NULL
   for (i in 1:length(tab$not_duplicated_infos)){no_Dupl = rbind(no_Dupl,tab$not_duplicated_infos[[i]])}
   
