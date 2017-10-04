@@ -652,7 +652,7 @@ feedback_folder_1 = function(
    if(!is.null(tab)){
      p = get_interaction_plot_disease(tab,5,vec_variables,type="year")
      a=NULL
-     for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}
+     if(!is.null(p$Data_groups)){ for (i in 1:nrow(p$Data_groups)){a=paste(a,paste(p$Data_groups[i,1],p$Data_groups[i,2],sep=" : "),sep="\n")}}
      out = list("figure" = list("caption" = paste("Evolution de la note de maladie au cours de l'année. Si plusieurs populations ont reçu les même notes elles se trouvent dans le même groupe. 1 = sain ; 2 = malade ; 3 = très malade",
                                                   a,sep=""),"content" = p$plot, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
      OUT=c(OUT,out)
@@ -1395,30 +1395,32 @@ if(FALSE){
     data_S = data_S[grep("bouquet",data_S$sl_statut),]
     Sel_year = unlist(lapply(as.character(data_S$son),function(x){strsplit(x,"_")[[1]][1]}))
     out = res_model2[[variable]]$predict.past[[paste(person, year, sep = ":")]]$MCMC
-    quantiles=NULL
-    for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
-    rownames(quantiles)=unlist(ex_between(names(out),"[",","))
-    
-    if( nrow(quantiles) > 0 ) {
-      quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
-      quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
-      quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
-      tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
-      if(!is.null(Sel_year)){tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]}
-      tab_pop=tail(tab_pop,n=3)
-      germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
-      tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
-      quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
-      colnames(quantiles) = c("population",variable)
-    }
+    if(!is.null(out)){
+      quantiles=NULL
+      for(i in 1:ncol(out)){quantiles = rbind(quantiles,quantile( out[i,], probs=c(0, 0.05, 0.10, 0.50, 0.90, 0.95, 1)))}
+      rownames(quantiles)=unlist(ex_between(names(out),"[",","))
+      
+      if( nrow(quantiles) > 0 ) {
+        quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
+        quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
+        quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
+        tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
+        if(!is.null(Sel_year)){tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]}
+        tab_pop=tail(tab_pop,n=3)
+        germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
+        tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
+        quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
+        colnames(quantiles) = c("population",variable)
+      }
+    }else{quantiles=NULL}
+ 
     
     if (!is.null(quantiles)){
       attributes(quantiles)$invert = FALSE
       out = list("table" = list("caption" = paste("Populations qui auraient eu des \\textbf{",variable,"} les plus importants chez vous cette année. A titre de comparaison, les meilleures populations pour cette variable semées cette année sur votre ferme sont notées avec *.",sep=""), "content" = quantiles)); OUT = c(OUT, out)  
     }else{
-      out = list("text" = "
-Il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année . 
-"); OUT = c(OUT, out)
+      out = list("text" = paste(variable," : il n'est pas possible de prédire ces valeurs car nous n'avons aucune données phénotypiques sur votre ferme pour cette année.",sep="") 
+); OUT = c(OUT, out)
     }
     
     return(OUT)
