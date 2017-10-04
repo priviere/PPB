@@ -130,6 +130,7 @@ ggplot_mixture1 = function(res_model,
               Data$max = max(Data$median, na.rm = TRUE)
               Data$melange = Data[grep("Mélange",Data$type),"germplasm"]
               
+              if(!is.null(save)){write.table(Data,file=paste(save,"/Par_paysan/Mel_et_comp_",unique(Data$melange),"_",unique(Data$environment),"_",variable,".csv",sep=""),sep=";",dec=",")}
               if (plot.type == "comp.in.farm") {
                 Data$split = add_split_col(Data, nb_parameters_per_plot)
                 Data_split = plyr:::splitter_d(Data, .(split))
@@ -267,7 +268,7 @@ ggplot_mixture1 = function(res_model,
         return(Mat)
       })
       
-      if (plot.type == "mix.comp.distribution"){
+      if (plot.type == "mix.comp.distribution" | plot.type =="mix.gain.distribution"){
         toPlot=NULL
         D = lapply(Distrib,function(x) {
           return(lapply(x,function(y){return(lapply(y,function(yr){return(yr$tab)}))}))
@@ -291,22 +292,21 @@ ggplot_mixture1 = function(res_model,
         toPlot=as.data.frame(toPlot)
         toPlot$Moyenne = as.numeric(as.character(toPlot$Moyenne))
     
-        p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group), xlab=variable)
-        p = p +labs(x="", y=paste("Valeur du ",variable,sep=""))
-        p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=4.5)
-        p = p + geom_jitter(position=position_jitter(0), cex=3) 
-        p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
-        p = p + geom_line()
-        p = p + theme(legend.position="none")
-        
+        if(plot.type =="mix.comp.distribution"){
+          p = ggplot(toPlot, aes(x=Type,y=Moyenne,color = Group, shape=Group), xlab=variable)
+          p = p +labs(x="", y=paste("Valeur du ",variable,sep=""))
+          p = p + stat_summary(fun.y=mean,geom="point",color="black",shape="x",size=4.5)
+          p = p + geom_jitter(position=position_jitter(0), cex=3) 
+          p = p + scale_shape_manual(values = seq(1,nrow(toPlot)/4,1))
+          p = p + geom_line()
+          p = p + theme(legend.position="none")
+          return(list("Tab"=toPlot,"plot"=p))
+        }
         if(!is.null(save)){write.table(toPlot,file=paste(save,"/Distrib_",variable,".csv",sep=""),sep=";")}
-        return(list("Tab"=toPlot,"plot"=p))
+
       }
-      
-    }else{
-      return(NULL)
-    }
-    
+
+    }else{return(NULL)}
   }
   
   
@@ -338,19 +338,12 @@ ggplot_mixture1 = function(res_model,
       rownames(Data)=seq(1,nrow(Data),1)
       Data=as.data.frame(Data)
       colnames(Data) = c("Paysan","overyielding","pvalue","nbComp","melange","year","location")
-      Gain = round(mean(as.numeric(as.character(Data$overyielding)))*100,2)
-      Mean=mean(as.numeric(as.character(Data$overyielding)))
-      Positif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))>0])*100/length(Data$overyielding),2)
-      Negatif = round(length(Data$overyielding[as.numeric(as.character(Data$overyielding))<0])*100/length(Data$overyielding),2)
-      
-      
-      B= ifelse(abs(max(as.numeric(as.character(Data$overyielding)))) > abs(min(as.numeric(as.character(Data$overyielding)))),max(as.numeric(as.character(Data$overyielding))),min(as.numeric(as.character(Data$overyielding))))
       Data$mod = unlist(lapply(as.character(Data$melange),function(x){
         if(length(grep(".2",x))>0){return("mod2")
         }else if(length(grep("[.]3",x))>0){return("mod1")
         }else{return("mod4")}
       }))
-      
+
       p = get_histo(Data,col_plot,breaks=0.05, titre=variable)
       
       if(!is.null(save)){write.table(Data,file=paste(save,"/Histo_",variable,".csv",sep=""),sep=";")}
