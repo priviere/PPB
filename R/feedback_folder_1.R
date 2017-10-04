@@ -1404,12 +1404,16 @@ if(FALSE){
         quantiles = quantiles[order(quantiles[,"50%"], decreasing = TRUE),]
         quantiles = quantiles[c(c(1:5),c((nrow(quantiles) - 5):nrow(quantiles))),]
         quantiles = cbind.data.frame(rownames(quantiles), quantiles$`50%`)
-        tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
-        if(!is.null(Sel_year)){tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]}
-        tab_pop=tail(tab_pop,n=3)
-        germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
-        tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
-        quantiles = rbind(quantiles,tab_pop) ; quantiles = quantiles[order(quantiles[,2]),]
+        
+        if(length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons)))>0){
+          tab_pop = res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons[[paste(person,year,sep=":")]]$mean.comparisons[,c("parameter","median")]
+          if(!is.null(Sel_year)){tab_pop = tab_pop[-grep(paste(Sel_year,collapse="|"),tab_pop$parameter),]}
+          tab_pop=tail(tab_pop,n=3)
+          germ = unlist(ex_between(tab_pop$parameter, "[", "]")) ; germ = unlist(lapply(germ,function(x){strsplit(x,",")[[1]][1]}))
+          tab_pop$parameter = paste(germ,"*",sep=" ") ; colnames(tab_pop)=colnames(quantiles)
+          quantiles = rbind(quantiles,tab_pop) 
+        }
+        quantiles = quantiles[order(quantiles[,2]),]
         colnames(quantiles) = c("population",variable)
       }
     }else{quantiles=NULL}
