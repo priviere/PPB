@@ -107,7 +107,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
     \\noindent
     {\\Huge \\textbf{\\textsf{Programme de sélection décentralisée \\\\ et collaborative sur le blé tendre}}} \\\\
     ~\\\\
-    \\noindent{\\Large \\textbf{\\textsf{Résultats de la saison",as.numeric(year)-1,"-",year,"}}}
+    \\noindent{\\Large \\textbf{\\textsf{Résultats de la saison ",as.numeric(year)-1,"-",year,"}}}
     \\vfill
     
     \\begin{flushright}
@@ -1479,7 +1479,7 @@ if(FALSE){
   
   system("mkdir ./feedback_folder/figures")
   system("cp ./figures/*.png ./feedback_folder/figures")
-#  rm(list=setdiff(ls(), c("we_are_here","OUT","person","year","out_analyse_feedback_folder_1")))
+  rm(list=setdiff(ls(), c("we_are_here","OUT","person","year")))
   
   # /!\ Get pdf ----------
   get.pdf(dir = paste(we_are_here, "/feedback_folder", sep = ""), 
