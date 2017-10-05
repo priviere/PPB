@@ -107,7 +107,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
     \\noindent
     {\\Huge \\textbf{\\textsf{Programme de sélection décentralisée \\\\ et collaborative sur le blé tendre}}} \\\\
     ~\\\\
-    \\noindent{\\Large \\textbf{\\textsf{Résultats de la saison 2015-2016}}}
+    \\noindent{\\Large \\textbf{\\textsf{Résultats de la saison",as.numeric(year)-1,"-",year,"}}}
     \\vfill
     
     \\begin{flushright}
