@@ -1078,7 +1078,7 @@ get_pS_pSR <- function(data,variable){
   
 data_mixtures = get(load(paste(pathway,"out_data_mixtures.RData",sep="/")))
 Mixtures_all = data_mixtures$Mixtures_all
-Mixtures_selection = data_mixtures$Mixtures_selection
+Mixtures_S = data_mixtures$Mixtures_selection
 Mix_tot = data_mixtures$Mix_tot
     
 levels(Mixtures_all$data$son) = c(levels(Mixtures_all$data$son) , "C70_ANB_2011_0001")
