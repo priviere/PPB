@@ -33,6 +33,7 @@ get_interaction_cycle <- function(data,
 	      
 	      q=melt(d,id.vars="son",measure.vars=variable)
 	      q=q[order(q$son),]
+	      q=q[!is.na(q$value),]
 	      if(!is.null(nb_parameters_per_plot_in.col)){
 	        ns = unique(q$son)
 	        s = rep(c(1:length(ns)), each = nb_parameters_per_plot_in.col)[1:length(ns)]
