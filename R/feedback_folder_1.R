@@ -552,7 +552,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
     tab$not_duplicated_infos[[1]] = rbind(tab$not_duplicated_infos[[1]],TAB)
     attributes(tab$not_duplicated_infos)$invert=FALSE
     tab$duplicated_infos = NULL
-    tab$duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
+    tab$not_duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
       colnames(x)=lapply(colnames(x),function(y){strsplit(y,"---")[[1]][1]})
       return(x)
   })
