@@ -552,6 +552,10 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
     tab$not_duplicated_infos[[1]] = rbind(tab$not_duplicated_infos[[1]],TAB)
     attributes(tab$not_duplicated_infos)$invert=FALSE
     tab$duplicated_infos = NULL
+    tab$duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
+      colnames(x)=lapply(colnames(x),function(y){strsplit(y,"---")[[1]][1]})
+      return(x)
+  })
   }
   if(!is.null(tab)){out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = tab,"landscape"=TRUE)); OUT = c(OUT, out); comp = 1}
   
@@ -812,7 +816,7 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
         out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
         out = list("text" = "Si vous n'avez pas semé deux répétitions du témoin ou que vous ne nous avez pas envoyé d'information ou d'épis pour les 2 répétitions, nous n'avons pas pu analyser statistiquement les données. 
                    Voici un tableau présentant les données brutes mesurées sur les populations. 
-                   L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} ou à bien nous envoyer les informations et épis pour les 2 répétitions semées pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
+                   L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} et à bien nous envoyer les informations et épis pour les 2 répétitions semées pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
         out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
       }
     }
