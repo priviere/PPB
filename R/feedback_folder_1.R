@@ -829,7 +829,7 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
   
    # 2.5.1.3. Poids de mille grains en fonction du taux de protéine ----------
   a=data_all$data$data
-  if(length(grep(paste("^poids.de.mille.grains---poids.de.mille.grains$","^taux.de.proteine---taux.de.proteine$",collapse="|"),colnames(a))) == 2){
+  if(length(grep(paste("^poids.de.mille.grains---poids.de.mille.grains$","^taux.de.proteine---taux.de.proteine$",sep="|"),colnames(a))) == 2){
     prot_ok =  a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)),grep("^poids.de.mille.grains---poids.de.mille.grains$",colnames(a)))]
     prot = a[is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & !is.na(a[,"taux.de.proteine---taux.de.proteine"]),c(1:40,grep("^taux.de.proteine---taux.de.proteine$",colnames(a)))]
     pmg = a[!is.na(a[,"poids.de.mille.grains---poids.de.mille.grains"]) & is.na(a[,"taux.de.proteine---taux.de.proteine"]),c("son","poids.de.mille.grains---poids.de.mille.grains")]
@@ -897,7 +897,21 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
   # 2.5.1.6. La verse en fonction de la hauteur ----------
   if(comp ==1){
     out = list("subsubsection" = "La verse en fonction de la hauteur"); OUT = c(OUT, out)
-    
+    D=data_all$data$data
+    if(!is.null(D$"verse---verse_2")){
+      D$"verse---verse" = unlist(lapply(D$"verse---verse_2",function(x){
+        b=NULL
+        if(!is.null(x) & x %in% "à plat"){a="1"}
+        if(!is.null(x) & x %in% "couché"){a="2"}
+        if(!is.null(x) & x %in% "intermédiaire"){a="3"}
+        if(!is.null(x) & x %in% " presque droit"){a="4"}
+        if(!is.null(x) & x %in% "droit"){a="5"}
+        if(is.null(x) | is.na(x)){a="NA"}
+        if(is.null(b)){a="NA"}
+        return(a)
+      }))
+      data_all$data$data$"verse---verse" = D$"verse---verse"
+    }
     p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
                    vec_variables = c("verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
     out = list("figure" = list("caption" = "Relation entre la \\textbf{verse} et la \\textbf{hauteur}", "content" = p, "width" = 1)); OUT = c(OUT, out)
