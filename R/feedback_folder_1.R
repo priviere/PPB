@@ -810,9 +810,9 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
       if(!is.null(tab$not_duplicated_infos$`set-1`[,variable])){
         out = list("subsubsection" = titre); OUT = c(OUT, out)
         out = list("text" = paste("Le tableau ci-dessous présente le \\textbf{",variable,"} pour les populations récoltées cette année.",sep="")); OUT = c(OUT, out)
-        out = list("text" = "Si vous n'avez pas semé deux répétitions du témoin nous n'avons pas pu analyser statistiquement les données. 
+        out = list("text" = "Si vous n'avez pas semé deux répétitions du témoin ou que vous ne nous avez pas envoyé d'information ou d'épis pour les 2 répétitions, nous n'avons pas pu analyser statistiquement les données. 
                    Voici un tableau présentant les données brutes mesurées sur les populations. 
-                   L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
+                   L'année prochaine pensez à semer au moins \\textbf{2 répétitions du(des) témoin(s)} ou à bien nous envoyer les informations et épis pour les 2 répétitions semées pour que l'on puisse estimer les valeurs de vos populations plus précisément !") ; OUT=c(OUT,out)
         out = list("table" = list("caption" = paste(variable," des populations récoltées en ",year,sep=""), "content" = tab)); OUT = c(OUT, out)
       }
     }
