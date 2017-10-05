@@ -527,37 +527,84 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, col_to_display = c("germplasm", "block"), 
                   invert_row_col = FALSE, merge_g_and_s = TRUE, nb_duplicated_rows = 2, nb_row =NULL,
-                  nb_col = NULL)
+                  nb_col = 5)
   tab=traduction(tab,row_or_col = "row")
   if(!is.null(tab$duplicated_infos)){
-    variables = colnames(tab$duplicated_infos$`set-1`$duplicated_infos_variables)
-    TAB =NULL
-    noms = NULL
-    for (i in 1:length(tab$duplicated_infos)){
-      a = c(paste("Groupe",i,sep=" "),as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))
-      names(a) = c("seed_lot","value")
-      TAB = rbind(TAB,a)
-      noms=paste(noms,"Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`," \\\\
-                 ",sep="")
-    }
-    if(nrow(TAB) == 1 ){
-      TAB = c(TAB[,1],NA,TAB[,2:ncol(TAB)])
-      names(TAB) = c("germplasm","block",variables) 
-    }else{
-      TAB = cbind(TAB[,1],NA,TAB[,2:ncol(TAB)])
-     colnames(TAB) = c("germplasm","block",variables)  
-    }
+      set_variables = unique(lapply(tab$duplicated_infos,function(x){return(colnames(x$duplicated_infos_variables))}))
+      names(set_variables)=paste("set",seq(1:length(set_variables)),sep="-")
+      TAB = lapply(set_variables,function(x) NULL)
+      noms = NULL
+      for (i in 1:length(tab$duplicated_infos)){
+        name = colnames(tab$duplicated_infos[[i]]$duplicated_infos_variables)
+        set = grep("TRUE",lapply(set_variables, identical, name))
+        a = c(paste("Groupe",i,sep=" "),as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))
+        TAB[[set]] = rbind(TAB[[set]],a)
+        colnames(TAB[[set]]) = c("seed_lot",set_variables[[set]])
+        b=paste("Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`,sep="")
+        noms=paste(noms,b,sep=" \\\\")
+      }
+      TAB = lapply(TAB,function(x){
+        if(nrow(x) == 1 ){
+          x = c(x[,1],NA,x[,2:ncol(x)])
+          names(x)[1:2] = c("germplasm","block") 
+        }else{
+          x = cbind(x[,1],NA,x[,2:ncol(x)])
+          colnames(x)[1:2] = c("germplasm","block")  
+        }
+        return(x)
+      })
+      if(!is.null(tab$not_duplicated_infos)){
+        for (i in 1:length(tab$not_duplicated_infos)){
+          x=tab$not_duplicated_infos[[i]]
+          name = colnames(x)[3:ncol(x)]
+          set = grep("TRUE",lapply(set_variables, identical, name))
+          if(length(set)>0){
+            TAB[[set]] = rbind(x,TAB[[set]])
+          }else{
+            TAB = c(TAB,x)
+          }
+        }
+        TAB=lapply(TAB,function(x){
+          attributes(x)$invert=TRUE
+          return(x)
+        })
+        tab$not_duplicated_infos=TAB
+        tab$duplicated_infos =NULL
+      }
+      
+
   }
-  if(!is.null(tab$not_duplicated_infos)){
-    tab$not_duplicated_infos[[1]] = rbind(tab$not_duplicated_infos[[1]],TAB)
-    attributes(tab$not_duplicated_infos)$invert=FALSE
-    tab$duplicated_infos = NULL
-    tab$not_duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
-      colnames(x)=lapply(colnames(x),function(y){strsplit(y,"---")[[1]][1]})
-      return(x)
-  })
+  
+  # if(!is.null(tab$not_duplicated_infos)){
+  #   if(exists("TAB")){
+  #     tab$not_duplicated_infos = lapply(tab$not_duplicated_infos,function(x){
+  #       name = colnames(x)[3:ncol(x)]
+  #       set = grep("TRUE",lapply(set_variables, identical, name))
+  #       x = rbind(x,TAB[[[set]]]$data)
+  #       TAB[[[set]]]$data=NULL
+  #       return(x)
+  #     })
+  #     attributes(tab$not_duplicated_infos)$invert=FALSE
+  #     tab$duplicated_infos = NULL
+  #     tab$not_duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
+  #       colnames(x)=lapply(colnames(x),function(y){strsplit(y,"---")[[1]][1]})
+  #       return(x)
+  #     })
+  #   }
+  # }
+  
+  if(!is.null(tab)){
+    for (i in 1:length(tab)){
+      if(is.list(tab[[i]])){
+        for(j in 1:length(tab[[i]])){
+          out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=TRUE)); OUT = c(OUT, out)
+        }
+      }else{
+        out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]]),"landscape"=TRUE)); OUT = c(OUT, out)
+      }
+     }
+   comp = 1
   }
-  if(!is.null(tab)){out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = tab,"landscape"=TRUE)); OUT = c(OUT, out); comp = 1}
   
   vec_variables = 
     c("pluies.automne---pluies", 
