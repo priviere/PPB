@@ -858,7 +858,7 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
  # p = get.ggplot(data = data_all, ggplot.type = "data-barplot", x.axis = "year", in.col = "germplasm", 
  #                  vec_variables = "hauteur---hauteur", nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
   OUT=interaction_and_score(OUT,res_model1,"hauteur",table=FALSE,titre = "Hauteur",score=TRUE,inter_plot=FALSE)
-  
+  if(length(grep("Hauteur",OUT))>0){comp=comp+0.5}
 #   if(!is.null(p)){
 #     out = list("figure" = list("caption" = "Evolution de la \\textbf{hauteur} au cours du temps", "content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
 #     OUT = c(OUT, out) ; comp = comp+0.5
