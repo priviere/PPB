@@ -527,7 +527,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, col_to_display = c("germplasm", "block"), 
                   invert_row_col = FALSE, merge_g_and_s = TRUE, nb_duplicated_rows = 2, nb_row =NULL,
-                  nb_col = 5)
+                  nb_col = 4
   tab=traduction(tab,row_or_col = "row")
   if(!is.null(tab$duplicated_infos)){
       set_variables = unique(lapply(tab$duplicated_infos,function(x){return(colnames(x$duplicated_infos_variables))}))
@@ -539,7 +539,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
         set = grep("TRUE",lapply(set_variables, identical, name))
         a = c(paste("Groupe",i,sep=" "),as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))
         TAB[[set]] = rbind(TAB[[set]],a)
-        colnames(TAB[[set]]) = c("seed_lot",set_variables[[set]])
+        colnames(TAB[[set]]) = c("seed_lot",lapply(set_variables[[set]],function(y){strsplit(y,"---")[[1]][1]}))
         b=paste("Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`,sep="")
         noms=paste(noms,b,sep=" \\\\")
       }
@@ -558,6 +558,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
           x=tab$not_duplicated_infos[[i]]
           name = colnames(x)[3:ncol(x)]
           set = grep("TRUE",lapply(set_variables, identical, name))
+          colnames(x) = lapply( colnames(x),function(y){strsplit(y,"---")[[1]][1]})
           if(length(set)>0){
             TAB[[set]] = rbind(x,TAB[[set]])
           }else{
@@ -565,7 +566,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
           }
         }
         TAB=lapply(TAB,function(x){
-          attributes(x)$invert=TRUE
+          attributes(x)$invert=FALSE
           return(x)
         })
         tab$not_duplicated_infos=TAB
@@ -597,10 +598,10 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
     for (i in 1:length(tab)){
       if(is.list(tab[[i]])){
         for(j in 1:length(tab[[i]])){
-          out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=TRUE)); OUT = c(OUT, out)
+          out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=FALSE)); OUT = c(OUT, out)
         }
       }else{
-        out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]]),"landscape"=TRUE)); OUT = c(OUT, out)
+        out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]]),"landscape"=FALSE)); OUT = c(OUT, out)
       }
      }
    comp = 1
