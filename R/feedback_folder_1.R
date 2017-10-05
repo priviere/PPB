@@ -31,8 +31,8 @@ feedback_folder_1 = function(
   a = dir(dir)
   if( !file.exists(dir) ){ stop("directory ", dir, " does not exist.") }
   
-  message("Loading data....")
-  out_analyse_feedback_folder_1 = get(load(pathway))
+#  message("Loading data....")
+#  out_analyse_feedback_folder_1 = get(load(pathway))
   
   
   setwd(dir)
@@ -45,6 +45,7 @@ feedback_folder_1 = function(
   system(paste("cp ",p , "/* ", " ",we_are_here,"/tex_files", sep = ""))
   message("Several files used in the tex document have been copied to tex_files folder")
   
+if(FALSE){
   # get info from out_analyse_feedback_folder_1
   year = out_analyse_feedback_folder_1$year
   res_model1 = out_analyse_feedback_folder_1$res_model1
@@ -59,10 +60,15 @@ feedback_folder_1 = function(
   Mixtures_all = out_analyse_feedback_folder_1$data_mixtures$Mixtures_all
   Mixtures_S = out_analyse_feedback_folder_1$data_mixtures$Mixtures_selection
   Mix_tot = out_analyse_feedback_folder_1$data_mixtures$Mix_tot
-  
-  levels(Mixtures_all$data$son) = c(levels(Mixtures_all$data$son) , "C70_ANB_2011_0001")
-  Mixtures_all$data[Mixtures_all$data$son %in% "C70#S-crossés_ANB_2015_0001","son"] = as.factor("C70_ANB_2011_0001")
-  Mixtures_all$data[Mixtures_all$data$germplasm_son %in% "C70#S-crossés","germplasm_son"] = "C70"
+}
+
+year = get(load(paste(pathway,"out_year.RData",sep="/")))
+out_farmers_data = get(load(paste(pathway,"out_out_farmers_data.RData",sep="/")))
+data_all =  out_farmers_data[[person]]$data_all
+data_year =  out_farmers_data[[person]]$data_year
+data_S_year =  out_farmers_data[[person]]$data_S_year
+data_SR_year =  out_farmers_data[[person]]$data_SR_year
+data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   
   # Créer title page
   a = paste(
@@ -476,11 +482,11 @@ feedback_folder_1 = function(
   
   # 2.0. Populations présentes dans la ferme ----------
   out = list("section" = "Populations semées cette année dans votre ferme"); OUT = c(OUT, out)
-  D=out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_year$data$data
+  D=out_farmers_data[[person]]$data_year$data$data
   a = unique(D[!is.na(D$block) |!is.na(D$X) | !is.na(D$Y) | !is.na(D$"poids.grains.mesure---poids.grains.mesure") | 
                  !is.na(D$"nbr_spikes---nbr.épiss") | !is.na(D$"poids.de.mille.grains---poids.de.mille.grains"),"son"])
   a = pop_ferme = unlist(lapply(as.character(a),function(x){strsplit(x,'_')[[1]][1]}))
-  b = unique(out_analyse_feedback_folder_1$out_farmers_data[[person]]$data_S_year$data$data$expe_name_2)
+  b = unique(out_farmers_data[[person]]$data_S_year$data$data$expe_name_2)
   b = unlist(lapply(as.character(b),function(x){strsplit(x,' | ')[[1]][3]}))
   b = unlist(lapply(as.character(b),function(x){strsplit(x,'_')[[1]][1]}))
   if(!is.null(b)){a = a[-grep(paste(b,collapse='|'),a)]}
@@ -496,7 +502,7 @@ feedback_folder_1 = function(
     OUT=c(OUT,graph)
   }
   
-  
+  rm(list="out_farmers_data")
   
   # 2.1. Automne ----------
   out = list("section" = "Automne"); OUT = c(OUT, out)
@@ -728,7 +734,8 @@ feedback_folder_1 = function(
   
   # 2.5. Mesure à la récolte ----------
   out = list("section" = "Mesures à la récolte"); OUT = c(OUT, out)
-  
+
+res_model1 = get(load(paste(pathway,"out_res_model1.RData",sep="/")))
   # 2.5.1. Mesures sur les populations ----------
   out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
 
@@ -1069,7 +1076,15 @@ get_pS_pSR <- function(data,variable){
     out = list("text" = "Vous n'avez pas mis en place l'essai de sélection pour les mélanges sur votre ferme cette année."); OUT=c(OUT,out)
   }else{
   
+data_mixtures = get(load(paste(pathway,"out_data_mixtures.RData",sep="/")))
+Mixtures_all = data_mixtures$Mixtures_all
+Mixtures_selection = data_mixtures$Mixtures_selection
+Mix_tot = data_mixtures$Mix_tot
     
+levels(Mixtures_all$data$son) = c(levels(Mixtures_all$data$son) , "C70_ANB_2011_0001")
+Mixtures_all$data[Mixtures_all$data$son %in% "C70#S-crossés_ANB_2015_0001","son"] = as.factor("C70_ANB_2011_0001")
+Mixtures_all$data[Mixtures_all$data$germplasm_son %in% "C70#S-crossés","germplasm_son"] = "C70"
+
     out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
     out = list("text" = "Les gaphiques suivant permettent de comparer la valeur du mélange à celles de ses composantes et à la valeur moyenne des composantes."); OUT=c(OUT,out)
     
@@ -1238,6 +1253,7 @@ if(FALSE){
 
   
   # 4. Le réseau de fermes -----------------------------------------------------------------------------------------------------------------------------------------
+data_network_year = get(load(paste(pathway,"out_data_network_year.RData",sep="/"))) 
   
   # 4.1. Intro ----------
   out = list("chapter" = "Resultats dans le réseau de fermes"); OUT = c(OUT, out)
@@ -1269,7 +1285,9 @@ if(FALSE){
              Vous pouvez essayer des populations cultivées dans une ferme qui apparait proche de la votre. 
              Les dossiers de chaque paysan(ne) est disponible à la demande."); OUT = c(OUT, out)
   
-  
+rm(list=c("data_mixtures","data_network_year"))
+res_model2 = get(load(paste(pathway,"out_res_model2.RData",sep="/")))
+
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
   
   clust = parameter_groups(Model2, parameter = "theta")
