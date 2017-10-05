@@ -527,7 +527,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, col_to_display = c("germplasm", "block"), 
                   invert_row_col = FALSE, merge_g_and_s = TRUE, nb_duplicated_rows = 2, nb_row =NULL,
-                  nb_col = 4
+                  nb_col = 4)
   tab=traduction(tab,row_or_col = "row")
   if(!is.null(tab$duplicated_infos)){
       set_variables = unique(lapply(tab$duplicated_infos,function(x){return(colnames(x$duplicated_infos_variables))}))
