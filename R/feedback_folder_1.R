@@ -914,7 +914,7 @@ Deux populations partageant la même lettre (colonne groupe) ne sont pas signifi
     }
     p = get.ggplot(data = data_all, ggplot.type = "data-biplot", in.col = "year", 
                    vec_variables = c("verse", "hauteur---hauteur"), hide.labels.parts = c("person:year"))
-    out = list("figure" = list("caption" = "Relation entre la \\textbf{verse} et la \\textbf{hauteur}", "content" = p, "width" = 1)); OUT = c(OUT, out)
+    out = list("figure" = list("caption" = "Relation entre la \\textbf{verse} (1=à plat, 3=intermédiaire, 5=droit) et la \\textbf{hauteur}", "content" = p, "width" = 1)); OUT = c(OUT, out)
   }
    
 if(FALSE){
