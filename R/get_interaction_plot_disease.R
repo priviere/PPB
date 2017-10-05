@@ -6,15 +6,20 @@ add_split_col= function(x, each){ rep(c(1:nrow(x)), each = each)[1:nrow(x)] }
 format_date <- function(char){
   if(length(strsplit(char,"-")[[1]])>1){
     a = strsplit(char,"-")[[1]]
-    if(which(nchar(a)==4)==1){return(paste(a[3],a[2],a[1],sep="/"))}
-    if(which(nchar(a)==4)==3){return(paste(a[1],a[2],a[3],sep="/"))}
+    if(length(which(nchar(a)==4))>0){
+      if(which(nchar(a)==4)==1){return(paste(a[3],a[2],a[1],sep="/"))}
+      if(which(nchar(a)==4)==3){return(paste(a[1],a[2],a[3],sep="/"))}
+    }
     if(length(which(nchar(a)==4))==0){return(paste(a[1],a[2],paste("20",a[3],sep=""),sep="/"))}
   }
   
   if(length(strsplit(char,"/")[[1]])>1){
     a = strsplit(char,"/")[[1]]
-    if(which(nchar(a)==4)==1){return(paste(a[3],a[2],a[1],sep="/"))}
-    if(which(nchar(a)==4)==3){return(paste(a[1],a[2],a[3],sep="/"))}
+    if(length(which(nchar(a)==4))>0){
+      if(which(nchar(a)==4)==1){return(paste(a[3],a[2],a[1],sep="/"))}
+      if(which(nchar(a)==4)==3){return(paste(a[1],a[2],a[3],sep="/"))}
+    }
+
     if(length(which(nchar(a)==4))==0){return(paste(a[1],a[2],paste("20",a[3],sep=""),sep="/"))}
   }
 }
