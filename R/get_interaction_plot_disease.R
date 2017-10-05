@@ -60,10 +60,15 @@ if(type=="year"){
       if(y=="tres"){return(3)}
     }))
     x$value = factor(x$value,levels=lev)
-    p = ggplot(data=x,aes(x=value,y=variable, colour = germplasm, group=germplasm))# + stat_summary(fun.y = mean, geom = "point") + stat_summary(fun.y = mean, geom = "line") 
+    
+    p = ggplot(data=x,aes(x=value,y=variable, colour = germplasm, group=germplasm)) 
     p = p + labs(x="date",y="note maladie")
     p = p + scale_y_continuous(breaks = c(1,2,3))
-    p = p + geom_jitter(inherit.aes=TRUE,width=0.1,height=0)
+    
+    if(length(unique(x$value))>1){
+      p = p + stat_summary(fun.y = mean, geom = "point") + stat_summary(fun.y = mean, geom = "line") 
+    }else{p = p + geom_jitter(inherit.aes=TRUE,width=0.1,height=0)}
+    
     return(p)
   })
   return(list("plot" = p, "Data_groups"=Data_duplicated_groups))
