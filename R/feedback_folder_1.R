@@ -562,7 +562,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
           if(length(set)>0){
             TAB[[set]] = rbind(x,TAB[[set]])
           }else{
-            TAB = c(TAB,x)
+            TAB = c(TAB,list(x))
           }
         }
         TAB=lapply(TAB,function(x){
@@ -1351,7 +1351,7 @@ data_network_year = get(load(paste(pathway,"out_data_network_year.RData",sep="/"
              Vous pouvez essayer des populations cultivées dans une ferme qui apparait proche de la votre. 
              Les dossiers de chaque paysan(ne) est disponible à la demande."); OUT = c(OUT, out)
   
-rm(list=c("data_mixtures","data_network_year"))
+rm(list=c("data_network_year"))
 res_model2 = get(load(paste(pathway,"out_res_model2.RData",sep="/")))
 
   Model2 = lapply(res_model2,function(x){return(x$model.outputs)})
