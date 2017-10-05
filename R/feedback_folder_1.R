@@ -432,7 +432,7 @@ feedback_folder_1 = function(
     #   # 1ere année : mettre un tableau plutôt qu'un graph...
     #   if(){
     #     
-     # }
+    }else{
       p = get.ggplot(data = data, ggplot.type = "data-interaction", x.axis = "year", 
                      in.col = "germplasm", vec_variables = variable, 
                      nb_parameters_per_plot_in.col = 8, merge_g_and_s = TRUE)
