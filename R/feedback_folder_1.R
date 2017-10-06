@@ -593,23 +593,6 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
 
   }
   
-  # if(!is.null(tab$not_duplicated_infos)){
-  #   if(exists("TAB")){
-  #     tab$not_duplicated_infos = lapply(tab$not_duplicated_infos,function(x){
-  #       name = colnames(x)[3:ncol(x)]
-  #       set = grep("TRUE",lapply(set_variables, identical, name))
-  #       x = rbind(x,TAB[[[set]]]$data)
-  #       TAB[[[set]]]$data=NULL
-  #       return(x)
-  #     })
-  #     attributes(tab$not_duplicated_infos)$invert=FALSE
-  #     tab$duplicated_infos = NULL
-  #     tab$not_duplicated_infos = lapply(tab$not_duplicated_infos, function(x){
-  #       colnames(x)=lapply(colnames(x),function(y){strsplit(y,"---")[[1]][1]})
-  #       return(x)
-  #     })
-  #   }
-  # }
   
   if(!is.null(tab)){
     for (i in 1:length(tab)){
@@ -1018,7 +1001,7 @@ if(FALSE){
   selection_intra = function(res_model1, data_S_year, data_SR_year, variable){
     if (!is.null(data_S_year$data) & is.element(paste(variable,"---",variable,sep=""),colnames(data_S_year$data$data))) {
       data_version = format.data(data_S_year, data.on = "son", fuse_g_and_s = TRUE, format = "PPBstats")
-      levels(data_version$version) = c(levels(data_version$version) [grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))])
+      data_version$version = factor(data_version$version,levels=c(levels(data_version$version)[grep("vrac",levels(data_version$version))], levels(data_version$version) [grep("bouquet",levels(data_version$version))]))
       if(paste(person,year,sep=":")%in% names(res_model1[[variable]]$comp.par$comp.mu$data_mean_comparisons)){
         pS =plot.PPBstats(x=res_model1[[variable]]$comp.par$comp.mu, data_version = data_version, ggplot.type = "barplot", 
                           nb_parameters_per_plot=30)
