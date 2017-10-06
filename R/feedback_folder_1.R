@@ -804,9 +804,14 @@ res_model1 = get(load(paste(pathway,"out_res_model1.RData",sep="/")))
   out = list("subsection" = "Mesures sur les populations"); OUT = c(OUT, out)
 
   interaction_and_score = function(OUT,res_model,variable,table=FALSE,titre,score=TRUE,inter_plot=FALSE){
-    
+
     if(variable %in% names(res_model1) & length(grep(paste(person,year,sep=":"),names(res_model1[[variable]]$model.outputs$MCMC)))>0){
       out = list("subsubsection" = titre); OUT = c(OUT, out)
+      if(variable == "taux.de.proteine"){
+        out = list("text" = paste("Etant donné la quantité de sacs que nous recevons nous ne pouvons pas faire les analyse de protéine sur toutes les populations.
+                                  Nous priorisons les sélection ainsi que les réponses à la sélection (semis l'année après sélection de cette sélection et de la population
+                                  non sélectionnée correspondante.",sep="")); OUT = c(OUT, out)
+      }
       res_model = res_model[[variable]]
       comp.mu = res_model$comp.par$comp.mu
       
