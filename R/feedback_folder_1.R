@@ -542,9 +542,16 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
         a = c(paste("Groupe",i,sep=" "),a)
         TAB[[set]] = rbind(TAB[[set]],a)
         colnames(TAB[[set]]) = c("seed_lot",lapply(set_variables[[set]],function(y){strsplit(y,"---")[[1]][1]}))
-        b=paste("Groupe ",i," : ",tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`,sep="")
-        noms=paste(noms,b,sep=" \\\\")
+        b=c(paste("Groupe ",i,sep=""), as.character(tab$duplicated_infos[[i]]$`duplicated_infos_seed-lots`$`seed-lots`))
+        noms=rbind(noms,b)
       }
+      a = unique(noms[,2])
+      b=lapply(a,function(x){
+        d = grep(x,noms[,2]) 
+        return(list("Groupe"=paste(d,collapse = ","),"populations"=unique(noms[d,2])))
+      })
+      noms=paste(lapply(b,function(x){return(paste("Groupe ",x$Group," : ",x$populations,sep=""))}),collapse="\\\\")
+
       TAB = lapply(TAB,function(x){
         if(nrow(x) == 1 ){
           nom=colnames(x)
