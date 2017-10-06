@@ -743,7 +743,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   tab = get.table(data = data_all, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 10, col_to_display = c("germplasm", "block"), merge_g_and_s = FALSE,nb_duplicated_rows = 500)
   if(!is.null(tab)){
-    p = get_interaction_plot_disease(tab,20,vec_variables,type="all_year")
+    p = get_interaction_plot_disease(tab,12,vec_variables,type="all_year")
     if(!is.null(p)){
       out = list("figure" = list("caption" = "Evolution de la note de maladie au cours des années. 1 = sain ; 2 = malade ; 3 = très malade","content" = p, "layout" = matrix(c(1,2,3), ncol = 1), "width" = 1))
       OUT=c(OUT,out);comp=1
