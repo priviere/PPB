@@ -537,7 +537,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
       for (i in 1:length(tab$duplicated_infos)){
         name = colnames(tab$duplicated_infos[[i]]$duplicated_infos_variables)
         set = grep("TRUE",lapply(set_variables, identical, name))
-        if(unique(dim(tab$duplicated_infos[[i]]$"duplicated_infos_variables"))==1){a=as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"[1,1])
+        if(length(unique(dim(tab$duplicated_infos[[i]]$"duplicated_infos_variables")))==1 & nrow(tab$duplicated_infos[[i]]$"duplicated_infos_variables")==1){a=as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables"[1,1])
         }else{a=as.character(tab$duplicated_infos[[i]]$"duplicated_infos_variables")}
         a = c(paste("Groupe",i,sep=" "),a)
         TAB[[set]] = rbind(TAB[[set]],a)
