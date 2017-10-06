@@ -662,7 +662,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
   tab = get.table(data = data_year, table.type = "raw", vec_variables = vec_variables, 
                   nb_col = 5, col_to_display = c("germplasm", "block"), merge_g_and_s = TRUE,nb_duplicated_rows=50)
   tab=traduction(tab,"col")
-  tab=tab$not_duplicated_infos$`set-1`[order(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,"reprise"]))),]
+  if("reprise"%in% colnames(tab$not_duplicated_infos$`set-1`)){tab$not_duplicated_infos$`set-1`[order(as.numeric(as.character(tab$not_duplicated_infos$`set-1`[,"reprise"]))),]}
  
 
   if(!is.null(tab)){
