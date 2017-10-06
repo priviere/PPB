@@ -616,10 +616,10 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
       if(!is.null(tab[[i]])){
         if(is.list(tab[[i]])){
           for(j in 1:length(tab[[i]])){
-            out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=FALSE)); OUT = c(OUT, out)
+            out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=TRUE)); OUT = c(OUT, out)
           }
         }else{
-          out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]]),"landscape"=FALSE)); OUT = c(OUT, out)
+          out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]]),"landscape"=TRUE)); OUT = c(OUT, out)
         }
       }
      }
