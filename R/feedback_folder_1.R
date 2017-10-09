@@ -808,7 +808,7 @@ res_model1 = get(load(paste(pathway,"out_res_model1.RData",sep="/")))
       if(variable == "taux.de.proteine"){
         out = list("text" = paste("Etant donné la quantité de sacs que nous recevons nous ne pouvons pas faire les analyse de protéine sur toutes les populations.
                                   Nous priorisons les sélection ainsi que les réponses à la sélection (semis l'année après sélection de cette sélection et de la population
-                                  non sélectionnée correspondante.",sep="")); OUT = c(OUT, out)
+                                  non sélectionnée correspondante).",sep="")); OUT = c(OUT, out)
       }
       res_model = res_model[[variable]]
       comp.mu = res_model$comp.par$comp.mu
