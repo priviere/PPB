@@ -1167,6 +1167,12 @@ Mixtures_all$data[Mixtures_all$data$son %in% "C70#S-crossés_ANB_2015_0001","son
 Mixtures_all$data[Mixtures_all$data$germplasm_son %in% "C70#S-crossés","germplasm_son"] = "C70"
 
     out = list("section" = "Résultats sur la ferme"); OUT = c(OUT, out)
+    out = list("text" = "Rappel des appellations pour les différentes sélections faites : \\\\ VA : Sélections faites dans les composantes pour la modalité 1 la première année.\\\\ 
+               #VB : Sélections faites dans les composantes pour la modalité 1 la deuxième année. \\\\
+               #JA : Sélections faites dans les composantes pour la modalité 2 la première année.\\\\
+               #JB : Sélections faites dans le mélange 2 recomposé pour la modalité 2 la deuxième année.\\\\
+               #BA : Sélections faites dans le mélange pour la modalité 3 la première année.\\\\
+               #BB : Sélections faites dans le mélange pour la modalité 3 la deuxième année.\\\\"); OUT=c(OUT,out)
     out = list("text" = "Les gaphiques suivant permettent de comparer la valeur du mélange à celles de ses composantes et à la valeur moyenne des composantes."); OUT=c(OUT,out)
     
     
