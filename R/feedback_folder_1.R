@@ -547,7 +547,7 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
       }
       a = unique(noms[,2])
       b=lapply(a,function(x){
-        d = grep(x,noms[,2]) 
+        d = grep(paste("^",x,"$",sep=""),noms[,2]) 
         return(list("Groupe"=paste("Groupe ",paste(d,collapse = ",")," : ",unique(noms[d,2]),sep=""),"nom" = paste("Groupe ",d,sep="")))
       })
       noms=b
@@ -600,12 +600,14 @@ data_PPB_mixture = out_farmers_data[[person]]$data_PPB_mixture
         if(is.list(tab[[i]])){
           for(j in 1:length(tab[[i]])){
             if(is.null(dim(tab[[i]][[j]]))){germ = tab[[i]][[j]]["germplasm"]}else{germ = tab[[i]][[j]][,"germplasm"]}
-            name = noms[[grep(germ,noms)]]$Groupe
+            name=NULL
+            for (n in 1:germ){name = c(name,noms[[grep(n,noms)]]$Groupe)}
             out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",noms,sep="\n"), "content" = list(tab[[i]][[j]]),"landscape"=TRUE)); OUT = c(OUT, out)
           }
         }else{
           if(is.null(dim(tab[[i]]))){germ = tab[[i]]["germplasm"]}else{germ = tab[[i]][,"germplasm"]}
-          name = noms[[grep(germ,noms)]]$Groupe
+          name=NULL
+          for (n in germ){name = paste(name,noms[[grep(n,noms)]]$Groupe,sep="\\\\")}
           out = list("table" = list("caption" = paste("Informations sur les pratiques culturales",name,sep="\n"), "content" = list(tab[[i]]),"landscape"=TRUE)); OUT = c(OUT, out)
         }
       }
