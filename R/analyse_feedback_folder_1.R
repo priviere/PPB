@@ -351,8 +351,9 @@ analyse_feedback_folder_1 = function(
                                      project.in="PPB-Mélange"
     )
     
-
-    Mixtures_all$data =  Mixtures_all$data[as.character(Mixtures_all$data$son_germplasm) !=  as.character(Mixtures_all$data$father_germplasm),]
+    
+    expe_to_delete = unique(Mixtures_all$data [Mixtures_all$data$sl_statut %in% "son" & as.character(Mixtures_all$data$son_germplasm) == as.character(Mixtures_all$data$father_germplasm),"expe"])
+    Mixtures_all$data  = Mixtures_all$data[-grep(paste(expe_to_delete,collapse="|"),Mixtures_all$data$expe),]
     Mixtures_all$data = Mixtures_all$data[!is.na(Mixtures_all$data$son),]
     Mixtures_all$data$germplasm_son = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$son) 
     Mixtures_all$data$germplasm_father = gsub("^([^_]*)_.*$", "\\1", Mixtures_all$data$father)
@@ -361,7 +362,9 @@ analyse_feedback_folder_1 = function(
     Mixtures_all$data$expe_melange = gsub("[^._]*_([^_]*)_.*$","\\1", Mixtures_all$data$son)
     Mixtures_all$data$expe_melange = ifelse(Mixtures_all$data$expe_melange == Mixtures_all$data$location, as.character(Mixtures_all$data$son_germplasm), 
                               unlist(lapply(as.character(Mixtures_all$data$expe_melange),function(x){sub("[.]","-",x)})))
-   
+    M = unique(Mixtures_all$data[Mixtures_all$data$sl_statut %in% "son" & !is.na(Mixtures_all$data$expe_melange),"son_germplasm"])
+    Mix = get.data(db_user = db_user, db_host = db_host, db_name = db_name, db_password = db_password,
+                   query.type ="data-classic", filter.on="father-son",data.type="relation",germplasm.in=M)
 
 
 #1.1.3. Get selection data for Mixture experiment
@@ -542,7 +545,7 @@ analyse_feedback_folder_1 = function(
   names(out_farmers_data) = vec_person
   
   out_from_speed = list("year" = year, "vec_person" = vec_person, "res_model1" = res_model1, "res_model2" = res_model2, "res_model_varintra" = res_model_varintra, 
-                        "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "data_mixtures" = list("Mixtures_selection" = data_S_Mixtures, "Mixtures_all" = Mixtures_all))
+                        "data_network_year" = data_network_year, "out_farmers_data" = out_farmers_data, "list_translation" = list_translation, "data_mixtures" = list("Mixtures_selection" = data_S_Mixtures, "Mixtures_all" = Mixtures_all,"Mix_tot"=Mix))
   
   return(out_from_speed)
 }
